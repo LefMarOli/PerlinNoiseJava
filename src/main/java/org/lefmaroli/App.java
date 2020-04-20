@@ -14,7 +14,11 @@ import java.awt.*;
 public class App {
     public static void main(String[] args) {
 
-        Perlin1D perlin1D = new Perlin1D(2000, 4);
+        Perlin1D perlin1D = new Perlin1D.Builder()
+                .withDistance(2048)
+                .withLayers(16)
+                .withFactorisationSpeed(2)
+                .build();
 
         XYSeriesCollection dataset = LineChart.createEquidistantDataset(perlin1D.getNext(50), "Perlin1D");
         EventQueue.invokeLater(() -> {
@@ -23,7 +27,7 @@ public class App {
         });
 
         boolean activateUpdate = true;
-        if(activateUpdate) {
+        if (activateUpdate) {
             long start = System.currentTimeMillis();
             while (true) {
                 long current = System.currentTimeMillis();

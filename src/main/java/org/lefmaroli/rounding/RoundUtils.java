@@ -11,7 +11,20 @@ public class RoundUtils {
             return n;
         }else{
             int power = 0;
-            while (n !=0){
+            while (n !=0){  //000000
+                n >>= 1;
+                power++;
+            }
+            return 1 << power;
+        }
+    }
+
+    public static int floorToPowerOfTwo(int n){
+        if(isPowerOfTwo(n)){
+            return n;
+        }else{
+            int power = 0;
+            while (n !=1){  //000001
                 n >>= 1;
                 power++;
             }

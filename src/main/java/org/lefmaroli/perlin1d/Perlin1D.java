@@ -12,31 +12,56 @@ public class Perlin1D {
 
     private static final Logger LOGGER = LogManager.getLogger(Perlin1D.class);
 
-    public Perlin1D() {
-        this(32, 3);
+    public static class Builder {
+        //Default values
+        private int distance = 32;
+        private int layers = 3;
+        private int factor = 2;
+        private long seed = System.currentTimeMillis();
+
+        public Builder withDistance(int distance) {
+            if (distance < 4) {
+                throw new IllegalArgumentException("Parameter distance must be greater than 4.");
+            }
+            if (!RoundUtils.isPowerOfTwo(distance)) {
+                LOGGER.warn("Rounding up distance to nearest power of 2");
+                distance = RoundUtils.ceilToPowerOfTwo(distance);
+            }
+            this.distance = distance;
+            return this;
+        }
+
+        public Builder withLayers(int layers) {
+            if (layers < 1) {
+                throw new IllegalArgumentException("Layers must be at least 1.");
+            }
+            this.layers = layers;
+            return this;
+        }
+
+        public Builder withFactorisationSpeed(int factor) {
+            if (!RoundUtils.isPowerOfTwo(factor)) {
+                LOGGER.warn("Rounding down factor to nearest power of 2");
+                factor = RoundUtils.floorToPowerOfTwo(factor);
+            }
+            this.factor = factor;
+            return this;
+        }
+
+        public Builder withRandomGeneratorSeed(long seed) {
+            this.seed = seed;
+            return this;
+        }
+
+        public Perlin1D build() {
+            return new Perlin1D(this.distance, this.layers, this.factor, this.seed);
+        }
     }
 
-    public Perlin1D(int distance, int layers) {
-        this(distance, layers, System.currentTimeMillis());
-    }
-
-    public Perlin1D(int distance) {
-        this(distance, 3, System.currentTimeMillis());
-    }
-
-    Perlin1D(int distance, int layers, long seed) {
-        if (distance < 4) {
-            throw new IllegalArgumentException("Parameter distance must be greater than 4.");
-        }
-        if (layers < 1) {
-            throw new IllegalArgumentException("Layers must be at least 1.");
-        }
-        if (!RoundUtils.isPowerOfTwo(distance)) {
-            LOGGER.warn("Rounding distance to nearest power of 2");
-            distance = RoundUtils.ceilToPowerOfTwo(distance);
-        }
+    private Perlin1D(int distance, int layers, int factor, long seed) {
         this.distance = distance;
         this.layers = layers;
+        this.factor = factor;
         this.random = new Random(seed);
         this.currentLastRandom = random.nextDouble();
         this.previousLastRandom = random.nextDouble();
@@ -68,7 +93,7 @@ public class Perlin1D {
         return distance;
     }
 
-    public List<Double> computeAtLeast(int count) {
+    private List<Double> computeAtLeast(int count) {
         //Preprocess to save on cost of operation
         if (count < MIN_COUNT) {
             count = MIN_COUNT;
@@ -84,17 +109,16 @@ public class Perlin1D {
         List<Double> results = computeLayer(toComputeCount, currentDistance, currentFactor, false);
         int currentLayers = layers - 1;
         double maxValue = 1.0;
-        while (currentLayers > 0 && currentDistance > 4.0) {
+        while (currentLayers > 0 && currentDistance / factor > 4) {
             currentLayers--;
-            currentDistance = currentDistance / 2;
-            currentFactor = currentFactor / 2.0;
+            currentDistance = currentDistance / factor;
+            currentFactor = currentFactor / (double) factor;
             maxValue += currentFactor;
             List<Double> newLayer = computeLayer(toComputeCount, currentDistance, currentFactor, true);
             for (int i = 0; i < results.size(); i++) {
                 double newValue = results.get(i) + newLayer.get(i);
                 results.set(i, newValue);
             }
-
         }
 
         //Normalize
@@ -124,7 +148,8 @@ public class Perlin1D {
         }
         if (additionalLayer) {
             currentLastRandom +=
-                    bounds.get(bounds.size() - 1) * factor;    //Used for current computation but never added to result
+                    bounds.get(bounds.size() - 1) *
+                            factor;
         } else {
             currentLastRandom = bounds.get(bounds.size() - 1);
         }
@@ -138,6 +163,7 @@ public class Perlin1D {
         if (!additionalLayer) {
             randoms.add(previousLastRandom);
         } else {
+            //Don't modify first value to match previously generated series
             randoms.add(0.0);
         }
         for (int i = 0; i < count - 1; i++) {
@@ -153,8 +179,11 @@ public class Perlin1D {
     private static final int MIN_COUNT = 1000;
     private final int distance;
     private final int layers;
+    private final int factor;
     private final Random random;
     private final Queue<Double> computed = new LinkedBlockingQueue<>();
+
+    //Used for current computation but added to result in the following batch requested
     private Double currentLastRandom;
     private Double previousLastRandom;
 }

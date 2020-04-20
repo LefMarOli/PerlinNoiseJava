@@ -35,4 +35,14 @@ public class RoundUtilsTest {
         assertEquals(8, RoundUtils.ceilToPowerOfTwo(8));
     }
 
+
+    @Test
+    public void testRoundDownToPowerOfTwo(){
+        assertEquals(4, RoundUtils.floorToPowerOfTwo(6));
+        assertEquals(8, RoundUtils.floorToPowerOfTwo(9));
+        assertEquals(16, RoundUtils.floorToPowerOfTwo(18));
+        assertEquals(32, RoundUtils.floorToPowerOfTwo(38));
+
+        assertEquals(8, RoundUtils.floorToPowerOfTwo(8));
+    }
 }
