@@ -11,7 +11,7 @@ public class Perlin1DTest {
     @Test
     public void TestCreate() {
         Perlin1D perlin1D = new Perlin1D.Builder().withDistance(6).build();
-        assertEquals(6, perlin1D.getDistance(), 0);
+        assertEquals(8, perlin1D.getDistance(), 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
