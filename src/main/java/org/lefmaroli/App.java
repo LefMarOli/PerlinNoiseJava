@@ -17,7 +17,8 @@ public class App {
         Perlin1D perlin1D = new Perlin1D.Builder()
                 .withDistance(2048)
                 .withLayers(16)
-                .withFactorisationSpeed(2)
+                .withDistanceFactor(2)
+                .withAmplitudeFactor(1.8)
                 .build();
 
         XYSeriesCollection dataset = LineChart.createEquidistantDataset(perlin1D.getNext(50), "Perlin1D");

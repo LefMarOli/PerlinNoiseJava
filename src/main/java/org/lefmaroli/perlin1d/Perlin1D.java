@@ -16,7 +16,8 @@ public class Perlin1D {
         //Default values
         private int distance = 32;
         private int layers = 3;
-        private int factor = 2;
+        private int distanceFactor = 2;
+        private double amplitudeFactor = 2.0;
         private long seed = System.currentTimeMillis();
 
         public Builder withDistance(int distance) {
@@ -39,12 +40,21 @@ public class Perlin1D {
             return this;
         }
 
-        public Builder withFactorisationSpeed(int factor) {
-            if (!RoundUtils.isPowerOfTwo(factor)) {
-                LOGGER.warn("Rounding down factor to nearest power of 2");
-                factor = RoundUtils.floorToPowerOfTwo(factor);
+        public Builder withDistanceFactor(int distanceFactor) {
+            if (!RoundUtils.isPowerOfTwo(distanceFactor)) {
+                LOGGER.warn("Rounding down distance factor to nearest power of 2");
+                distanceFactor = RoundUtils.floorToPowerOfTwo(distanceFactor);
             }
-            this.factor = factor;
+            this.distanceFactor = distanceFactor;
+            return this;
+        }
+
+        public Builder withAmplitudeFactor(double amplitudeFactor) {
+            if (amplitudeFactor <= 1.0) {
+                LOGGER.warn("Amplitude factor must be greater than 1.0. Setting to default of " + this.amplitudeFactor);
+            } else {
+                this.amplitudeFactor = amplitudeFactor;
+            }
             return this;
         }
 
@@ -54,14 +64,15 @@ public class Perlin1D {
         }
 
         public Perlin1D build() {
-            return new Perlin1D(this.distance, this.layers, this.factor, this.seed);
+            return new Perlin1D(this.distance, this.layers, this.distanceFactor, this.amplitudeFactor, this.seed);
         }
     }
 
-    private Perlin1D(int distance, int layers, int factor, long seed) {
+    private Perlin1D(int distance, int layers, int distanceFactor, double amplitudeFactor, long seed) {
         this.distance = distance;
         this.layers = layers;
-        this.factor = factor;
+        this.distanceFactor = distanceFactor;
+        this.amplitudeFactor = amplitudeFactor;
         this.random = new Random(seed);
         this.currentLastRandom = random.nextDouble();
         this.previousLastRandom = random.nextDouble();
@@ -109,10 +120,10 @@ public class Perlin1D {
         List<Double> results = computeLayer(toComputeCount, currentDistance, currentFactor, false);
         int currentLayers = layers - 1;
         double maxValue = 1.0;
-        while (currentLayers > 0 && currentDistance / factor > 4) {
+        while (currentLayers > 0 && currentDistance / distanceFactor > 4) {
             currentLayers--;
-            currentDistance = currentDistance / factor;
-            currentFactor = currentFactor / (double) factor;
+            currentDistance = currentDistance / distanceFactor;
+            currentFactor = currentFactor / amplitudeFactor;
             maxValue += currentFactor;
             List<Double> newLayer = computeLayer(toComputeCount, currentDistance, currentFactor, true);
             for (int i = 0; i < results.size(); i++) {
@@ -127,11 +138,6 @@ public class Perlin1D {
         }
         previousLastRandom =
                 currentLastRandom; //Don't normalize this one, it will be factored and normalized in the next call
-
-        System.out.println("currentLastRandom: " + currentLastRandom);
-        System.out.println("currentLastValue: " + results.get(results.size() - 1));
-        System.out.println("previousLastRandom: " + previousLastRandom);
-        System.out.println("maxValue: " + maxValue);
 
         return results;
     }
@@ -179,7 +185,8 @@ public class Perlin1D {
     private static final int MIN_COUNT = 1000;
     private final int distance;
     private final int layers;
-    private final int factor;
+    private final int distanceFactor;
+    private final double amplitudeFactor;
     private final Random random;
     private final Queue<Double> computed = new LinkedBlockingQueue<>();
 
