@@ -142,9 +142,9 @@ public class Perlin1D {
         return results;
     }
 
-    private List<Double> computeLayer(int toComputeCount, int distance, double factor, boolean additionalLayer) {
+    private List<Double> computeLayer(int toComputeCount, int distance, double factor, boolean isAdditionalLayer) {
         List<Double> layerValues = new ArrayList<>(toComputeCount);
-        List<Double> bounds = getRandomsList(getInterpolationBoundsCount(toComputeCount, distance), additionalLayer);
+        List<Double> bounds = getRandomsList(getInterpolationBoundsCount(toComputeCount, distance), isAdditionalLayer);
         for (int i = 0; i < bounds.size() - 1; i++) {
             for (int j = 0; j < distance; j++) {
                 double addedValue = Interpolation.linearWithFade(bounds.get(i),
@@ -152,7 +152,7 @@ public class Perlin1D {
                 layerValues.add(addedValue);
             }
         }
-        if (additionalLayer) {
+        if (isAdditionalLayer) {
             currentLastRandom +=
                     bounds.get(bounds.size() - 1) *
                             factor;
@@ -163,10 +163,10 @@ public class Perlin1D {
         return layerValues;
     }
 
-    private List<Double> getRandomsList(int count, boolean additionalLayer) {
+    private List<Double> getRandomsList(int count, boolean isAdditionalLayer) {
         List<Double> randoms = new ArrayList<>(count);
         //Always start at previously generated last boundary on new computations
-        if (!additionalLayer) {
+        if (!isAdditionalLayer) {
             randoms.add(previousLastRandom);
         } else {
             //Don't modify first value to match previously generated series
