@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class Perlin1DTest {
 
@@ -27,7 +27,9 @@ public class Perlin1DTest {
     @Test
     public void TestGet1Value() {
         Perlin1D perlin1D = new Perlin1D.Builder().withDistance(10).build();
-        perlin1D.getNext();
+        Double next = perlin1D.getNext();
+        assertNotNull(next);
+        assertTrue(next > 0.0 && next < 1.0);
     }
 
     @Test
@@ -36,6 +38,11 @@ public class Perlin1DTest {
         int expectedCount = 58;
         List<Double> nextValues = perlin1D.getNext(expectedCount);
         assertEquals(expectedCount, nextValues.size());
+
+        for (Double value : nextValues) {
+            assertNotNull(value);
+            assertTrue(value > 0.0 && value < 1.0);
+        }
     }
 
     @Test
@@ -44,6 +51,11 @@ public class Perlin1DTest {
         int expectedCount = 3000;
         List<Double> nextValues = perlin1D.getNext(expectedCount);
         assertEquals(expectedCount, nextValues.size());
+
+        for (Double value : nextValues) {
+            assertNotNull(value);
+            assertTrue(value > 0.0 && value < 1.0);
+        }
     }
 
     @Test
@@ -52,5 +64,13 @@ public class Perlin1DTest {
         int expectedCount = 3567;
         List<Double> nextValues = perlin1D.getNext(expectedCount);
         assertEquals(expectedCount, nextValues.size());
+
+        for (Double value : nextValues) {
+            assertNotNull(value);
+            assertTrue(value > 0.0 && value < 1.0);
+        }
     }
+
+
+
 }

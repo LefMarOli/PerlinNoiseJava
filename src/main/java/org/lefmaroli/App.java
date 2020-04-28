@@ -15,7 +15,7 @@ public class App {
     public static void main(String[] args) {
 
         Perlin1D perlin1D = new Perlin1D.Builder()
-                .withDistance(2048)
+                .withDistance(2046)
                 .withLayers(16)
                 .withDistanceFactor(2)
                 .withAmplitudeFactor(1.8)

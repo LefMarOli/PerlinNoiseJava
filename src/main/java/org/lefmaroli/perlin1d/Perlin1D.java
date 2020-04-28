@@ -1,7 +1,7 @@
 package org.lefmaroli.perlin1d;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.rounding.RoundUtils;
 
@@ -11,62 +11,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Perlin1D {
 
     private static final Logger LOGGER = LogManager.getLogger(Perlin1D.class);
-
-    public static class Builder {
-        //Default values
-        private int distance = 32;
-        private int layers = 3;
-        private int distanceFactor = 2;
-        private double amplitudeFactor = 2.0;
-        private long seed = System.currentTimeMillis();
-
-        public Builder withDistance(int distance) {
-            if (distance < 4) {
-                throw new IllegalArgumentException("Parameter distance must be greater than 4.");
-            }
-            if (!RoundUtils.isPowerOfTwo(distance)) {
-                LOGGER.warn("Rounding up distance to nearest power of 2");
-                distance = RoundUtils.ceilToPowerOfTwo(distance);
-            }
-            this.distance = distance;
-            return this;
-        }
-
-        public Builder withLayers(int layers) {
-            if (layers < 1) {
-                throw new IllegalArgumentException("Layers must be at least 1.");
-            }
-            this.layers = layers;
-            return this;
-        }
-
-        public Builder withDistanceFactor(int distanceFactor) {
-            if (!RoundUtils.isPowerOfTwo(distanceFactor)) {
-                LOGGER.warn("Rounding down distance factor to nearest power of 2");
-                distanceFactor = RoundUtils.floorToPowerOfTwo(distanceFactor);
-            }
-            this.distanceFactor = distanceFactor;
-            return this;
-        }
-
-        public Builder withAmplitudeFactor(double amplitudeFactor) {
-            if (amplitudeFactor <= 1.0) {
-                LOGGER.warn("Amplitude factor must be greater than 1.0. Setting to default of " + this.amplitudeFactor);
-            } else {
-                this.amplitudeFactor = amplitudeFactor;
-            }
-            return this;
-        }
-
-        public Builder withRandomGeneratorSeed(long seed) {
-            this.seed = seed;
-            return this;
-        }
-
-        public Perlin1D build() {
-            return new Perlin1D(this.distance, this.layers, this.distanceFactor, this.amplitudeFactor, this.seed);
-        }
-    }
+    private static final int MIN_COUNT = 1000;
+    private final int distance;
+    private final int layers;
+    private final int distanceFactor;
+    private final double amplitudeFactor;
+    private final Random random;
+    private final Queue<Double> computed = new LinkedBlockingQueue<>();
+    //Used for current computation but added to result in the following batch requested
+    private Double currentLastRandom;
+    private Double previousLastRandom;
 
     private Perlin1D(int distance, int layers, int distanceFactor, double amplitudeFactor, long seed) {
         this.distance = distance;
@@ -98,6 +52,14 @@ public class Perlin1D {
             computed.addAll(computeAtLeast(1));
         }
         return computed.remove();
+    }
+
+    public Double getPrevious() {
+        return 0.0;
+    }
+
+    public List<Double> getPrevious(int expectedCount) {
+        return new ArrayList<>();
     }
 
     public float getDistance() {
@@ -182,15 +144,59 @@ public class Perlin1D {
         return (int) Math.ceil((double) (count) / distance) + 1;
     }
 
-    private static final int MIN_COUNT = 1000;
-    private final int distance;
-    private final int layers;
-    private final int distanceFactor;
-    private final double amplitudeFactor;
-    private final Random random;
-    private final Queue<Double> computed = new LinkedBlockingQueue<>();
+    public static class Builder {
+        //Default values
+        private int distance = 32;
+        private int layers = 3;
+        private int distanceFactor = 2;
+        private double amplitudeFactor = 2.0;
+        private long seed = System.currentTimeMillis();
 
-    //Used for current computation but added to result in the following batch requested
-    private Double currentLastRandom;
-    private Double previousLastRandom;
+        public Builder withDistance(int distance) {
+            if (distance < 4) {
+                throw new IllegalArgumentException("Parameter distance must be greater than 4.");
+            }
+            if (!RoundUtils.isPowerOfTwo(distance)) {
+                LOGGER.warn("Rounding up distance to nearest power of 2");
+                distance = RoundUtils.ceilToPowerOfTwo(distance);
+            }
+            this.distance = distance;
+            return this;
+        }
+
+        public Builder withLayers(int layers) {
+            if (layers < 1) {
+                throw new IllegalArgumentException("Layers must be at least 1.");
+            }
+            this.layers = layers;
+            return this;
+        }
+
+        public Builder withDistanceFactor(int distanceFactor) {
+            if (!RoundUtils.isPowerOfTwo(distanceFactor)) {
+                LOGGER.warn("Rounding down distance factor to nearest power of 2");
+                distanceFactor = RoundUtils.floorToPowerOfTwo(distanceFactor);
+            }
+            this.distanceFactor = distanceFactor;
+            return this;
+        }
+
+        public Builder withAmplitudeFactor(double amplitudeFactor) {
+            if (amplitudeFactor <= 1.0) {
+                LOGGER.warn("Amplitude factor must be greater than 1.0. Setting to default of " + this.amplitudeFactor);
+            } else {
+                this.amplitudeFactor = amplitudeFactor;
+            }
+            return this;
+        }
+
+        public Builder withRandomGeneratorSeed(long seed) {
+            this.seed = seed;
+            return this;
+        }
+
+        public Perlin1D build() {
+            return new Perlin1D(this.distance, this.layers, this.distanceFactor, this.amplitudeFactor, this.seed);
+        }
+    }
 }
