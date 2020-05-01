@@ -3,7 +3,10 @@ package org.lefmaroli;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.lefmaroli.display.LineChart;
+import org.lefmaroli.factorgenerator.FactorGenerator;
+import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
 import org.lefmaroli.perlin1d.Perlin1D;
+import org.lefmaroli.randomgrid.RandomGrid1D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,12 +17,18 @@ import java.awt.*;
 public class App {
     public static void main(String[] args) {
 
-        Perlin1D perlin1D = new Perlin1D.Builder()
-                .withDistance(2046)
-                .withLayers(16)
-                .withDistanceFactor(2)
-                .withAmplitudeFactor(1.8)
-                .build();
+        FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
+        FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
+        RandomGrid1D grid1D = new RandomGrid1D(16, distanceFactor, amplitudeFactor, System.currentTimeMillis());
+
+        Perlin1D perlin1D = new Perlin1D(grid1D);
+
+//                .Builder()
+//                .withDistance(2046)
+//                .withLayers(16)
+//                .withDistanceFactor(2)
+//                .withAmplitudeFactor(1.8)
+//                .build();
 
         XYSeriesCollection dataset = LineChart.createEquidistantDataset(perlin1D.getNext(50), "Perlin1D");
         EventQueue.invokeLater(() -> {
@@ -32,13 +41,13 @@ public class App {
             long start = System.currentTimeMillis();
             while (true) {
                 long current = System.currentTimeMillis();
-                if ((current - start) > 5) {
+                if ((current - start) > 2) {
                     start = System.currentTimeMillis();
                     EventQueue.invokeLater(() -> {
                         XYSeries dataSeries = dataset.getSeries("Perlin1D");
                         int itemCount = dataSeries.getItemCount();
                         dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, perlin1D.getNext());
-                        if (itemCount > 25 * perlin1D.getDistance() || itemCount > 5000) {
+                        if (itemCount > 5000) {
                             dataSeries.remove(0);
                         }
                     });
