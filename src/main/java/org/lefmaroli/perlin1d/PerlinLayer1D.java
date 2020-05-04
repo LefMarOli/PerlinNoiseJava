@@ -1,7 +1,5 @@
-package org.lefmaroli.randomgrid;
+package org.lefmaroli.perlin1d;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
 
 import java.util.Queue;
@@ -9,7 +7,7 @@ import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class RandomLayer1D {
+public class PerlinLayer1D {
 
     private final double amplitudeFactor;
     private final double segmentLength;
@@ -17,7 +15,7 @@ public class RandomLayer1D {
     private final Queue<Double> generated = new LinkedBlockingQueue<>();
     private double previousBound;
 
-    RandomLayer1D(int interpolationPoints, double amplitudeFactor, long randomSeed) {
+    public PerlinLayer1D(int interpolationPoints, double amplitudeFactor, long randomSeed) {
         if (interpolationPoints < 0) {
             throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
         }

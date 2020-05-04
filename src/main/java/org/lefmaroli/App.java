@@ -6,7 +6,7 @@ import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.FactorGenerator;
 import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
 import org.lefmaroli.perlin1d.Perlin1D;
-import org.lefmaroli.randomgrid.RandomGrid1D;
+import org.lefmaroli.perlin1d.PerlinGrid1D;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +19,7 @@ public class App {
 
         FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
-        RandomGrid1D grid1D = new RandomGrid1D(16, distanceFactor, amplitudeFactor, System.currentTimeMillis());
+        PerlinGrid1D grid1D = new PerlinGrid1D(16, distanceFactor, amplitudeFactor, System.currentTimeMillis());
 
         Perlin1D perlin1D = new Perlin1D(grid1D);
 
