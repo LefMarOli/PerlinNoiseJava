@@ -1,4 +1,4 @@
-package org.lefmaroli.randomgrid;
+package org.lefmaroli.perlin1d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,15 +6,15 @@ import org.lefmaroli.factorgenerator.FactorGenerator;
 
 import java.util.*;
 
-public class RandomGrid1D {
+public class PerlinGrid1D {
 
-    private final static Logger LOGGER = LogManager.getLogger(RandomGrid1D.class);
+    private final static Logger LOGGER = LogManager.getLogger(PerlinGrid1D.class);
 
-    private final List<RandomLayer1D> layers;
+    private final List<PerlinLayer1D> layers;
     private double maxAmplitude;
 
-    public RandomGrid1D(int numLayers, FactorGenerator distanceFactorGenerator,
-                 FactorGenerator amplitudeFactorGenerator, long seed) {
+    public PerlinGrid1D(int numLayers, FactorGenerator distanceFactorGenerator,
+                        FactorGenerator amplitudeFactorGenerator, long seed) {
         if (numLayers < 1) {
             throw new IllegalArgumentException("Number of layers must be at least 1");
         }
@@ -35,13 +35,13 @@ public class RandomGrid1D {
             }
             LOGGER.debug("Generating layer with amplitude factor of " + amplitude + " and " + interpolationPoints +
                     " interpolation points.");
-            layers.add(new RandomLayer1D(interpolationPoints, amplitude, random.nextLong()));
+            layers.add(new PerlinLayer1D(interpolationPoints, amplitude, random.nextLong()));
             maxAmplitude += amplitude;
         }
         LOGGER.debug("Generated random grid with " + layers.size() + " and max amplitude of " + maxAmplitude);
     }
 
-    public int getNumberOfLayers(){
+    public int getNumberOfLayers() {
         return layers.size();
     }
 
@@ -54,7 +54,7 @@ public class RandomGrid1D {
         for (int i = 0; i < count; i++) {
             results.add(0.0);
         }
-        for (RandomLayer1D layer : layers) {
+        for (PerlinLayer1D layer : layers) {
             Vector<Double> layerData = layer.getNext(count);
             for (int i = 0; i < count; i++) {
                 results.set(i, results.get(i) + layerData.get(i));

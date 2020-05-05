@@ -2,7 +2,6 @@ package org.lefmaroli.perlin1d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lefmaroli.randomgrid.RandomGrid1D;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,9 +11,9 @@ public class Perlin1D {
     private static final Logger LOGGER = LogManager.getLogger(Perlin1D.class);
     private final Vector<Double> generated = new Vector<>();
     private final AtomicInteger currentIndex = new AtomicInteger(0);
-    private final RandomGrid1D grid1D;
+    private final PerlinGrid1D grid1D;
 
-    public Perlin1D(RandomGrid1D grid1D) {
+    public Perlin1D(PerlinGrid1D grid1D) {
         this.grid1D = grid1D;
     }
 
