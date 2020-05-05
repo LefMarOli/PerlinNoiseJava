@@ -13,11 +13,11 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
+import java.util.Collection;
 
 public class LineChart {
 
-    public static JFrame getFramedChart(String title, String xAxisLabel, String yAxisLabel, XYDataset dataset){
+    public static JFrame getFramedChart(String title, String xAxisLabel, String yAxisLabel, XYDataset dataset) {
         JFrame frame = new JFrame(title);
         frame.setContentPane(getChartPanel(title, xAxisLabel, yAxisLabel, dataset));
         frame.pack();
@@ -62,11 +62,13 @@ public class LineChart {
         return new ChartPanel(chart);
     }
 
-    public static XYSeriesCollection createEquidistantDataset(List<Double> input, String description) {
+    public static XYSeriesCollection createEquidistantDataset(Collection<Double> input, String description) {
 
         XYSeries series = new XYSeries(description);
-        for (int i = 0; i < input.size(); i++) {
-            series.add(i, input.get(i));
+        int index = 0;
+        for (Double aDouble : input) {
+            series.add(index, aDouble);
+            index++;
         }
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(series);

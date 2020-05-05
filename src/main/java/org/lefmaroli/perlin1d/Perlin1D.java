@@ -2,195 +2,71 @@ package org.lefmaroli.perlin1d;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lefmaroli.interpolation.Interpolation;
-import org.lefmaroli.rounding.RoundUtils;
+import org.lefmaroli.randomgrid.RandomGrid1D;
 
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Perlin1D {
 
     private static final Logger LOGGER = LogManager.getLogger(Perlin1D.class);
+    private final Vector<Double> generated = new Vector<>();
+    private final AtomicInteger currentIndex = new AtomicInteger(0);
+    private final RandomGrid1D grid1D;
 
-    public static class Builder {
-        //Default values
-        private int distance = 32;
-        private int layers = 3;
-        private int distanceFactor = 2;
-        private double amplitudeFactor = 2.0;
-        private long seed = System.currentTimeMillis();
-
-        public Builder withDistance(int distance) {
-            if (distance < 4) {
-                throw new IllegalArgumentException("Parameter distance must be greater than 4.");
-            }
-            if (!RoundUtils.isPowerOfTwo(distance)) {
-                LOGGER.warn("Rounding up distance to nearest power of 2");
-                distance = RoundUtils.ceilToPowerOfTwo(distance);
-            }
-            this.distance = distance;
-            return this;
-        }
-
-        public Builder withLayers(int layers) {
-            if (layers < 1) {
-                throw new IllegalArgumentException("Layers must be at least 1.");
-            }
-            this.layers = layers;
-            return this;
-        }
-
-        public Builder withDistanceFactor(int distanceFactor) {
-            if (!RoundUtils.isPowerOfTwo(distanceFactor)) {
-                LOGGER.warn("Rounding down distance factor to nearest power of 2");
-                distanceFactor = RoundUtils.floorToPowerOfTwo(distanceFactor);
-            }
-            this.distanceFactor = distanceFactor;
-            return this;
-        }
-
-        public Builder withAmplitudeFactor(double amplitudeFactor) {
-            if (amplitudeFactor <= 1.0) {
-                LOGGER.warn("Amplitude factor must be greater than 1.0. Setting to default of " + this.amplitudeFactor);
-            } else {
-                this.amplitudeFactor = amplitudeFactor;
-            }
-            return this;
-        }
-
-        public Builder withRandomGeneratorSeed(long seed) {
-            this.seed = seed;
-            return this;
-        }
-
-        public Perlin1D build() {
-            return new Perlin1D(this.distance, this.layers, this.distanceFactor, this.amplitudeFactor, this.seed);
-        }
-    }
-
-    private Perlin1D(int distance, int layers, int distanceFactor, double amplitudeFactor, long seed) {
-        this.distance = distance;
-        this.layers = layers;
-        this.distanceFactor = distanceFactor;
-        this.amplitudeFactor = amplitudeFactor;
-        this.random = new Random(seed);
-        this.currentLastRandom = random.nextDouble();
-        this.previousLastRandom = random.nextDouble();
+    public Perlin1D(RandomGrid1D grid1D) {
+        this.grid1D = grid1D;
     }
 
     public List<Double> getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Parameter count must be greater than 0");
         }
-        if (computed.size() < count) {
-            //Perform computation
-            computed.addAll(computeAtLeast(count));
-        }
-        List<Double> result = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            result.add(computed.remove());
-        }
-        return result;
+        final List<Double> toReturn = new ArrayList<>();
+        currentIndex.getAndUpdate(value -> {
+            if (generated.size() < value + count) {
+                //Perform computation
+                generated.addAll(grid1D.getNext(count));
+            }
+            toReturn.addAll(generated.subList(value, value + count));
+            return value + count;
+        });
+        return toReturn;
     }
 
     public Double getNext() {
-        if (computed.isEmpty()) {
-            computed.addAll(computeAtLeast(1));
-        }
-        return computed.remove();
+        return getNext(1).get(0);
     }
 
-    public float getDistance() {
-        return distance;
+    public int getCurrentIndex(){
+        return currentIndex.get();
     }
 
-    private List<Double> computeAtLeast(int count) {
-        //Preprocess to save on cost of operation
-        if (count < MIN_COUNT) {
-            count = MIN_COUNT;
-        }
+    public Double getPrevious() {
+        return getPrevious(1).get(0);
+    }
 
-        while (count < distance) {
-            count *= 2;
-        }
-
-        int toComputeCount = RoundUtils.ceilToPowerOfTwo(count);
-        double currentFactor = 1.0;
-        int currentDistance = distance;
-        List<Double> results = computeLayer(toComputeCount, currentDistance, currentFactor, false);
-        int currentLayers = layers - 1;
-        double maxValue = 1.0;
-        while (currentLayers > 0 && currentDistance / distanceFactor > 4) {
-            currentLayers--;
-            currentDistance = currentDistance / distanceFactor;
-            currentFactor = currentFactor / amplitudeFactor;
-            maxValue += currentFactor;
-            List<Double> newLayer = computeLayer(toComputeCount, currentDistance, currentFactor, true);
-            for (int i = 0; i < results.size(); i++) {
-                double newValue = results.get(i) + newLayer.get(i);
-                results.set(i, newValue);
+    public List<Double> getPrevious(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("Parameter count must be greater than 0");
+        } else {
+            final List<Double> toReturn = new ArrayList<>(count);
+            int previousIndex = currentIndex.getAndUpdate(value -> {
+                if (value - count >= 0) {
+                    toReturn.addAll(generated.subList(value - count, value));
+                    return value - count;
+                } else {
+                    return value;
+                }
+            });
+            if (toReturn.isEmpty()) {
+                throw new IndexOutOfBoundsException(
+                        "Count is too high, current index is at " + previousIndex + ", queried " + count +
+                                " previous values");
+            } else {
+                Collections.reverse(toReturn);
+                return toReturn;
             }
         }
-
-        //Normalize
-        for (int i = 0; i < results.size(); i++) {
-            results.set(i, results.get(i) / maxValue);
-        }
-        previousLastRandom =
-                currentLastRandom; //Don't normalize this one, it will be factored and normalized in the next call
-
-        return results;
     }
-
-    private List<Double> computeLayer(int toComputeCount, int distance, double factor, boolean isAdditionalLayer) {
-        List<Double> layerValues = new ArrayList<>(toComputeCount);
-        List<Double> bounds = getRandomsList(getInterpolationBoundsCount(toComputeCount, distance), isAdditionalLayer);
-        for (int i = 0; i < bounds.size() - 1; i++) {
-            for (int j = 0; j < distance; j++) {
-                double addedValue = Interpolation.linearWithFade(bounds.get(i),
-                        bounds.get(i + 1), 1.0 / distance * j) * factor;
-                layerValues.add(addedValue);
-            }
-        }
-        if (isAdditionalLayer) {
-            currentLastRandom +=
-                    bounds.get(bounds.size() - 1) *
-                            factor;
-        } else {
-            currentLastRandom = bounds.get(bounds.size() - 1);
-        }
-
-        return layerValues;
-    }
-
-    private List<Double> getRandomsList(int count, boolean isAdditionalLayer) {
-        List<Double> randoms = new ArrayList<>(count);
-        //Always start at previously generated last boundary on new computations
-        if (!isAdditionalLayer) {
-            randoms.add(previousLastRandom);
-        } else {
-            //Don't modify first value to match previously generated series
-            randoms.add(0.0);
-        }
-        for (int i = 0; i < count - 1; i++) {
-            randoms.add(random.nextDouble());
-        }
-        return randoms;
-    }
-
-    private int getInterpolationBoundsCount(int count, int distance) {
-        return (int) Math.ceil((double) (count) / distance) + 1;
-    }
-
-    private static final int MIN_COUNT = 1000;
-    private final int distance;
-    private final int layers;
-    private final int distanceFactor;
-    private final double amplitudeFactor;
-    private final Random random;
-    private final Queue<Double> computed = new LinkedBlockingQueue<>();
-
-    //Used for current computation but added to result in the following batch requested
-    private Double currentLastRandom;
-    private Double previousLastRandom;
 }
