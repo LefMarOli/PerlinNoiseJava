@@ -1,13 +1,13 @@
 package org.lefmaroli.perlin2d;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 class PerlinLayer2DTest {
 
@@ -18,7 +18,7 @@ class PerlinLayer2DTest {
         PerlinLayer2D layer2D = new PerlinLayer2D(width, 200, 1.0, System.currentTimeMillis());
 
         int requestedDataPoints = 500;
-        Vector<Vector<Double>> nextSlices = layer2D.getNextSlices(requestedDataPoints);
+        Vector<Vector<Double>> nextSlices = layer2D.getNextXSlices(requestedDataPoints);
 
         assertEquals(width, nextSlices.size(), 0);
 
@@ -73,7 +73,7 @@ class PerlinLayer2DTest {
         while (true) {
             if (System.currentTimeMillis() - previousTime > 5) {
                 previousTime = System.currentTimeMillis();
-                nextSlices.add(layer2D.getNextSlices(1).get(0));
+                nextSlices.add(layer2D.getNextXSlices(1).get(0));
                 nextSlices.remove(0);
                 final BufferedImage newImage = new BufferedImage(requestedDataPoints, width, BufferedImage.TYPE_BYTE_GRAY);
                 Graphics2D newGraphics = (Graphics2D) newImage.getGraphics();

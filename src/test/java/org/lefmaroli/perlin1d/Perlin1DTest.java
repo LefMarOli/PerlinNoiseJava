@@ -15,8 +15,10 @@ public class Perlin1DTest {
         FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
 
-        Perlin1D perlin1D =
-                new Perlin1D(new PerlinGrid1D(5, distanceFactor, amplitudeFactor, System.currentTimeMillis()));
+        PerlinGrid1D grid = new PerlinGrid1D.Builder().withNumberOfLayers(5).withDistanceFactorGenerator(distanceFactor)
+                .withAmplitudeFactorGenerator(amplitudeFactor).build();
+
+        Perlin1D perlin1D = new Perlin1D(grid);
 
         int expected = 500;
         List<Double> next = perlin1D.getNext(expected);
@@ -34,8 +36,10 @@ public class Perlin1DTest {
         FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
 
-        Perlin1D perlin1D =
-                new Perlin1D(new PerlinGrid1D(5, distanceFactor, amplitudeFactor, System.currentTimeMillis()));
+        PerlinGrid1D grid = new PerlinGrid1D.Builder().withNumberOfLayers(5).withDistanceFactorGenerator(distanceFactor)
+                .withAmplitudeFactorGenerator(amplitudeFactor).build();
+
+        Perlin1D perlin1D = new Perlin1D(grid);
 
         perlin1D.getNext(0);
     }
@@ -45,8 +49,9 @@ public class Perlin1DTest {
         FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
 
-        Perlin1D perlin1D =
-                new Perlin1D(new PerlinGrid1D(5, distanceFactor, amplitudeFactor, System.currentTimeMillis()));
+        PerlinGrid1D grid = new PerlinGrid1D.Builder().withNumberOfLayers(5).withDistanceFactorGenerator(distanceFactor)
+                .withAmplitudeFactorGenerator(amplitudeFactor).build();
+        Perlin1D perlin1D = new Perlin1D(grid);
 
         int requested = 500;
         List<Double> next = perlin1D.getNext(requested);
@@ -65,9 +70,9 @@ public class Perlin1DTest {
     public void testGetPrevious() {
         FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
-
-        Perlin1D perlin1D =
-                new Perlin1D(new PerlinGrid1D(5, distanceFactor, amplitudeFactor, System.currentTimeMillis()));
+        PerlinGrid1D grid = new PerlinGrid1D.Builder().withNumberOfLayers(5).withDistanceFactorGenerator(distanceFactor)
+                .withAmplitudeFactorGenerator(amplitudeFactor).build();
+        Perlin1D perlin1D = new Perlin1D(grid);
 
         perlin1D.getPrevious(0);
     }
@@ -76,9 +81,9 @@ public class Perlin1DTest {
     public void testGetPrevious2() {
         FactorGenerator distanceFactor = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
-
-        Perlin1D perlin1D =
-                new Perlin1D(new PerlinGrid1D(5, distanceFactor, amplitudeFactor, System.currentTimeMillis()));
+        PerlinGrid1D grid = new PerlinGrid1D.Builder().withNumberOfLayers(5).withDistanceFactorGenerator(distanceFactor)
+                .withAmplitudeFactorGenerator(amplitudeFactor).build();
+        Perlin1D perlin1D = new Perlin1D(grid);
 
         int requested = 500;
         List<Double> next = perlin1D.getNext(requested);

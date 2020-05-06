@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 public class MultiplierFactorGeneratorTest {
 
     @Test
-    public void getNextFactor() {
+    public void getNextFactorShouldAlwaysBeZero() {
         MultiplierFactorGenerator generator = new MultiplierFactorGenerator(0.0, 5489.5946);
         for (int i = 0; i < 50000; i++) {
             assertEquals(0.0, generator.getNextFactor(), 0.0);
@@ -17,7 +17,7 @@ public class MultiplierFactorGeneratorTest {
     }
 
     @Test
-    public void getNextFactorTest2() {
+    public void getNextFactorTestMultipliedByFactor() {
         Random rand = new Random(System.currentTimeMillis());
         double initialValue = rand.nextDouble();
         double factor = rand.nextDouble() * 500;
@@ -31,7 +31,7 @@ public class MultiplierFactorGeneratorTest {
     }
 
     @Test
-    public void getNextFactorTest3() {
+    public void getNextFactorTestAlternatePositiveNegative() {
         Random rand = new Random(System.currentTimeMillis());
         double initialValue = rand.nextDouble();
         double factor = rand.nextDouble() * 500 * -1;

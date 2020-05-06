@@ -2,7 +2,7 @@ package org.lefmaroli.perlin2d;
 
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.random.RandomGenerator;
-import org.lefmaroli.vector.UnitVector;
+import org.lefmaroli.vector.Vector2D;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,7 +15,7 @@ public class PerlinLayer2D {
     private final List<Queue<Double>> generated;
     private final int width;
     private final int randomBounds;
-    private List<UnitVector> previousBounds;
+    private List<Vector2D> previousBounds;
 
     PerlinLayer2D(int width, int interpolationPoints, double amplitudeFactor, long randomSeed) {
         if (interpolationPoints < 0) {
@@ -25,50 +25,52 @@ public class PerlinLayer2D {
         this.segmentLength = interpolationPoints + 2;
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.generated = new ArrayList<>(width);
+        initializeGeneratedDataContainers(width);
+        this.width = width;
+        this.randomBounds = 2 + width / segmentLength;
+        this.previousBounds = generateNewRandomBounds();
+    }
+
+    private void initializeGeneratedDataContainers(int width) {
         for (int i = 0; i < width; i++) {
             this.generated.add(new LinkedBlockingQueue<>());
         }
-        this.width = width;
-        this.randomBounds = 2 + width / segmentLength;
-        this.previousBounds = new ArrayList<>(randomBounds);
-        for (int i = 0; i < randomBounds; i++) {
-            this.previousBounds.add(randomGenerator.getRandomUnitVector2D());
-        }
     }
 
-    Vector<Vector<Double>> getNextSlices(int count) {
+    Vector<Vector<Double>> getNextXSlices(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }
+        assertEnoughDataIsGenerated(count);
+        return constructXSlicesFromGeneratedData(count);
+    }
+
+    private Vector<Vector<Double>> constructXSlicesFromGeneratedData(int count) {
+        Vector<Vector<Double>> xSlices = new Vector<>(count);
+        for (int i = 0; i < count; i++) {
+            Vector<Double> ySlices = new Vector<>(width);
+            for (int j = 0; j < width; j++) {
+                ySlices.add(generated.get(j).poll());
+            }
+            xSlices.add(ySlices);
+        }
+        return xSlices;
+    }
+
+    private void assertEnoughDataIsGenerated(int count) {
         while (generated.get(0).size() < count) {
             generateNextSegment();
         }
-
-        Vector<Vector<Double>> results = new Vector<>(count);
-        for (int i = 0; i < count; i++) {
-            Vector<Double> xSeries = new Vector<>(width);
-            for (int j = 0; j < width; j++) {
-                xSeries.add(generated.get(j).poll());
-            }
-            results.add(xSeries);
-        }
-
-        return results;
     }
 
     private void generateNextSegment() {
-        //Generate new anchors
-        List<UnitVector> newBounds = new ArrayList<>(randomBounds);
-        for (int i = 0; i < randomBounds; i++) {
-            newBounds.add(randomGenerator.getRandomUnitVector2D());
-        }
-
+        List<Vector2D> newBounds = generateNewRandomBounds();
 
         for (int i = 0; i < randomBounds - 1; i++) {
-            UnitVector topLeftBound = previousBounds.get(i);
-            UnitVector topRightBound = newBounds.get(i);
-            UnitVector bottomLeftBound = previousBounds.get(i + 1);
-            UnitVector bottomRightBound = newBounds.get(i + 1);
+            Vector2D topLeftBound = previousBounds.get(i);
+            Vector2D topRightBound = newBounds.get(i);
+            Vector2D bottomLeftBound = previousBounds.get(i + 1);
+            Vector2D bottomRightBound = newBounds.get(i + 1);
 
             //iteration through width
             for (int j = 0; j < segmentLength; j++) {
@@ -82,28 +84,40 @@ public class PerlinLayer2D {
                     double segmentDistance = segmentLength;
                     double xDist = (double) (k + 1) / segmentDistance;
                     double yDist = (double) (j + 1) / segmentDistance;
-                    //Compute necessary interpolations
-                    UnitVector topLeftDistance = new UnitVector(xDist, yDist);
-                    UnitVector topRightDistance = new UnitVector(xDist - 1.0, yDist);
-                    UnitVector bottomLeftDistance = new UnitVector(xDist,  yDist - 1.0);
-                    UnitVector bottomRightDistance = new UnitVector(xDist - 1.0, yDist - 1.0);
+
+                    Vector2D topLeftDistance = new Vector2D(xDist, yDist);
+                    Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
+                    Vector2D bottomLeftDistance = new Vector2D(xDist, yDist - 1.0);
+                    Vector2D bottomRightDistance = new Vector2D(xDist - 1.0, yDist - 1.0);
 
                     double topLeftProduct = topLeftBound.getVectorProduct(topLeftDistance);
                     double topRightProduct = topRightBound.getVectorProduct(topRightDistance);
                     double bottomLeftProduct = bottomLeftBound.getVectorProduct(bottomLeftDistance);
                     double bottomRightProduct = bottomRightBound.getVectorProduct(bottomRightDistance);
 
-                    //Interpolation
-                    double topInterpolation = Interpolation.linearWithFade(topLeftProduct, topRightProduct, xDist);
-                    double bottomInterpolation =
-                            Interpolation.linearWithFade(bottomLeftProduct, bottomRightProduct, xDist);
-                    double finalValue = Interpolation.linearWithFade(topInterpolation, bottomInterpolation, yDist);
-                    generated.get(j + (i * segmentLength)).add(finalValue * amplitudeFactor);
+                    double interpolatedValue =
+                            interpolate2D(xDist, yDist, topLeftProduct, topRightProduct, bottomLeftProduct,
+                                    bottomRightProduct);
+                    generated.get(j + (i * segmentLength)).add(interpolatedValue * amplitudeFactor);
                 }
             }
         }
-
-        //Update bounds
         previousBounds = newBounds;
+    }
+
+    private double interpolate2D(double xDist, double yDist, double topLeftProduct, double topRightProduct,
+                                 double bottomLeftProduct, double bottomRightProduct) {
+        double topInterpolation = Interpolation.linearWithFade(topLeftProduct, topRightProduct, xDist);
+        double bottomInterpolation =
+                Interpolation.linearWithFade(bottomLeftProduct, bottomRightProduct, xDist);
+        return Interpolation.linearWithFade(topInterpolation, bottomInterpolation, yDist);
+    }
+
+    private List<Vector2D> generateNewRandomBounds() {
+        List<Vector2D> newBounds = new ArrayList<>(randomBounds);
+        for (int i = 0; i < randomBounds; i++) {
+            newBounds.add(randomGenerator.getRandomUnitVector2D());
+        }
+        return newBounds;
     }
 }
