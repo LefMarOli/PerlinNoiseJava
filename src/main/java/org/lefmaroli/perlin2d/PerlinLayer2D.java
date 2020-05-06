@@ -68,7 +68,7 @@ public class PerlinLayer2D {
         List<Vector2D> newBounds = generateNewRandomBounds();
 
         for (int yIndex = 0; yIndex < width; yIndex++) {
-            int lowerBoundIndex = yIndex / width;
+            int lowerBoundIndex = yIndex / segmentLength;
             Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
             Vector2D topRightBound = newBounds.get(lowerBoundIndex);
             Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
