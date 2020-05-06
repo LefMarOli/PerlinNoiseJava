@@ -5,14 +5,13 @@ import org.junit.Test;
 import java.util.Random;
 import java.util.Vector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PerlinLayer1DTest {
 
     @Test
     public void testGetNextSegmentCount() {
-        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, 0L);
+        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, System.currentTimeMillis());
         int expectedCount = 75;
         Vector<Double> nextSegment = layer.getNext(expectedCount);
         assertEquals(expectedCount, nextSegment.size(), 0);
@@ -20,10 +19,11 @@ public class PerlinLayer1DTest {
 
     @Test
     public void testValuesBounded() {
-        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, 0L);
+        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, System.currentTimeMillis());
         int count = 10000;
         Vector<Double> nextSegment = layer.getNext(count);
         for (Double value : nextSegment) {
+            assertNotNull(value);
             assertTrue(value < 1.0);
             assertTrue(value > 0.0);
         }
@@ -31,10 +31,11 @@ public class PerlinLayer1DTest {
 
     @Test
     public void testValuesMultipliedByFactor(){
-        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, 0L);
+        long randomSeed = System.currentTimeMillis();
+        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, randomSeed);
         Random random = new Random(System.currentTimeMillis());
         double amplitudeFactor = random.nextDouble() * 100;
-        PerlinLayer1D amplifiedLayer = new PerlinLayer1D(50, amplitudeFactor, 0L);
+        PerlinLayer1D amplifiedLayer = new PerlinLayer1D(50, amplitudeFactor, randomSeed);
 
         int count = 10000;
         Vector<Double> values = layer.getNext(count);
@@ -49,15 +50,16 @@ public class PerlinLayer1DTest {
 
     @Test
     public void testCreateSame(){
-        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, 0L);
-        PerlinLayer1D sameLayer = new PerlinLayer1D(50, 1.0, 0L);
+        long randomSeed = System.currentTimeMillis();
+        PerlinLayer1D layer = new PerlinLayer1D(50, 1.0, randomSeed);
+        PerlinLayer1D sameLayer = new PerlinLayer1D(50, 1.0, randomSeed);
         int expectedCount = 75;
         Vector<Double> nextSegment1 = layer.getNext(expectedCount);
         Vector<Double> nextSegment2 = sameLayer.getNext(expectedCount);
         assertExpectedVectorEqualsActual(nextSegment1, nextSegment2, 0.0);
     }
 
-    public void assertExpectedVectorEqualsActual(Vector<Double> expected, Vector<Double> actual, double delta){
+    private void assertExpectedVectorEqualsActual(Vector<Double> expected, Vector<Double> actual, double delta){
         assertEquals(expected.size(), actual.size(), delta);
         for (int i = 0; i < expected.size(); i++) {
             assertEquals(expected.get(i), actual.get(i), delta);
