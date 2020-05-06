@@ -67,41 +67,37 @@ public class PerlinLayer2D {
     private void generateNextSegment() {
         List<Vector2D> newBounds = generateNewRandomBounds();
 
-        for (int i = 0; i < randomBounds - 1; i++) {
-            Vector2D topLeftBound = previousBounds.get(i);
-            Vector2D topRightBound = newBounds.get(i);
-            Vector2D bottomLeftBound = previousBounds.get(i + 1);
-            Vector2D bottomRightBound = newBounds.get(i + 1);
+        for (int yIndex = 0; yIndex < width; yIndex++) {
+            int lowerBoundIndex = yIndex / width;
+            Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
+            Vector2D topRightBound = newBounds.get(lowerBoundIndex);
+            Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
+            Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
 
-            //iteration through width
-            for (int j = 0; j < segmentLength; j++) {
-                //Check if we reached final width
-                if (j + i * segmentLength >= width) {
-                    break;
-                }
-                //iteration through length
-                for (int k = 0; k < segmentLength; k++) {
+            int segmentYIndex = yIndex % segmentLength;
+            double yDist = (double) (segmentYIndex) / segmentLength;
 
-                    double xDist = (double) (k) / segmentLength;
-                    double yDist = (double) (j) / segmentLength;
+            //iteration through length
+            for (int segmentXIndex = 0; segmentXIndex < segmentLength; segmentXIndex++) {
 
-                    Vector2D topLeftDistance = new Vector2D(xDist, yDist);
-                    Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
-                    Vector2D bottomLeftDistance = new Vector2D(xDist, yDist - 1.0);
-                    Vector2D bottomRightDistance = new Vector2D(xDist - 1.0, yDist - 1.0);
+                double xDist = (double) (segmentXIndex) / segmentLength;
 
-                    double topLeftProduct = topLeftBound.getVectorProduct(topLeftDistance);
-                    double topRightProduct = topRightBound.getVectorProduct(topRightDistance);
-                    double bottomLeftProduct = bottomLeftBound.getVectorProduct(bottomLeftDistance);
-                    double bottomRightProduct = bottomRightBound.getVectorProduct(bottomRightDistance);
+                Vector2D topLeftDistance = new Vector2D(xDist, yDist);
+                Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
+                Vector2D bottomLeftDistance = new Vector2D(xDist, yDist - 1.0);
+                Vector2D bottomRightDistance = new Vector2D(xDist - 1.0, yDist - 1.0);
 
-                    double interpolatedValue =
-                            interpolate2D(xDist, yDist, topLeftProduct, topRightProduct, bottomLeftProduct,
-                                    bottomRightProduct);
-                    double adjustedValue = adjustValueRange(interpolatedValue);
-                    double amplifiedValue = adjustedValue * amplitudeFactor;
-                    generated.get(j + (i * segmentLength)).add(amplifiedValue);
-                }
+                double topLeftProduct = topLeftBound.getVectorProduct(topLeftDistance);
+                double topRightProduct = topRightBound.getVectorProduct(topRightDistance);
+                double bottomLeftProduct = bottomLeftBound.getVectorProduct(bottomLeftDistance);
+                double bottomRightProduct = bottomRightBound.getVectorProduct(bottomRightDistance);
+
+                double interpolatedValue =
+                        interpolate2D(xDist, yDist, topLeftProduct, topRightProduct, bottomLeftProduct,
+                                bottomRightProduct);
+                double adjustedValue = adjustValueRange(interpolatedValue);
+                double amplifiedValue = adjustedValue * amplitudeFactor;
+                generated.get(yIndex).add(amplifiedValue);
             }
         }
         previousBounds = newBounds;
