@@ -31,7 +31,7 @@ public class PerlinLayer2DTest {
         int width = 500;
         PerlinLayer2D layer2D = new PerlinLayer2D(width, 200, 1.0, System.currentTimeMillis());
 
-        int requestedDataPoints = 50000;
+        int requestedDataPoints = 500;
         Vector<Vector<Double>> nextSlices = layer2D.getNextXSlices(requestedDataPoints);
 
         for (Vector<Double> nextSlice : nextSlices) {
@@ -52,7 +52,7 @@ public class PerlinLayer2DTest {
         double amplitudeFactor = random.nextDouble() * 100;
         PerlinLayer2D amplifiedLayer = new PerlinLayer2D(width, 50, amplitudeFactor, randomSeed);
 
-        int count = 10000;
+        int count = 500;
         Vector<Vector<Double>> values = layer.getNextXSlices(count);
         Vector<Vector<Double>> actualAmplifiedValues = amplifiedLayer.getNextXSlices(count);
 
