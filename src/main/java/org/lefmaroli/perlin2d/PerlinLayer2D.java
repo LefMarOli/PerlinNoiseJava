@@ -16,6 +16,7 @@ public class PerlinLayer2D {
     private final int width;
     private final int randomBounds;
     private List<Vector2D> previousBounds;
+    public static final double MAX_VALUE = Math.sqrt(2.0) / 2.0;
 
     PerlinLayer2D(int width, int interpolationPoints, double amplitudeFactor, long randomSeed) {
         if (interpolationPoints < 0) {
@@ -81,9 +82,8 @@ public class PerlinLayer2D {
                 //iteration through length
                 for (int k = 0; k < segmentLength; k++) {
 
-                    double segmentDistance = segmentLength;
-                    double xDist = (double) (k + 1) / segmentDistance;
-                    double yDist = (double) (j + 1) / segmentDistance;
+                    double xDist = (double) (k) / segmentLength;
+                    double yDist = (double) (j) / segmentLength;
 
                     Vector2D topLeftDistance = new Vector2D(xDist, yDist);
                     Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
@@ -98,11 +98,17 @@ public class PerlinLayer2D {
                     double interpolatedValue =
                             interpolate2D(xDist, yDist, topLeftProduct, topRightProduct, bottomLeftProduct,
                                     bottomRightProduct);
-                    generated.get(j + (i * segmentLength)).add(interpolatedValue * amplitudeFactor);
+                    double adjustedValue = adjustValueRange(interpolatedValue);
+                    double amplifiedValue = adjustedValue * amplitudeFactor;
+                    generated.get(j + (i * segmentLength)).add(amplifiedValue);
                 }
             }
         }
         previousBounds = newBounds;
+    }
+
+    private double adjustValueRange(double interpolatedValue) {
+        return ((interpolatedValue / MAX_VALUE) + 1.0) / 2.0;
     }
 
     private double interpolate2D(double xDist, double yDist, double topLeftProduct, double topRightProduct,

@@ -1,18 +1,98 @@
 package org.lefmaroli.perlin2d;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 import java.util.Vector;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-class PerlinLayer2DTest {
+public class PerlinLayer2DTest {
 
     @Test
-    void getNextSlices() {
+    public void getNextSlicesCorrectSize() {
+        int width = 500;
+        PerlinLayer2D layer2D = new PerlinLayer2D(width, 200, 1.0, System.currentTimeMillis());
+
+        int requestedDataPoints = 500;
+        Vector<Vector<Double>> nextSlices = layer2D.getNextXSlices(requestedDataPoints);
+        assertEquals(requestedDataPoints, nextSlices.size(), 0);
+        for (Vector<Double> nextSlice : nextSlices) {
+            assertEquals(width, nextSlice.size(), 0);
+        }
+    }
+
+    @Test
+    public void testValuesBounded() {
+        int width = 500;
+        PerlinLayer2D layer2D = new PerlinLayer2D(width, 200, 1.0, System.currentTimeMillis());
+
+        int requestedDataPoints = 50000;
+        Vector<Vector<Double>> nextSlices = layer2D.getNextXSlices(requestedDataPoints);
+
+        for (Vector<Double> nextSlice : nextSlices) {
+            for (Double value : nextSlice) {
+                assertNotNull(value);
+                assertTrue(value > 0.0);
+                assertTrue(value < 1.0);
+            }
+        }
+    }
+
+    @Test
+    public void testValuesMultipliedByAmplitudeFactor() {
+        int width = 500;
+        long randomSeed = System.currentTimeMillis();
+        PerlinLayer2D layer = new PerlinLayer2D(width, 50, 1.0, randomSeed);
+        Random random = new Random(System.currentTimeMillis());
+        double amplitudeFactor = random.nextDouble() * 100;
+        PerlinLayer2D amplifiedLayer = new PerlinLayer2D(width, 50, amplitudeFactor, randomSeed);
+
+        int count = 10000;
+        Vector<Vector<Double>> values = layer.getNextXSlices(count);
+        Vector<Vector<Double>> actualAmplifiedValues = amplifiedLayer.getNextXSlices(count);
+
+        for (Vector<Double> xSlice : values) {
+            for (int j = 0; j < xSlice.size(); j++) {
+                xSlice.set(j, xSlice.get(j) * amplitudeFactor);
+            }
+        }
+
+        for (int i = 0; i < values.size(); i++) {
+            assertExpectedVectorEqualsActual(values.get(i), actualAmplifiedValues.get(i), 1e-18);
+        }
+    }
+
+    @Test
+    public void testCreateSame() {
+        int width = 500;
+        long randomSeed = System.currentTimeMillis();
+        PerlinLayer2D layer = new PerlinLayer2D(width, 50, 1.0, randomSeed);
+        PerlinLayer2D sameLayer = new PerlinLayer2D(width, 50, 1.0, randomSeed);
+        int expectedCount = 75;
+        Vector<Vector<Double>> nextSegment1 = layer.getNextXSlices(expectedCount);
+        Vector<Vector<Double>> nextSegment2 = sameLayer.getNextXSlices(expectedCount);
+
+        assertEquals(nextSegment1.size(), nextSegment2.size(), 0);
+        for (int i = 0; i < nextSegment1.size(); i++) {
+            assertExpectedVectorEqualsActual(nextSegment1.get(i), nextSegment2.get(i), 0.0);
+        }
+    }
+
+    private void assertExpectedVectorEqualsActual(Vector<Double> expected, Vector<Double> actual, double delta) {
+        assertEquals(expected.size(), actual.size(), delta);
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actual.get(i), delta);
+        }
+    }
+
+    @Ignore
+    @Test
+    public void getNextSlices() {
 
         int width = 500;
         PerlinLayer2D layer2D = new PerlinLayer2D(width, 200, 1.0, System.currentTimeMillis());
@@ -75,11 +155,13 @@ class PerlinLayer2DTest {
                 previousTime = System.currentTimeMillis();
                 nextSlices.add(layer2D.getNextXSlices(1).get(0));
                 nextSlices.remove(0);
-                final BufferedImage newImage = new BufferedImage(requestedDataPoints, width, BufferedImage.TYPE_BYTE_GRAY);
+                final BufferedImage newImage =
+                        new BufferedImage(requestedDataPoints, width, BufferedImage.TYPE_BYTE_GRAY);
                 Graphics2D newGraphics = (Graphics2D) newImage.getGraphics();
                 for (int i = 0; i < requestedDataPoints; i++) {
                     for (int j = 0; j < width; j++) {
-                        newGraphics.setColor(colors[(int) ((nextSlices.get(i).get(j) + 1.0) / 2.0 * 255)]);
+//                        newGraphics.setColor(colors[(int) ((nextSlices.get(i).get(j) + 1.0) / 2.0 * 255)]);
+                        newGraphics.setColor(colors[(int) ((nextSlices.get(i).get(j)) * 255)]);
                         newGraphics.fillRect(i, j, 5, 5);
                     }
                 }
