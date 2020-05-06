@@ -33,14 +33,14 @@ public class LineChart {
     public void addEquidistantDataSeries(Collection<Double> dataSeries, String dataSeriesLabel) {
         XYSeries series = new XYSeries(dataSeriesLabel);
         int index = 0;
-        for (Double aDouble : dataSeries) {
-            series.add(index, aDouble);
+        for (Double dataPoint : dataSeries) {
+            series.add(index, dataPoint);
             index++;
         }
         dataset.addSeries(series);
     }
 
-    public void updateEquidistantDataSeries(Consumer<XYSeries> updateFunction, String dataSeriesLabel){
+    public void updateDataSeries(Consumer<XYSeries> updateFunction, String dataSeriesLabel){
         XYSeries series = dataset.getSeries(dataSeriesLabel);
         updateFunction.accept(series);
     }
@@ -69,29 +69,35 @@ public class LineChart {
                 false,
                 false
         );
+        configureChart(chart);
+        return new ChartPanel(chart);
+    }
 
-        XYPlot plot = chart.getXYPlot();
-
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-
-        for (int i = 0; i < dataset.getSeriesCount(); i++) {
-            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
-        }
-        plot.setRenderer(renderer);
-        plot.setBackgroundPaint(Color.white);
-
-        plot.setRangeGridlinesVisible(true);
-        plot.setRangeGridlinePaint(Color.BLACK);
-
-        plot.setDomainGridlinesVisible(true);
-        plot.setDomainGridlinePaint(Color.BLACK);
-
+    private void configureChart(JFreeChart chart){
         if(!title.isEmpty()) {
             chart.setTitle(new TextTitle(title,
                             new Font("Serif", java.awt.Font.BOLD, 18)
                     )
             );
         }
-        return new ChartPanel(chart);
+        configureXYPlot(chart.getXYPlot());
+    }
+
+    private void configureXYPlot(XYPlot plot){
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        for (int i = 0; i < dataset.getSeriesCount(); i++) {
+            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+        }
+        plot.setRenderer(renderer);
+        plot.setBackgroundPaint(Color.white);
+        setGridLines(plot);
+    }
+
+    private void setGridLines(XYPlot plot){
+        plot.setRangeGridlinesVisible(true);
+        plot.setRangeGridlinePaint(Color.BLACK);
+
+        plot.setDomainGridlinesVisible(true);
+        plot.setDomainGridlinePaint(Color.BLACK);
     }
 }

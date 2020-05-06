@@ -33,7 +33,7 @@ public class App {
                 if ((current - start) > 2) {
                     start = System.currentTimeMillis();
                     EventQueue.invokeLater(() -> {
-                        lineChart.updateEquidistantDataSeries(dataSeries -> {
+                        lineChart.updateDataSeries(dataSeries -> {
                             int itemCount = dataSeries.getItemCount();
                             dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, perlin1D.getNext());
                             if (itemCount > 5000) {
