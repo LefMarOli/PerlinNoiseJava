@@ -10,19 +10,32 @@ public class Vector2D {
         this.y = y;
     }
 
-    public double getX() {
-        return x;
+    public double getLength(){
+        return Math.sqrt(x * x + y * y);
     }
 
-    public double getY() {
-        return y;
-    }
-
-    public double getVectorProduct(Vector2D other){
+    public double getVectorProduct(Vector2D other) {
         return (this.x * other.x) + (this.y * other.y);
     }
 
-    public static double getVectorProduct(Vector2D lhs, Vector2D rhs){
+    public Vector2D normalize() {
+        double length = getLength();
+        if(length > 0.0)
+            return new Vector2D(x / length, y / length);
+        else{
+            return this;
+        }
+    }
+
+    public static double getVectorProduct(Vector2D lhs, Vector2D rhs) {
         return lhs.getVectorProduct(rhs);
+    }
+
+    @Override
+    public String toString() {
+        return "Vector2D{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
