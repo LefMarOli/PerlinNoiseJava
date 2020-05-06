@@ -3,9 +3,9 @@ package org.lefmaroli.factorgenerator;
 
 public class MultiplierFactorGenerator implements FactorGenerator {
 
-    protected final double factor;
+    private final double factor;
     private final double initialValue;
-    protected double previousValue;
+    private double previousValue;
     private boolean firstCall = true;
 
     public MultiplierFactorGenerator(double initialValue, double factor) {

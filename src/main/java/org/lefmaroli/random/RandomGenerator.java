@@ -1,6 +1,6 @@
 package org.lefmaroli.random;
 
-import org.lefmaroli.vector.UnitVector;
+import org.lefmaroli.vector.Vector2D;
 
 import java.util.Random;
 
@@ -16,8 +16,8 @@ public class RandomGenerator {
         this.basicRandGenerator = new Random(seed);
     }
 
-    public UnitVector getRandomUnitVector2D(){
+    public Vector2D getRandomUnitVector2D(){
         double angle = basicRandGenerator.nextDouble() * 2 * Math.PI;
-        return new UnitVector(Math.cos(angle), Math.sin(angle));
+        return new Vector2D(Math.cos(angle), Math.sin(angle));
     }
 }

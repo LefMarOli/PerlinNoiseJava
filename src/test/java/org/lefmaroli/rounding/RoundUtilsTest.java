@@ -1,48 +1,70 @@
 package org.lefmaroli.rounding;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class RoundUtilsTest {
 
+    private final List<Integer> testList = new ArrayList<>();
+
+    @Before
+    public void setup(){
+        for (int i = 0; i < 10; i++) {
+            testList.add((int)Math.pow(2, i));
+        }
+    }
+
     @Test
     public void isPowerOfTwoTest(){
-        assertTrue(RoundUtils.isPowerOfTwo(1));
-        assertTrue(RoundUtils.isPowerOfTwo(2));
-        assertTrue(RoundUtils.isPowerOfTwo(4));
-        assertTrue(RoundUtils.isPowerOfTwo(8));
-        assertTrue(RoundUtils.isPowerOfTwo(16));
-        assertTrue(RoundUtils.isPowerOfTwo(32));
-        assertTrue(RoundUtils.isPowerOfTwo(64));
-
-        assertFalse(RoundUtils.isPowerOfTwo(56));
-        assertFalse(RoundUtils.isPowerOfTwo(17));
-        assertFalse(RoundUtils.isPowerOfTwo(876));
-        assertFalse(RoundUtils.isPowerOfTwo(155));
-        assertFalse(RoundUtils.isPowerOfTwo(5));
-        assertFalse(RoundUtils.isPowerOfTwo(9874));
-        assertFalse(RoundUtils.isPowerOfTwo(6));
+        for (Integer integer : testList) {
+            assertTrue(RoundUtils.isPowerOfTwo(integer));
+        }
     }
 
     @Test
-    public void testRoundUpToPowerOfTwo(){
-        assertEquals(4, RoundUtils.ceilToPowerOfTwo(3));
-        assertEquals(8, RoundUtils.ceilToPowerOfTwo(5));
-        assertEquals(16, RoundUtils.ceilToPowerOfTwo(13));
-        assertEquals(32, RoundUtils.ceilToPowerOfTwo(25));
-
-        assertEquals(8, RoundUtils.ceilToPowerOfTwo(8));
+    public void isPowerOfTwoTestFalse(){
+        for (int i = 1; i < testList.size(); i++) {
+            assertFalse(RoundUtils.isPowerOfTwo(testList.get(i) + 1));
+        }
     }
 
+    @Test
+    public void isPowerOfTwoTestFalseForNegativeNumbers(){
+        for (Integer integer : testList) {
+            assertFalse(RoundUtils.isPowerOfTwo(-integer));
+        }
+    }
 
     @Test
-    public void testRoundDownToPowerOfTwo(){
-        assertEquals(4, RoundUtils.floorToPowerOfTwo(6));
-        assertEquals(8, RoundUtils.floorToPowerOfTwo(9));
-        assertEquals(16, RoundUtils.floorToPowerOfTwo(18));
-        assertEquals(32, RoundUtils.floorToPowerOfTwo(38));
+    public void testRoundUpToPowerOfTwoSmallerNumber(){
+        for (int i = 2; i < testList.size(); i++) {
+            assertEquals(testList.get(i), RoundUtils.ceilToPowerOfTwo(testList.get(i) - 1), 0);
+        }
+    }
 
-        assertEquals(8, RoundUtils.floorToPowerOfTwo(8));
+    @Test
+    public void testRoundUpToPowerOfTwoEqualNumber(){
+        for (Integer integer : testList) {
+            assertEquals(integer, RoundUtils.ceilToPowerOfTwo(integer), 0);
+        }
+    }
+
+    @Test
+    public void testRoundDownToPowerOfTwoBiggerNumber(){
+        for (int i = 1; i < testList.size(); i++) {
+            assertEquals(testList.get(i), RoundUtils.floorToPowerOfTwo(testList.get(i) + 1), 0);
+        }
+    }
+
+    @Test
+    public void testRoundDownToPowerOfTwoEqualNumber(){
+        for (Integer integer : testList) {
+            assertEquals(integer, RoundUtils.floorToPowerOfTwo(integer), 0);
+        }
     }
 }
