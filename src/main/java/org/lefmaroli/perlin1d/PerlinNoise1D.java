@@ -3,16 +3,14 @@ package org.lefmaroli.perlin1d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
-import org.lefmaroli.perlin2d.PerlinLayer2D;
 
 import java.util.Queue;
 import java.util.Random;
-import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class PerlinLayer1D {
+public class PerlinNoise1D {
 
-    private final static Logger LOGGER = LogManager.getLogger(PerlinLayer1D.class);
+    private final static Logger LOGGER = LogManager.getLogger(PerlinNoise1D.class);
 
     private final double amplitudeFactor;
     private final double segmentLength;
@@ -20,7 +18,7 @@ public class PerlinLayer1D {
     private final Queue<Double> generated = new LinkedBlockingQueue<>();
     private double previousBound;
 
-    public PerlinLayer1D(int interpolationPoints, double amplitudeFactor, long randomSeed) {
+    public PerlinNoise1D(int interpolationPoints, double amplitudeFactor, long randomSeed) {
         if (interpolationPoints < 0) {
             throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
         }
@@ -32,7 +30,7 @@ public class PerlinLayer1D {
                 " interpolation points.");
     }
 
-    Vector<Double> getNext(int count) {
+    Double[] getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }
@@ -40,9 +38,9 @@ public class PerlinLayer1D {
             generateNextSegment();
         }
 
-        Vector<Double> results = new Vector<>(count);
+        Double[] results = new Double[count];
         for (int i = 0; i < count; i++) {
-            results.add(generated.poll());
+            results[i] = generated.poll();
         }
         return results;
     }

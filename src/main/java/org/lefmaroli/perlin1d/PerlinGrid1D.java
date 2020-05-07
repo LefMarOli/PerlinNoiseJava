@@ -11,7 +11,7 @@ public class PerlinGrid1D {
 
     private final static Logger LOGGER = LogManager.getLogger(PerlinGrid1D.class);
 
-    private final List<PerlinLayer1D> layers;
+    private final List<PerlinNoise1D> layers;
     private double maxAmplitude;
 
     private PerlinGrid1D(int numberOfLayers, FactorGenerator distanceFactorGenerator,
@@ -51,7 +51,7 @@ public class PerlinGrid1D {
                         ", please check provided distanceFactorGenerator");
                 break;
             }
-            layers.add(new PerlinLayer1D(interpolationPoints, amplitude, random.nextLong()));
+            layers.add(new PerlinNoise1D(interpolationPoints, amplitude, random.nextLong()));
             maxAmplitude += amplitude;
         }
     }
@@ -65,10 +65,10 @@ public class PerlinGrid1D {
     }
 
     private void addNoiseLayersContributions(int count, Vector<Double> results) {
-        for (PerlinLayer1D layer : layers) {
-            Vector<Double> layerData = layer.getNext(count);
+        for (PerlinNoise1D layer : layers) {
+            Double[] layerData = layer.getNext(count);
             for (int i = 0; i < count; i++) {
-                results.set(i, results.get(i) + layerData.get(i));
+                results.set(i, results.get(i) + layerData[i]);
             }
         }
     }

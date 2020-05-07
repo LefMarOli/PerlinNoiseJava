@@ -7,7 +7,7 @@ import org.lefmaroli.vector.Vector2D;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class PerlinLayer2D {
+public class PerlinNoise2D {
 
     private static final double MAX_VALUE = Math.sqrt(2.0) / 2.0;
     private final double amplitudeFactor;
@@ -18,7 +18,7 @@ public class PerlinLayer2D {
     private int randomBounds;
     private List<Vector2D> previousBounds = new ArrayList<>();
 
-    PerlinLayer2D(int lineLength, int interpolationPoints, double amplitudeFactor, long randomSeed) {
+    PerlinNoise2D(int lineLength, int interpolationPoints, double amplitudeFactor, long randomSeed) {
         if (interpolationPoints < 0) {
             throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
         }
@@ -94,14 +94,14 @@ public class PerlinLayer2D {
                 Vector2D bottomLeftDistance = new Vector2D(xDist, yDist - 1.0);
                 Vector2D bottomRightDistance = new Vector2D(xDist - 1.0, yDist - 1.0);
 
-                double topLeftProduct = topLeftBound.getVectorProduct(topLeftDistance);
-                double topRightProduct = topRightBound.getVectorProduct(topRightDistance);
-                double bottomLeftProduct = bottomLeftBound.getVectorProduct(bottomLeftDistance);
-                double bottomRightProduct = bottomRightBound.getVectorProduct(bottomRightDistance);
+                double topLeftBoundImpact = topLeftBound.getVectorProduct(topLeftDistance);
+                double topRightBoundImpact = topRightBound.getVectorProduct(topRightDistance);
+                double bottomLeftBoundImpact = bottomLeftBound.getVectorProduct(bottomLeftDistance);
+                double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDistance);
 
                 double interpolatedValue =
-                        interpolate2D(xDist, yDist, topLeftProduct, topRightProduct, bottomLeftProduct,
-                                bottomRightProduct);
+                        interpolate2D(xDist, yDist, topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
+                                bottomRightBoundImpact);
                 double adjustedValue = adjustValueRange(interpolatedValue);
                 double amplifiedValue = adjustedValue * amplitudeFactor;
                 generated.get(yIndex).add(amplifiedValue);

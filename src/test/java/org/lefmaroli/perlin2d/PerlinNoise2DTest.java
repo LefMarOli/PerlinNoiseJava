@@ -9,20 +9,20 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class PerlinLayer2DTest {
+public class PerlinNoise2DTest {
 
     private final int lineLength = 500;
     private final int requestedLines = 700;
-    private PerlinLayer2D noiseLayer;
+    private PerlinNoise2D noiseLayer;
 
     @Before
     public void setup(){
-        noiseLayer = new PerlinLayer2D(lineLength, 200, 1.0, System.currentTimeMillis());
+        noiseLayer = new PerlinNoise2D(lineLength, 200, 1.0, System.currentTimeMillis());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateInvalidLineLength(){
-        new PerlinLayer2D(-5, 200, 1.0, System.currentTimeMillis());
+        new PerlinNoise2D(-5, 200, 1.0, System.currentTimeMillis());
     }
 
     @Test
@@ -49,10 +49,10 @@ public class PerlinLayer2DTest {
     @Test
     public void testValuesMultipliedByAmplitudeFactor() {
         long randomSeed = System.currentTimeMillis();
-        PerlinLayer2D layer = new PerlinLayer2D(lineLength, 50, 1.0, randomSeed);
+        PerlinNoise2D layer = new PerlinNoise2D(lineLength, 50, 1.0, randomSeed);
         Random random = new Random(System.currentTimeMillis());
         double amplitudeFactor = random.nextDouble() * 100;
-        PerlinLayer2D amplifiedLayer = new PerlinLayer2D(lineLength, 50, amplitudeFactor, randomSeed);
+        PerlinNoise2D amplifiedLayer = new PerlinNoise2D(lineLength, 50, amplitudeFactor, randomSeed);
 
         Double[][] lines = layer.getNextLines(requestedLines);
         Double[][] amplifiedLines = amplifiedLayer.getNextLines(requestedLines);
@@ -71,8 +71,8 @@ public class PerlinLayer2DTest {
     @Test
     public void testCreateSame() {
         long randomSeed = System.currentTimeMillis();
-        PerlinLayer2D layer = new PerlinLayer2D(lineLength, 50, 1.0, randomSeed);
-        PerlinLayer2D sameLayer = new PerlinLayer2D(lineLength, 50, 1.0, randomSeed);
+        PerlinNoise2D layer = new PerlinNoise2D(lineLength, 50, 1.0, randomSeed);
+        PerlinNoise2D sameLayer = new PerlinNoise2D(lineLength, 50, 1.0, randomSeed);
         Double[][] nextSegment1 = layer.getNextLines(requestedLines);
         Double[][] nextSegment2 = sameLayer.getNextLines(requestedLines);
 
