@@ -9,53 +9,61 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class PerlinLayer2D {
 
+    private static final double MAX_VALUE = Math.sqrt(2.0) / 2.0;
     private final double amplitudeFactor;
     private final int segmentLength;
     private final RandomGenerator randomGenerator;
     private final List<Queue<Double>> generated;
-    private final int width;
-    private final int randomBounds;
-    private List<Vector2D> previousBounds;
-    public static final double MAX_VALUE = Math.sqrt(2.0) / 2.0;
+    private int lineLength;
+    private int randomBounds;
+    private List<Vector2D> previousBounds = new ArrayList<>();
 
-    PerlinLayer2D(int width, int interpolationPoints, double amplitudeFactor, long randomSeed) {
+    PerlinLayer2D(int lineLength, int interpolationPoints, double amplitudeFactor, long randomSeed) {
         if (interpolationPoints < 0) {
             throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
         }
         this.amplitudeFactor = amplitudeFactor;
         this.segmentLength = interpolationPoints + 2;
         this.randomGenerator = new RandomGenerator(randomSeed);
-        this.generated = new ArrayList<>(width);
-        initializeGeneratedDataContainers(width);
-        this.width = width;
-        this.randomBounds = 2 + width / segmentLength;
-        this.previousBounds = generateNewRandomBounds();
+        this.generated = new ArrayList<>(lineLength);
+        setLineLength(lineLength);
     }
 
-    private void initializeGeneratedDataContainers(int width) {
+    private void setLineLength(int lineLength){
+        if(lineLength < 0){
+            throw new IllegalArgumentException("Line length must be greater than 0");
+        }
+        this.lineLength = lineLength;
+        this.randomBounds = 2 + lineLength / segmentLength;
+        if(previousBounds.size() < randomBounds){
+            previousBounds.addAll(generateNewRandomBounds(randomBounds - previousBounds.size()));
+        }
+        addGeneratedRows(lineLength);
+    }
+
+    Double[][] getNextLines(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("Count must be greater than 0");
+        }
+        assertEnoughDataIsGenerated(count);
+        return constructLinesFromGeneratedData(count);
+    }
+
+    private void addGeneratedRows(int width) {
         for (int i = 0; i < width; i++) {
             this.generated.add(new LinkedBlockingQueue<>());
         }
     }
 
-    Vector<Vector<Double>> getNextXSlices(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be greater than 0");
-        }
-        assertEnoughDataIsGenerated(count);
-        return constructXSlicesFromGeneratedData(count);
-    }
-
-    private Vector<Vector<Double>> constructXSlicesFromGeneratedData(int count) {
-        Vector<Vector<Double>> xSlices = new Vector<>(count);
+    private Double[][] constructLinesFromGeneratedData(int count) {
+        Double[][] newLines = new Double[count][lineLength];
         for (int i = 0; i < count; i++) {
-            Vector<Double> ySlices = new Vector<>(width);
-            for (int j = 0; j < width; j++) {
-                ySlices.add(generated.get(j).poll());
+            for (int j = 0; j < lineLength; j++) {
+                Queue<Double> row = generated.get(j);
+                newLines[i][j] = row.poll();
             }
-            xSlices.add(ySlices);
         }
-        return xSlices;
+        return newLines;
     }
 
     private void assertEnoughDataIsGenerated(int count) {
@@ -65,9 +73,9 @@ public class PerlinLayer2D {
     }
 
     private void generateNextSegment() {
-        List<Vector2D> newBounds = generateNewRandomBounds();
+        List<Vector2D> newBounds = generateNewRandomBounds(randomBounds);
 
-        for (int yIndex = 0; yIndex < width; yIndex++) {
+        for (int yIndex = 0; yIndex < lineLength; yIndex++) {
             int lowerBoundIndex = yIndex / segmentLength;
             Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
             Vector2D topRightBound = newBounds.get(lowerBoundIndex);
@@ -77,7 +85,6 @@ public class PerlinLayer2D {
             int segmentYIndex = yIndex % segmentLength;
             double yDist = (double) (segmentYIndex) / segmentLength;
 
-            //iteration through length
             for (int segmentXIndex = 0; segmentXIndex < segmentLength; segmentXIndex++) {
 
                 double xDist = (double) (segmentXIndex) / segmentLength;
@@ -115,9 +122,9 @@ public class PerlinLayer2D {
         return Interpolation.linearWithFade(topInterpolation, bottomInterpolation, yDist);
     }
 
-    private List<Vector2D> generateNewRandomBounds() {
-        List<Vector2D> newBounds = new ArrayList<>(randomBounds);
-        for (int i = 0; i < randomBounds; i++) {
+    private List<Vector2D> generateNewRandomBounds(int count) {
+        List<Vector2D> newBounds = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
             newBounds.add(randomGenerator.getRandomUnitVector2D());
         }
         return newBounds;
