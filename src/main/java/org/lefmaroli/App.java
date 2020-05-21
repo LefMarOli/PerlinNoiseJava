@@ -3,8 +3,10 @@ package org.lefmaroli;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.FactorGenerator;
 import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
-import org.lefmaroli.perlin1d.Perlin1D;
-import org.lefmaroli.perlin1d.PerlinGrid1D;
+import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
+import org.lefmaroli.perlin.point.NoisePointNavigator;
+import org.lefmaroli.perlin.point.NoisePointGenerator;
+import org.lefmaroli.perlin.point.NoisePointGeneratorBuilder;
 
 import java.awt.*;
 
@@ -12,21 +14,21 @@ import java.awt.*;
  * Hello world!
  */
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoiseBuilderException {
 
         FactorGenerator distanceFactorGenerator = new MultiplierFactorGenerator(2048, 0.5);
         FactorGenerator amplitudeFactorGenerator = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
-        PerlinGrid1D grid1D = new PerlinGrid1D.Builder()
+        NoisePointGenerator grid1D = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(16)
                 .withDistanceFactorGenerator(distanceFactorGenerator)
                 .withAmplitudeFactorGenerator(amplitudeFactorGenerator)
                 .build();
 
-        Perlin1D perlin1D = new Perlin1D(grid1D);
+        NoisePointNavigator noisePointNavigator = new NoisePointNavigator(grid1D);
 
         LineChart lineChart = new LineChart("Perlin1D", "Sequence #", "Value");
         String dataLabel = "DataSet";
-        lineChart.addEquidistantDataSeries(perlin1D.getNext(50), dataLabel);
+        lineChart.addEquidistantDataSeries(noisePointNavigator.getNext(50), dataLabel);
         lineChart.setVisible();
 
         boolean activateUpdate = true;
@@ -39,7 +41,7 @@ public class App {
                     EventQueue.invokeLater(() -> {
                         lineChart.updateDataSeries(dataSeries -> {
                             int itemCount = dataSeries.getItemCount();
-                            dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, perlin1D.getNext());
+                            dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, noisePointNavigator.getNext());
                             if (itemCount > 5000) {
                                 dataSeries.remove(0);
                             }

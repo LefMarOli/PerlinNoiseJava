@@ -26,4 +26,9 @@ public class MultiplierFactorGenerator implements FactorGenerator {
         }
     }
 
+    @Override
+    public void reset() {
+        firstCall = true;
+    }
+
 }

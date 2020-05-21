@@ -12,6 +12,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -22,12 +23,17 @@ public class LineChart {
     private final String xAxisLabel;
     private final String yAxisLabel;
     private final JFrame framedChart;
+    private ChartPanel chartPanel;
 
     public LineChart(String title, String xAxisLabel, String yAxisLabel){
         this.title = title;
         this.xAxisLabel = xAxisLabel;
         this.yAxisLabel = yAxisLabel;
         this.framedChart = getFramedChart();
+    }
+
+    public void addEquidistantDataSeries(Double[] dataSeries, String dataSeriesLabel){
+        addEquidistantDataSeries(Arrays.asList(dataSeries), dataSeriesLabel);
     }
 
     public void addEquidistantDataSeries(Collection<Double> dataSeries, String dataSeriesLabel) {
@@ -47,6 +53,10 @@ public class LineChart {
 
     public void setVisible(){
         framedChart.setVisible(true);
+    }
+
+    public void setYAxisRange(double from, double to){
+        chartPanel.getChart().getXYPlot().getRangeAxis().setRange(from, to);
     }
 
     private JFrame getFramedChart() {
@@ -70,7 +80,8 @@ public class LineChart {
                 false
         );
         configureChart(chart);
-        return new ChartPanel(chart);
+        this.chartPanel = new ChartPanel(chart);
+        return this.chartPanel;
     }
 
     private void configureChart(JFreeChart chart){

@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class MultiplierFactorGeneratorTest {
 
@@ -41,6 +42,19 @@ public class MultiplierFactorGeneratorTest {
         for (int i = 0; i < 50000; i++) {
             assertEquals(expectedValue, generator.getNextFactor(), 0.0);
             expectedValue *= factor;
+        }
+    }
+
+    @Test
+    public void testReset(){
+        MultiplierFactorGenerator generator = new MultiplierFactorGenerator(new Random().nextInt(), 5489.5946);
+        double firstValue = generator.getNextFactor();
+        for (int i = 0; i < 50000; i++) {
+            generator.reset();  //Always try to get the first value
+            assertEquals(firstValue, generator.getNextFactor(), 0.0);
+        }
+        for (int i = 0; i < 50000; i++) {
+            assertNotEquals(firstValue, generator.getNextFactor(), 0.0);
         }
     }
 }
