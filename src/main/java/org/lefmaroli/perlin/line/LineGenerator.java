@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class LineGenerator extends NoiseLineGenerator {
 
     private static final double MAX_2D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
+
     private final double maxAmplitude;
     private final int interpolationPoints;
     private final int segmentLength;
@@ -24,7 +25,7 @@ public class LineGenerator extends NoiseLineGenerator {
         if (interpolationPoints < 0) {
             throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
         }
-        if (lineLength < 0){
+        if (lineLength < 0) {
             throw new IllegalArgumentException("Line length must be greater than 0");
         }
         this.maxAmplitude = maxAmplitude;

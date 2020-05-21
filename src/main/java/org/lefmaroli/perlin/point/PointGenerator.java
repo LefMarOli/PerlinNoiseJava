@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class PointGenerator extends NoisePointGenerator {
 
-    private final static Logger LOGGER = LogManager.getLogger(PointGenerator.class);
+    private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
 
     private final double maxAmplitude;
     private final int interpolationPoints;

@@ -11,10 +11,10 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
     private final static Logger LOGGER = LogManager.getLogger(MultiLayerLineGenerator.class);
 
     private final int lineLength;
-    private final List<LineGenerator> layers;
+    private final List<NoiseLineGenerator> layers;
     private final double maxAmplitude;
 
-    MultiLayerLineGenerator(List<LineGenerator> layers) {
+    MultiLayerLineGenerator(List<NoiseLineGenerator> layers) {
         if (layers.size() < 1) {
             throw new IllegalArgumentException("Number of layers must at least be 1");
         }
@@ -22,7 +22,7 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
         assertAllLayersHaveSameLineLength(this.lineLength, layers);
         this.layers = layers;
         double sum = 0.0;
-        for (LineGenerator layer : layers) {
+        for (NoiseLineGenerator layer : layers) {
             sum += layer.getMaxAmplitude();
         }
         this.maxAmplitude = sum;
@@ -74,7 +74,7 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
                 '}';
     }
 
-    private static void assertAllLayersHaveSameLineLength(int lineLength, List<LineGenerator> layers) {
+    private static void assertAllLayersHaveSameLineLength(int lineLength, List<NoiseLineGenerator> layers) {
         for (int i = 0; i < layers.size(); i++) {
             if (layers.get(i).getLineLength() != lineLength) {
                 throw new IllegalArgumentException(
@@ -85,7 +85,7 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
 
     private Double[][] generateResults(int count) {
         Double[][] results = initializeResults(count);
-        for (LineGenerator layer : layers) {
+        for (NoiseLineGenerator layer : layers) {
             Double[][] layerData = layer.getNextLines(count);
             for (int i = 0; i < count; i++) {
                 for (int j = 0; j < lineLength; j++) {

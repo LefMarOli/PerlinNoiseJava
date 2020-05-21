@@ -10,16 +10,16 @@ public class MultiLayerPointGenerator extends NoisePointGenerator {
 
     private final static Logger LOGGER = LogManager.getLogger(MultiLayerPointGenerator.class);
 
-    private final List<PointGenerator> layers;
+    private final List<NoisePointGenerator> layers;
     private final double maxAmplitude;
 
-    MultiLayerPointGenerator(List<PointGenerator> layers){
+    MultiLayerPointGenerator(List<NoisePointGenerator> layers){
         if(layers.size() < 1){
             throw new IllegalArgumentException("Number of layers must at least be 1");
         }
         this.layers = layers;
         double sum = 0.0;
-        for (PointGenerator layer : layers) {
+        for (NoisePointGenerator layer : layers) {
             sum += layer.getMaxAmplitude();
         }
         this.maxAmplitude = sum;
@@ -74,7 +74,7 @@ public class MultiLayerPointGenerator extends NoisePointGenerator {
 
     private Double[] generateResults(int count) {
         Double[] results = initializeResults(count);
-        for (PointGenerator layer : layers) {
+        for (NoisePointGenerator layer : layers) {
             Double[] layerData = layer.getNextPoints(count);
             for (int i = 0; i < count; i++) {
                 results[i] = results[i] + layerData[i];

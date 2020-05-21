@@ -109,4 +109,5 @@ public class MultiLayerLineGeneratorTest {
                 .withPreset(Presets.INTELLI_J)
                 .verify();
     }
+
 }
