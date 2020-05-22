@@ -6,7 +6,7 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import java.util.List;
 
 public class NoiseLineGeneratorBuilder
-        extends NoiseBuilder<NoiseLineGenerator, LineGenerator, NoiseLineGeneratorBuilder> {
+        extends NoiseBuilder<NoiseLineGenerator, NoiseLineGenerator, NoiseLineGeneratorBuilder> {
 
     private final int lineLength;
 
@@ -30,7 +30,7 @@ public class NoiseLineGeneratorBuilder
     }
 
     @Override
-    protected NoiseLineGenerator buildMultipleLayerNoise(List<LineGenerator> layers) {
+    protected NoiseLineGenerator buildMultipleLayerNoise(List<NoiseLineGenerator> layers) {
         return new MultiLayerLineGenerator(layers);
     }
 }

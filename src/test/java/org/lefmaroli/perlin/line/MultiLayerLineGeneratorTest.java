@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class MultiLayerLineGeneratorTest {
 
     private MultiLayerLineGenerator defaultGenerator;
-    private List<LineGenerator> layers;
+    private List<NoiseLineGenerator> layers;
     private static final double maxAmplitude = 1.75;
     private static final int defaultLineLength = 125;
 
@@ -39,7 +39,7 @@ public class MultiLayerLineGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithDifferentLineLengthLayers() {
-        List<LineGenerator> newLayerSet = layers;
+        List<NoiseLineGenerator> newLayerSet = layers;
         newLayerSet.add(new LineGenerator(defaultLineLength + 5, 256, 0.1225, System.currentTimeMillis()));
         new MultiLayerLineGenerator(newLayerSet);
     }
@@ -91,7 +91,7 @@ public class MultiLayerLineGeneratorTest {
 
     @Test
     public void testNotEquals() {
-        List<LineGenerator> otherLayers = layers;
+        List<NoiseLineGenerator> otherLayers = layers;
         otherLayers.add(new LineGenerator(defaultLineLength, 8, 0.1, 5L));
         MultiLayerLineGenerator otherGenerator = new MultiLayerLineGenerator(otherLayers);
         assertNotEquals(defaultGenerator, otherGenerator);
