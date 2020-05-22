@@ -25,8 +25,8 @@ public class NoiseLineGeneratorBuilder
     }
 
     @Override
-    protected LineGenerator buildSingleLayerNoise(int interpolationPoints, double layerAmplitude, long randomSeed) {
-        return new LineGenerator(lineLength, interpolationPoints, layerAmplitude, randomSeed);
+    protected NoiseLineGenerator buildSingleLayerNoise(int interpolationPoints, double layerAmplitude, long randomSeed) {
+        return new LineGenerator(lineLength, interpolationPoints, interpolationPoints, layerAmplitude, randomSeed);
     }
 
     @Override

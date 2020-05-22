@@ -21,9 +21,9 @@ public class MultiLayerLineGeneratorTest {
     @Before
     public void setup() {
         layers = new ArrayList<>(3);
-        layers.add(new LineGenerator(defaultLineLength, 2048, 1.0, System.currentTimeMillis()));
-        layers.add(new LineGenerator(defaultLineLength, 1024, 0.5, System.currentTimeMillis()));
-        layers.add(new LineGenerator(defaultLineLength, 512, 0.25, System.currentTimeMillis()));
+        layers.add(new LineGenerator(defaultLineLength, 2048, 2048, 1.0, System.currentTimeMillis()));
+        layers.add(new LineGenerator(defaultLineLength, 1024, 1024, 0.5, System.currentTimeMillis()));
+        layers.add(new LineGenerator(defaultLineLength, 512, 512, 0.25, System.currentTimeMillis()));
         defaultGenerator = new MultiLayerLineGenerator(layers);
     }
 
@@ -40,7 +40,7 @@ public class MultiLayerLineGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithDifferentLineLengthLayers() {
         List<NoiseLineGenerator> newLayerSet = layers;
-        newLayerSet.add(new LineGenerator(defaultLineLength + 5, 256, 0.1225, System.currentTimeMillis()));
+        newLayerSet.add(new LineGenerator(defaultLineLength + 5, 256, 256, 0.1225, System.currentTimeMillis()));
         new MultiLayerLineGenerator(newLayerSet);
     }
 
@@ -92,13 +92,13 @@ public class MultiLayerLineGeneratorTest {
     @Test
     public void testNotEquals() {
         List<NoiseLineGenerator> otherLayers = layers;
-        otherLayers.add(new LineGenerator(defaultLineLength, 8, 0.1, 5L));
+        otherLayers.add(new LineGenerator(defaultLineLength, 8, 8, 0.1, 5L));
         MultiLayerLineGenerator otherGenerator = new MultiLayerLineGenerator(otherLayers);
         assertNotEquals(defaultGenerator, otherGenerator);
     }
 
     @Test
-    public void testLineLength(){
+    public void testLineLength() {
         assertEquals(defaultLineLength, defaultGenerator.getLineLength());
     }
 

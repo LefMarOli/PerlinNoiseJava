@@ -12,8 +12,8 @@ public class LineGenerator extends NoiseLineGenerator {
     private static final double MAX_2D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
 
     private final double maxAmplitude;
-    private final int interpolationPoints;
-    private final int segmentLength;
+    private final int interpolationPointsAlongLine;
+    private final int lineSegmentLength;
     private final long randomSeed;
     private final RandomGenerator randomGenerator;
     private final List<Queue<Double>> generated;
@@ -21,21 +21,23 @@ public class LineGenerator extends NoiseLineGenerator {
     private final int randomBounds;
     private List<Vector2D> previousBounds;
 
-    public LineGenerator(int lineLength, int interpolationPoints, double maxAmplitude, long randomSeed) {
-        if (interpolationPoints < 0) {
+    public LineGenerator(int lineLength, int interpolationPointsAlongLine, int interpolationPointsAlongNoiseSpace,
+                         double maxAmplitude, long randomSeed) {
+        if (interpolationPointsAlongLine < 0) {
             throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
         }
         if (lineLength < 0) {
             throw new IllegalArgumentException("Line length must be greater than 0");
         }
         this.maxAmplitude = maxAmplitude;
-        this.interpolationPoints = interpolationPoints;
-        this.segmentLength = interpolationPoints + 2;
+        this.interpolationPointsAlongLine = interpolationPointsAlongLine;
+
+        this.lineSegmentLength = interpolationPointsAlongLine + 2;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.generated = new ArrayList<>(lineLength);
         this.lineLength = lineLength;
-        this.randomBounds = 2 + lineLength / segmentLength;
+        this.randomBounds = 2 + lineLength / lineSegmentLength;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
 
         addGeneratedRows(lineLength);
@@ -55,20 +57,28 @@ public class LineGenerator extends NoiseLineGenerator {
         return lineLength;
     }
 
+    public int getInterpolationPointsCountAlongLine() {
+        return interpolationPointsAlongLine;
+    }
+
+    public int getInterpolationPointsCountAlongNoiseSpace() {
+        return 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LineGenerator that = (LineGenerator) o;
         return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                interpolationPoints == that.interpolationPoints &&
+                interpolationPointsAlongLine == that.interpolationPointsAlongLine &&
                 randomSeed == that.randomSeed &&
                 lineLength == that.lineLength;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxAmplitude, interpolationPoints, randomSeed, lineLength);
+        return Objects.hash(maxAmplitude, interpolationPointsAlongLine, randomSeed, lineLength);
     }
 
     @Override
@@ -80,7 +90,7 @@ public class LineGenerator extends NoiseLineGenerator {
     public String toString() {
         return "LineGenerator{" +
                 "maxAmplitude=" + maxAmplitude +
-                ", interpolationPoints=" + interpolationPoints +
+                ", interpolationPoints=" + interpolationPointsAlongLine +
                 ", randomSeed=" + randomSeed +
                 ", lineLength=" + lineLength +
                 '}';
@@ -117,18 +127,18 @@ public class LineGenerator extends NoiseLineGenerator {
         List<Vector2D> newBounds = generateNewRandomBounds(randomBounds);
 
         for (int yIndex = 0; yIndex < lineLength; yIndex++) {
-            int lowerBoundIndex = yIndex / segmentLength;
+            int lowerBoundIndex = yIndex / lineSegmentLength;
             Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
             Vector2D topRightBound = newBounds.get(lowerBoundIndex);
             Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
             Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
 
-            int segmentYIndex = yIndex % segmentLength;
-            double yDist = (double) (segmentYIndex + 1) / (segmentLength + 1);
+            int segmentYIndex = yIndex % lineSegmentLength;
+            double yDist = (double) (segmentYIndex + 1) / (lineSegmentLength + 1);
 
-            for (int segmentXIndex = 0; segmentXIndex < segmentLength; segmentXIndex++) {
+            for (int segmentXIndex = 0; segmentXIndex < lineSegmentLength; segmentXIndex++) {
 
-                double xDist = (double) (segmentXIndex + 1) / (segmentLength + 1);
+                double xDist = (double) (segmentXIndex + 1) / (lineSegmentLength + 1);
 
                 Vector2D topLeftDistance = new Vector2D(xDist, yDist);
                 Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
