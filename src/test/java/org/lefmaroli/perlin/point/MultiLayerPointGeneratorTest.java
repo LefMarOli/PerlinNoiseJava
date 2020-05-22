@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 public class MultiLayerPointGeneratorTest {
 
     private MultiLayerPointGenerator defaultGenerator;
-    private List<PointGenerator> layers;
+    private List<NoisePointGenerator> layers;
     private double maxAmplitude = 1.75;
 
     @Before
@@ -77,7 +77,7 @@ public class MultiLayerPointGeneratorTest {
 
     @Test
     public void testNotEquals() {
-        List<PointGenerator> otherLayers = layers;
+        List<NoisePointGenerator> otherLayers = layers;
         otherLayers.add(new PointGenerator(8, 0.1, 5L));
         MultiLayerPointGenerator otherGenerator = new MultiLayerPointGenerator(otherLayers);
         assertNotEquals(defaultGenerator, otherGenerator);
