@@ -22,7 +22,7 @@ public class LineGeneratorTest {
     private double maxAmplitude = 5.0;
     private long randomSeed = System.currentTimeMillis();
     private int defaultInterpolationPointsAlongLine = 200;
-    private int defaultInterpolationPointsAlongNoiseSpace = 300;
+    private int defaultInterpolationPointsAlongNoiseSpace = 50;
 
     @Before
     public void setup() {
@@ -59,13 +59,13 @@ public class LineGeneratorTest {
 
     @Test
     public void testGetInterpolationPointsAlongLine() {
-        assertEquals(defaultInterpolationPointsAlongLine, defaultLineGenerator.getInterpolationPointsCountAlongLine());
+        assertEquals(defaultInterpolationPointsAlongLine, defaultLineGenerator.getLineInterpolationPointsCount());
     }
 
     @Test
     public void testGetInterpolationPointsAlongNoiseSpace() {
         assertEquals(defaultInterpolationPointsAlongNoiseSpace,
-                defaultLineGenerator.getInterpolationPointsCountAlongNoiseSpace());
+                defaultLineGenerator.getNoiseInterpolationPointsCount());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class LineGeneratorTest {
         ToStringVerifier.forClass(LineGenerator.class)
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
-                .withIgnoredFields("segmentLength", "randomGenerator", "generated", "randomBounds", "previousBounds")
+                .withIgnoredFields("lineSegmentLength", "noiseSegmentLength", "randomGenerator", "generated", "randomBounds", "previousBounds")
                 .verify();
     }
 
@@ -200,7 +200,10 @@ public class LineGeneratorTest {
     @Ignore
     @Test
     public void getNextLines() {
-        Double[][] lines = defaultLineGenerator.getNextLines(requestedLines);
+        LineGenerator generator =
+                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
+                        defaultInterpolationPointsAlongNoiseSpace, 1.0, randomSeed);
+        Double[][] lines = generator.getNextLines(requestedLines);
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
@@ -208,7 +211,7 @@ public class LineGeneratorTest {
             if (System.currentTimeMillis() - previousTime > 5) {
                 previousTime = System.currentTimeMillis();
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
-                lines[lines.length - 1] = defaultLineGenerator.getNextLines(1)[0];
+                lines[lines.length - 1] = generator.getNextLines(1)[0];
                 image.updateImage(lines);
             }
         }

@@ -7,13 +7,15 @@ import org.lefmaroli.vector.Vector2D;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class LineGenerator extends NoiseLineGenerator {
+public class LineGenerator extends NoiseLineGenerator implements BasicLineNoiseGenerator{
 
     private static final double MAX_2D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
 
     private final double maxAmplitude;
-    private final int interpolationPointsAlongLine;
+    private final int lineInterpolationPoints;
+    private final int noiseInterpolationPoints;
     private final int lineSegmentLength;
+    private final int noiseSegmentLength;
     private final long randomSeed;
     private final RandomGenerator randomGenerator;
     private final List<Queue<Double>> generated;
@@ -21,18 +23,22 @@ public class LineGenerator extends NoiseLineGenerator {
     private final int randomBounds;
     private List<Vector2D> previousBounds;
 
-    public LineGenerator(int lineLength, int interpolationPointsAlongLine, int interpolationPointsAlongNoiseSpace,
+    public LineGenerator(int lineLength, int lineInterpolationPoints, int noiseInterpolationPoints,
                          double maxAmplitude, long randomSeed) {
-        if (interpolationPointsAlongLine < 0) {
-            throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
+        if (lineInterpolationPoints < 0) {
+            throw new IllegalArgumentException("Line interpolation points must be greater than 0");
+        }if (noiseInterpolationPoints < 0) {
+            throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
         }
+
         if (lineLength < 0) {
             throw new IllegalArgumentException("Line length must be greater than 0");
         }
         this.maxAmplitude = maxAmplitude;
-        this.interpolationPointsAlongLine = interpolationPointsAlongLine;
-
-        this.lineSegmentLength = interpolationPointsAlongLine + 2;
+        this.lineInterpolationPoints = lineInterpolationPoints;
+        this.lineSegmentLength = lineInterpolationPoints + 2;
+        this.noiseInterpolationPoints = noiseInterpolationPoints;
+        this.noiseSegmentLength = noiseInterpolationPoints + 2;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.generated = new ArrayList<>(lineLength);
@@ -57,28 +63,21 @@ public class LineGenerator extends NoiseLineGenerator {
         return lineLength;
     }
 
-    public int getInterpolationPointsCountAlongLine() {
-        return interpolationPointsAlongLine;
-    }
-
-    public int getInterpolationPointsCountAlongNoiseSpace() {
-        return 0;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LineGenerator that = (LineGenerator) o;
         return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                interpolationPointsAlongLine == that.interpolationPointsAlongLine &&
+                lineInterpolationPoints == that.lineInterpolationPoints &&
+                noiseInterpolationPoints == that.noiseInterpolationPoints &&
                 randomSeed == that.randomSeed &&
                 lineLength == that.lineLength;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxAmplitude, interpolationPointsAlongLine, randomSeed, lineLength);
+        return Objects.hash(maxAmplitude, lineInterpolationPoints, noiseInterpolationPoints, randomSeed, lineLength);
     }
 
     @Override
@@ -90,10 +89,21 @@ public class LineGenerator extends NoiseLineGenerator {
     public String toString() {
         return "LineGenerator{" +
                 "maxAmplitude=" + maxAmplitude +
-                ", interpolationPoints=" + interpolationPointsAlongLine +
+                ", lineInterpolationPoints=" + lineInterpolationPoints +
+                ", noiseInterpolationPoints=" + noiseInterpolationPoints +
                 ", randomSeed=" + randomSeed +
                 ", lineLength=" + lineLength +
                 '}';
+    }
+
+    @Override
+    public int getLineInterpolationPointsCount() {
+        return lineInterpolationPoints;
+    }
+
+    @Override
+    public int getNoiseInterpolationPointsCount() {
+        return noiseInterpolationPoints;
     }
 
     private static double adjustValueRange(double interpolatedValue) {
@@ -136,9 +146,9 @@ public class LineGenerator extends NoiseLineGenerator {
             int segmentYIndex = yIndex % lineSegmentLength;
             double yDist = (double) (segmentYIndex + 1) / (lineSegmentLength + 1);
 
-            for (int segmentXIndex = 0; segmentXIndex < lineSegmentLength; segmentXIndex++) {
+            for (int segmentXIndex = 0; segmentXIndex < noiseSegmentLength; segmentXIndex++) {
 
-                double xDist = (double) (segmentXIndex + 1) / (lineSegmentLength + 1);
+                double xDist = (double) (segmentXIndex + 1) / (noiseSegmentLength + 1);
 
                 Vector2D topLeftDistance = new Vector2D(xDist, yDist);
                 Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
