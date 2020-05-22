@@ -22,6 +22,13 @@ public class Interpolation {
         return 6 * valueCubed * value * value - 15 * valueCubed * value + 10 * valueCubed;
     }
 
+    public static double twoDimensional(double x1y1, double x2y1, double x1y2,
+                                        double x2y2, double muX, double muY){
+        double topInterpolation = Interpolation.linear(x1y1, x2y1, muX);
+        double bottomInterpolation = Interpolation.linear(x1y2, x2y2, muX);
+        return Interpolation.linear(topInterpolation, bottomInterpolation, muY);
+    }
+
     public static double twoDimensionalWithFade(double x1y1, double x2y1, double x1y2,
                                                 double x2y2, double muX, double muY) {
         double topInterpolation = Interpolation.linearWithFade(x1y1, x2y1, muX);
