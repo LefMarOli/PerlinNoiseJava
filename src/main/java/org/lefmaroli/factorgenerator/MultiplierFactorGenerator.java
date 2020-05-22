@@ -1,7 +1,7 @@
 package org.lefmaroli.factorgenerator;
 
 
-public class MultiplierFactorGenerator implements FactorGenerator {
+public class MultiplierFactorGenerator implements SingleFactorGenerator {
 
     private final double factor;
     private final double initialValue;
@@ -24,6 +24,11 @@ public class MultiplierFactorGenerator implements FactorGenerator {
             previousValue = toReturn;
             return toReturn;
         }
+    }
+
+    @Override
+    public SingleFactorGenerator getCopy() {
+        return new MultiplierFactorGenerator(this.initialValue, this.factor);
     }
 
     @Override

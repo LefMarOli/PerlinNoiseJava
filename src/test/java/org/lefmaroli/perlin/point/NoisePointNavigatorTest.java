@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.point;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.lefmaroli.factorgenerator.FactorGenerator;
+import org.lefmaroli.factorgenerator.SingleFactorGenerator;
 import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
@@ -16,8 +16,8 @@ public class NoisePointNavigatorTest {
 
     @Before
     public void setup() throws NoiseBuilderException {
-        FactorGenerator defaultDistanceFactor = new MultiplierFactorGenerator(2048, 0.5);
-        FactorGenerator defaultAmplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
+        SingleFactorGenerator defaultDistanceFactor = new MultiplierFactorGenerator(2048, 0.5);
+        SingleFactorGenerator defaultAmplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
         NoisePointGenerator defaultNoisePointGenerator = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(5)
                 .withDistanceFactorGenerator(defaultDistanceFactor)

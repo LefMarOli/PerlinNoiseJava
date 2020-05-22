@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin;
 
 import org.junit.Test;
+import org.lefmaroli.factorgenerator.MultipleFactorGenerator;
 import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
@@ -39,7 +40,11 @@ public class NoiseGeneratorBuilderTest {
     }
 
     private static class MockNoiseBuilder
-            extends NoiseBuilder<MockNoiseGenerator, MockNoiseGeneratorLayer, MockNoiseBuilder> {
+            extends NoiseBuilder<MockNoiseGenerator, MockNoiseBuilder> {
+
+        MockNoiseBuilder() {
+            super(5);
+        }
 
         @Override
         protected MockNoiseBuilder self() {
@@ -47,13 +52,13 @@ public class NoiseGeneratorBuilderTest {
         }
 
         @Override
-        protected MockNoiseGeneratorLayer buildSingleLayerNoise(int interpolationPoints, double layerAmplitude,
-                                                                long randomSeed) {
+        protected MockNoiseGenerator buildSingleLayerNoise(List<Integer> interpolationPoints, double layerAmplitude,
+                                                           long randomSeed) {
             return new MockNoiseGeneratorLayer();
         }
 
         @Override
-        protected MockNoiseGenerator buildMultipleLayerNoise(List<MockNoiseGeneratorLayer> layers) {
+        protected MockNoiseGenerator buildMultipleLayerNoise(List<MockNoiseGenerator> layers) {
             return new MockNoiseGenerator();
         }
 
@@ -106,5 +111,13 @@ public class NoiseGeneratorBuilderTest {
                 .withNumberOfLayers(1)
                 .withDistanceFactorGenerator(new MultiplierFactorGenerator(0.0, 500))
                 .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWithWrongNumberOfDistanceFactorGenerators() {
+        MultipleFactorGenerator wrongNumberOfGenerators =
+                MultipleFactorGenerator.getSymmetricalFactorGenerator(3, new MultiplierFactorGenerator(1, 1.0));
+        new MockNoiseBuilder()
+                .withDistanceFactorGenerator(wrongNumberOfGenerators);
     }
 }

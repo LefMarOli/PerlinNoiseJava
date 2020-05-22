@@ -1,7 +1,7 @@
 package org.lefmaroli;
 
 import org.lefmaroli.display.LineChart;
-import org.lefmaroli.factorgenerator.FactorGenerator;
+import org.lefmaroli.factorgenerator.SingleFactorGenerator;
 import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.point.NoisePointNavigator;
@@ -16,8 +16,8 @@ import java.awt.*;
 public class App {
     public static void main(String[] args) throws NoiseBuilderException {
 
-        FactorGenerator distanceFactorGenerator = new MultiplierFactorGenerator(2048, 0.5);
-        FactorGenerator amplitudeFactorGenerator = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
+        SingleFactorGenerator distanceFactorGenerator = new MultiplierFactorGenerator(2048, 0.5);
+        SingleFactorGenerator amplitudeFactorGenerator = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
         NoisePointGenerator grid1D = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(16)
                 .withDistanceFactorGenerator(distanceFactorGenerator)

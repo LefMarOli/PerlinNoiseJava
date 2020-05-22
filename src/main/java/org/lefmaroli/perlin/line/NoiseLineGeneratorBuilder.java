@@ -6,11 +6,12 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import java.util.List;
 
 public class NoiseLineGeneratorBuilder
-        extends NoiseBuilder<NoiseLineGenerator, NoiseLineGenerator, NoiseLineGeneratorBuilder> {
+        extends NoiseBuilder<NoiseLineGenerator, NoiseLineGeneratorBuilder> {
 
     private final int lineLength;
 
     NoiseLineGeneratorBuilder(int lineLength) {
+        super(2);
         this.lineLength = lineLength;
     }
 
@@ -25,8 +26,10 @@ public class NoiseLineGeneratorBuilder
     }
 
     @Override
-    protected NoiseLineGenerator buildSingleLayerNoise(int interpolationPoints, double layerAmplitude, long randomSeed) {
-        return new LineGenerator(lineLength, interpolationPoints, interpolationPoints, layerAmplitude, randomSeed);
+    protected NoiseLineGenerator buildSingleLayerNoise(List<Integer> interpolationPoints, double layerAmplitude,
+                                                       long randomSeed) {
+        return new LineGenerator(lineLength, interpolationPoints.get(0), interpolationPoints.get(1), layerAmplitude,
+                randomSeed);
     }
 
     @Override

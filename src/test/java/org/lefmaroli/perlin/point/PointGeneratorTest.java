@@ -12,30 +12,30 @@ import static org.junit.Assert.*;
 
 public class PointGeneratorTest {
 
-    private PointGenerator noiseLayer;
+    private PointGenerator defaultGenerator;
     private final int interpolationPoints = 50;
     private final int expectedCount = 500;
     private final long randomSeed = System.currentTimeMillis();
 
     @Before
     public void setup() {
-        noiseLayer = new PointGenerator(interpolationPoints, 1.0, randomSeed);
+        defaultGenerator = new PointGenerator(interpolationPoints, 1.0, randomSeed);
     }
 
     @Test
     public void testDimension(){
-        assertEquals(1, noiseLayer.getDimensions());
+        assertEquals(1, defaultGenerator.getDimensions());
     }
 
     @Test
     public void testGetNextSegmentCount() {
-        Double[] nextSegment = noiseLayer.getNextPoints(expectedCount);
+        Double[] nextSegment = defaultGenerator.getNextPoints(expectedCount);
         assertEquals(expectedCount, nextSegment.length, 0);
     }
 
     @Test
     public void testValuesBounded() {
-        Double[] nextSegment = noiseLayer.getNextPoints(expectedCount);
+        Double[] nextSegment = defaultGenerator.getNextPoints(expectedCount);
         for (Double value : nextSegment) {
             assertNotNull(value);
             assertTrue(value < 1.0);
@@ -49,7 +49,7 @@ public class PointGeneratorTest {
         double amplitudeFactor = random.nextDouble() * 100;
         PointGenerator amplifiedLayer = new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
 
-        Double[] values = noiseLayer.getNextPoints(expectedCount);
+        Double[] values = defaultGenerator.getNextPoints(expectedCount);
         Double[] actualAmplifiedValues = amplifiedLayer.getNextPoints(expectedCount);
 
         Double[] expectedAmplifiedValues = new Double[values.length];
@@ -62,7 +62,7 @@ public class PointGeneratorTest {
     @Test
     public void testCreateSamePoints() {
         PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
-        Double[] nextSegment1 = noiseLayer.getNextPoints(expectedCount);
+        Double[] nextSegment1 = defaultGenerator.getNextPoints(expectedCount);
         Double[] nextSegment2 = sameLayer.getNextPoints(expectedCount);
         assertExpectedArrayEqualsActual(nextSegment1, nextSegment2, 0.0);
     }
@@ -128,5 +128,10 @@ public class PointGeneratorTest {
                 .withPreset(Presets.INTELLI_J)
                 .withIgnoredFields("randomGenerator", "previousBound", "generated", "segmentLength")
                 .verify();
+    }
+
+    @Test
+    public void getInterpolationPointsCount(){
+        assertEquals(interpolationPoints, defaultGenerator.getNoiseInterpolationPointsCount());
     }
 }
