@@ -90,14 +90,6 @@ public class LineGenerator extends NoiseLineGenerator {
         return ((interpolatedValue / MAX_2D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
     }
 
-    private static double interpolate2D(double xDist, double yDist, double topLeftProduct, double topRightProduct,
-                                        double bottomLeftProduct, double bottomRightProduct) {
-        double topInterpolation = Interpolation.linearWithFade(topLeftProduct, topRightProduct, xDist);
-        double bottomInterpolation =
-                Interpolation.linearWithFade(bottomLeftProduct, bottomRightProduct, xDist);
-        return Interpolation.linearWithFade(topInterpolation, bottomInterpolation, yDist);
-    }
-
     private void addGeneratedRows(int width) {
         for (int i = 0; i < width; i++) {
             this.generated.add(new LinkedBlockingQueue<>());
@@ -148,9 +140,9 @@ public class LineGenerator extends NoiseLineGenerator {
                 double bottomLeftBoundImpact = bottomLeftBound.getVectorProduct(bottomLeftDistance);
                 double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDistance);
 
-                double interpolatedValue =
-                        interpolate2D(xDist, yDist, topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
-                                bottomRightBoundImpact);
+                double interpolatedValue = Interpolation
+                        .twoDimensionalWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
+                                bottomRightBoundImpact, xDist, yDist);
                 double adjustedValue = adjustValueRange(interpolatedValue);
                 double amplifiedValue = adjustedValue * maxAmplitude;
                 generated.get(yIndex).add(amplifiedValue);

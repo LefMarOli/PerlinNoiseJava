@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class InterpolationTest{
+public class InterpolationTest {
 
     @Test
     public void testLinearSmallToBigInterpolation() {
@@ -22,30 +22,30 @@ public class InterpolationTest{
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test(expected = IllegalArgumentException.class)
-    public void testLinearIllegalValue(){
+    public void testLinearIllegalValue() {
         Interpolation.linear(1, 5, -1);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test(expected = IllegalArgumentException.class)
-    public void testLinearIllegalValue2(){
+    public void testLinearIllegalValue2() {
         Interpolation.linear(1, 5, 5);
     }
 
     @Test
     public void testLinearWithFade() {
         //1.5 should not change here
-        assertEquals(1.5, Interpolation.linearWithFade(1,2,0.5), 0);
-        assertEquals(1.103515625, Interpolation.linearWithFade(1,2,0.25), 0);
+        assertEquals(1.5, Interpolation.linearWithFade(1, 2, 0.5), 0);
+        assertEquals(1.103515625, Interpolation.linearWithFade(1, 2, 0.25), 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testLinearWithFadeIllegalValue(){
+    public void testLinearWithFadeIllegalValue() {
         Interpolation.linearWithFade(1, 5, -1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testLinearWithFadeIllegalValue2(){
+    public void testLinearWithFadeIllegalValue2() {
         Interpolation.linearWithFade(1, 5, 5);
     }
 
@@ -57,12 +57,24 @@ public class InterpolationTest{
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFadeIllegalValue(){
+    public void testFadeIllegalValue() {
         Interpolation.fade(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFadeIllegalValue2(){
+    public void testFadeIllegalValue2() {
         Interpolation.fade(5);
+    }
+
+    @Test
+    public void test2DWithFade() {
+        //0----1
+        //|    |
+        //1----0
+        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.5, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 1, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.5, 0), 0.0);
+        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.5, 1), 0.0);
     }
 }
