@@ -23,13 +23,13 @@ public class NoisePointGeneratorBuilder
     }
 
     @Override
-    protected NoisePointGenerator buildSingleLayerNoise(List<Integer> interpolationPoints, double layerAmplitude,
+    protected NoisePointGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
                                                         long randomSeed) {
         return new PointGenerator(interpolationPoints.get(0), layerAmplitude, randomSeed);
     }
 
     @Override
-    protected NoisePointGenerator buildMultipleLayerNoise(List<NoisePointGenerator> layers) {
+    protected NoisePointGenerator buildMultipleNoiseLayer(List<NoisePointGenerator> layers) {
         return new MultiLayerPointGenerator(layers);
     }
 }

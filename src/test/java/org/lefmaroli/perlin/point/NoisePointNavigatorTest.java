@@ -16,12 +16,12 @@ public class NoisePointNavigatorTest {
 
     @Before
     public void setup() throws NoiseBuilderException {
-        IntegerGenerator defaultDistanceFactor = new IntegerGenerator(2048, 0.5);
-        DoubleGenerator defaultAmplitudeFactor = new DoubleGenerator(1.0, 1.0 / 1.8);
+        IntegerGenerator defaultNoiseInterpolationPointCountGenerator = new IntegerGenerator(2048, 0.5);
+        DoubleGenerator defaultAmplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
         NoisePointGenerator defaultNoisePointGenerator = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(5)
-                .withNoiseDistanceGenerator(defaultDistanceFactor)
-                .withAmplitudeGenerator(defaultAmplitudeFactor)
+                .withNoiseInterpolationPointCountGenerator(defaultNoiseInterpolationPointCountGenerator)
+                .withAmplitudeGenerator(defaultAmplitudeFactorGenerator)
                 .build();
         defaultNoisePointNavigator = new NoisePointNavigator(defaultNoisePointGenerator);
     }

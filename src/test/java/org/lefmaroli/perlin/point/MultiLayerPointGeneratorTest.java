@@ -5,7 +5,6 @@ import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import org.junit.Before;
 import org.junit.Test;
-import org.lefmaroli.perlin.line.MultiLayerLineGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

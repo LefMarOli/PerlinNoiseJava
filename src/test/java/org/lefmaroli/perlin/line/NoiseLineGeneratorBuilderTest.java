@@ -39,11 +39,11 @@ public class NoiseLineGeneratorBuilderTest {
     @Ignore
     @Test
     public void getNextLines() throws NoiseBuilderException {
-        IntegerGenerator lineDistance = new IntegerGenerator(128, 0.9);
-        IntegerGenerator noiseDistance = new IntegerGenerator(128, 0.5);
+        IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(128, 0.9);
+        IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(128, 0.5);
         NoiseLineGenerator generator = new NoiseLineGeneratorBuilder(lineLength)
-                .withLineInterpolationPointCountGenerator(lineDistance)
-                .withNoiseDistanceGenerator(noiseDistance)
+                .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
+                .withNoiseInterpolationPointCountGenerator(noiseInterpolationPointCountGenerator)
                 .withNumberOfLayers(4)
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
                 .build();

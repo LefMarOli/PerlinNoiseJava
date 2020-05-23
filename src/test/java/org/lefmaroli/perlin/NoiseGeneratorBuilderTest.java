@@ -52,13 +52,13 @@ public class NoiseGeneratorBuilderTest {
         }
 
         @Override
-        protected MockNoiseGenerator buildSingleLayerNoise(List<Integer> interpolationPoints, double layerAmplitude,
+        protected MockNoiseGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
                                                            long randomSeed) {
             return new MockNoiseGeneratorLayer();
         }
 
         @Override
-        protected MockNoiseGenerator buildMultipleLayerNoise(List<MockNoiseGenerator> layers) {
+        protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers) {
             return new MockNoiseGenerator();
         }
 
@@ -77,13 +77,13 @@ public class NoiseGeneratorBuilderTest {
         }
 
         @Override
-        protected MockNoiseGenerator buildSingleLayerNoise(List<Integer> interpolationPoints, double layerAmplitude,
+        protected MockNoiseGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
                                                            long randomSeed) throws NoiseBuilderException {
             return null;
         }
 
         @Override
-        protected MockNoiseGenerator buildMultipleLayerNoise(List<MockNoiseGenerator> layers)
+        protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers)
                 throws NoiseBuilderException {
             return null;
         }
@@ -95,13 +95,13 @@ public class NoiseGeneratorBuilderTest {
         assertNotNull(noisePointBuilder.withRandomSeed(0L));
         assertNotNull(noisePointBuilder.withNumberOfLayers(5));
         assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-        assertNotNull(noisePointBuilder.withNoiseDistanceGenerator(new IntegerGenerator(1, 1.0)));
+        assertNotNull(noisePointBuilder.withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 1.0)));
     }
 
     @Test(expected = NoiseBuilderException.class)
     public void testToFewInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
-                .withNoiseDistanceGenerator(new IntegerGenerator(1, 0.5))
+                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 0.5))
                 .withNumberOfLayers(5)
                 .build();
     }
@@ -109,7 +109,7 @@ public class NoiseGeneratorBuilderTest {
     @Test(expected = NoiseBuilderException.class)
     public void testTooManyInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
-                .withNoiseDistanceGenerator(new IntegerGenerator(1, 5000))
+                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 5000))
                 .withNumberOfLayers(15)
                 .build();
     }
@@ -134,7 +134,7 @@ public class NoiseGeneratorBuilderTest {
     public void testCreateSingleLayerWithNoInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
                 .withNumberOfLayers(1)
-                .withNoiseDistanceGenerator(new IntegerGenerator(0, 500))
+                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(0, 500))
                 .build();
     }
 
@@ -142,6 +142,6 @@ public class NoiseGeneratorBuilderTest {
     public void testWrongImplementationOfBuilderClass(){
         int dimensions = 5;
         new WrongSubClassImplementationMock(dimensions)
-                .setDistanceGeneratorForDimension(dimensions +1, new IntegerGenerator(1, 0.5));
+                .setInterpolationPointCountGeneratorForDimension(dimensions +1, new IntegerGenerator(1, 0.5));
     }
 }
