@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.line;
 
+import org.lefmaroli.factorgenerator.NumberGenerator;
 import org.lefmaroli.perlin.NoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
@@ -13,6 +14,11 @@ public class NoiseLineGeneratorBuilder
     NoiseLineGeneratorBuilder(int lineLength) {
         super(2);
         this.lineLength = lineLength;
+    }
+
+    NoiseLineGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator){
+        setDistanceGeneratorForDimension(2, numberGenerator);
+        return this;
     }
 
     @Override

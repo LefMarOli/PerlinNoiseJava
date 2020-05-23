@@ -201,8 +201,8 @@ public class LineGeneratorTest {
     @Test
     public void getNextLines() {
         LineGenerator generator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, 1.0, randomSeed);
+                new LineGenerator(lineLength, defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        1.0, randomSeed);
         Double[][] lines = generator.getNextLines(requestedLines);
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();

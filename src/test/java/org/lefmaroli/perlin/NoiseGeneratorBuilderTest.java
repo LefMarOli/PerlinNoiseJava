@@ -1,8 +1,8 @@
 package org.lefmaroli.perlin;
 
 import org.junit.Test;
-import org.lefmaroli.factorgenerator.MultipleFactorGenerator;
-import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
+import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import java.util.List;
@@ -64,19 +64,44 @@ public class NoiseGeneratorBuilderTest {
 
     }
 
+    private class WrongSubClassImplementationMock
+            extends NoiseBuilder<MockNoiseGenerator, WrongSubClassImplementationMock> {
+
+        public WrongSubClassImplementationMock(int dimensions) {
+            super(dimensions);
+        }
+
+        @Override
+        protected WrongSubClassImplementationMock self() {
+            return this;
+        }
+
+        @Override
+        protected MockNoiseGenerator buildSingleLayerNoise(List<Integer> interpolationPoints, double layerAmplitude,
+                                                           long randomSeed) throws NoiseBuilderException {
+            return null;
+        }
+
+        @Override
+        protected MockNoiseGenerator buildMultipleLayerNoise(List<MockNoiseGenerator> layers)
+                throws NoiseBuilderException {
+            return null;
+        }
+    }
+
     @Test
     public void testBuilderPattern() {
         MockNoiseBuilder noisePointBuilder = new MockNoiseBuilder();
         assertNotNull(noisePointBuilder.withRandomSeed(0L));
         assertNotNull(noisePointBuilder.withNumberOfLayers(5));
-        assertNotNull(noisePointBuilder.withAmplitudeFactorGenerator(new MultiplierFactorGenerator(1, 1.0)));
-        assertNotNull(noisePointBuilder.withDistanceFactorGenerator(new MultiplierFactorGenerator(1, 1.0)));
+        assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
+        assertNotNull(noisePointBuilder.withNoiseDistanceGenerator(new IntegerGenerator(1, 1.0)));
     }
 
     @Test(expected = NoiseBuilderException.class)
     public void testToFewInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
-                .withDistanceFactorGenerator(new MultiplierFactorGenerator(1, 0.5))
+                .withNoiseDistanceGenerator(new IntegerGenerator(1, 0.5))
                 .withNumberOfLayers(5)
                 .build();
     }
@@ -84,7 +109,7 @@ public class NoiseGeneratorBuilderTest {
     @Test(expected = NoiseBuilderException.class)
     public void testTooManyInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
-                .withDistanceFactorGenerator(new MultiplierFactorGenerator(1, 5000))
+                .withNoiseDistanceGenerator(new IntegerGenerator(1, 5000))
                 .withNumberOfLayers(15)
                 .build();
     }
@@ -109,15 +134,14 @@ public class NoiseGeneratorBuilderTest {
     public void testCreateSingleLayerWithNoInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
                 .withNumberOfLayers(1)
-                .withDistanceFactorGenerator(new MultiplierFactorGenerator(0.0, 500))
+                .withNoiseDistanceGenerator(new IntegerGenerator(0, 500))
                 .build();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testWithWrongNumberOfDistanceFactorGenerators() {
-        MultipleFactorGenerator wrongNumberOfGenerators =
-                MultipleFactorGenerator.getSymmetricalFactorGenerator(3, new MultiplierFactorGenerator(1, 1.0));
-        new MockNoiseBuilder()
-                .withDistanceFactorGenerator(wrongNumberOfGenerators);
+    public void testWrongImplementationOfBuilderClass(){
+        int dimensions = 5;
+        new WrongSubClassImplementationMock(dimensions)
+                .setDistanceGeneratorForDimension(dimensions +1, new IntegerGenerator(1, 0.5));
     }
 }

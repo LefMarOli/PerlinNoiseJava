@@ -2,13 +2,13 @@ package org.lefmaroli.perlin.point;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.lefmaroli.factorgenerator.SingleFactorGenerator;
-import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
+import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class NoisePointNavigatorTest {
 
@@ -16,12 +16,12 @@ public class NoisePointNavigatorTest {
 
     @Before
     public void setup() throws NoiseBuilderException {
-        SingleFactorGenerator defaultDistanceFactor = new MultiplierFactorGenerator(2048, 0.5);
-        SingleFactorGenerator defaultAmplitudeFactor = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
+        IntegerGenerator defaultDistanceFactor = new IntegerGenerator(2048, 0.5);
+        DoubleGenerator defaultAmplitudeFactor = new DoubleGenerator(1.0, 1.0 / 1.8);
         NoisePointGenerator defaultNoisePointGenerator = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(5)
-                .withDistanceFactorGenerator(defaultDistanceFactor)
-                .withAmplitudeFactorGenerator(defaultAmplitudeFactor)
+                .withNoiseDistanceGenerator(defaultDistanceFactor)
+                .withAmplitudeGenerator(defaultAmplitudeFactor)
                 .build();
         defaultNoisePointNavigator = new NoisePointNavigator(defaultNoisePointGenerator);
     }

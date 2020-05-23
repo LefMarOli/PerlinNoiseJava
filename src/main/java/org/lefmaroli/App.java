@@ -1,12 +1,13 @@
 package org.lefmaroli;
 
 import org.lefmaroli.display.LineChart;
-import org.lefmaroli.factorgenerator.SingleFactorGenerator;
-import org.lefmaroli.factorgenerator.MultiplierFactorGenerator;
+import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.factorgenerator.IntegerGenerator;
+import org.lefmaroli.factorgenerator.NumberGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.point.NoisePointNavigator;
 import org.lefmaroli.perlin.point.NoisePointGenerator;
 import org.lefmaroli.perlin.point.NoisePointGeneratorBuilder;
+import org.lefmaroli.perlin.point.NoisePointNavigator;
 
 import java.awt.*;
 
@@ -16,12 +17,12 @@ import java.awt.*;
 public class App {
     public static void main(String[] args) throws NoiseBuilderException {
 
-        SingleFactorGenerator distanceFactorGenerator = new MultiplierFactorGenerator(2048, 0.5);
-        SingleFactorGenerator amplitudeFactorGenerator = new MultiplierFactorGenerator(1.0, 1.0 / 1.8);
+        NumberGenerator<Integer> distanceFactorGenerator = new IntegerGenerator(2048, 0.5);
+        NumberGenerator<Double> amplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
         NoisePointGenerator grid1D = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(16)
-                .withDistanceFactorGenerator(distanceFactorGenerator)
-                .withAmplitudeFactorGenerator(amplitudeFactorGenerator)
+                .withNoiseDistanceGenerator(distanceFactorGenerator)
+                .withAmplitudeGenerator(amplitudeFactorGenerator)
                 .build();
 
         NoisePointNavigator noisePointNavigator = new NoisePointNavigator(grid1D);

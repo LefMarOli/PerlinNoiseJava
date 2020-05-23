@@ -3,6 +3,8 @@ package org.lefmaroli.perlin.line;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import static org.junit.Assert.assertEquals;
@@ -10,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class NoiseLineGeneratorBuilderTest {
 
-    private int lineLength = 508;
+    private int lineLength = 800;
 
     @Test
     public void testBuildNoiseLineNotNull() throws NoiseBuilderException {
@@ -27,12 +29,25 @@ public class NoiseLineGeneratorBuilderTest {
         assertEquals(noisePointGenerator, noisePointGenerator2);
     }
 
+    @Test
+    public void testBuilderPatternForSubclass() {
+        new NoiseLineGeneratorBuilder(lineLength)
+                .withLineInterpolationPointCountGenerator(new IntegerGenerator(5, 0.5));
+    }
+
     //Fake test to visualize data, doesn't assert anything
     @Ignore
     @Test
     public void getNextLines() throws NoiseBuilderException {
-        NoiseLineGenerator generator = new NoiseLineGeneratorBuilder(lineLength).build();
-        int requestedLines = 500;
+        IntegerGenerator lineDistance = new IntegerGenerator(128, 0.9);
+        IntegerGenerator noiseDistance = new IntegerGenerator(128, 0.5);
+        NoiseLineGenerator generator = new NoiseLineGeneratorBuilder(lineLength)
+                .withLineInterpolationPointCountGenerator(lineDistance)
+                .withNoiseDistanceGenerator(noiseDistance)
+                .withNumberOfLayers(4)
+                .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
+                .build();
+        int requestedLines = 800;
         Double[][] lines = generator.getNextLines(requestedLines);
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();

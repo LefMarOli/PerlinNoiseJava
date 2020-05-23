@@ -42,6 +42,13 @@ public class Vector2DTest {
     }
 
     @Test
+    public void testNormalizeLength(){
+        Vector2D notNormalized = new Vector2D(0, 0);
+        Vector2D normalized = notNormalized.normalize();
+        assertEquals(0.0, normalized.getLength(), 1E-18);
+    }
+
+    @Test
     public void testLength(){
         assertEquals(1.0, new Vector2D(1.0, 0.0).getLength(), 0.0);
         assertEquals(1.0, new Vector2D(-1.0, 0.0).getLength(), 0.0);
