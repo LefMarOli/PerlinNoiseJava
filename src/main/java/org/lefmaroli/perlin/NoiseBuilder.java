@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
+import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.exceptions.*;
 
 import java.util.ArrayList;
@@ -12,10 +13,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class NoiseBuilder<RawDataType,
-        ReturnType extends NoiseData<RawDataType, ReturnType>,
-        NoiseType extends INoiseGenerator<RawDataType, ReturnType>,
-        NoiseBuilderType extends NoiseBuilder<RawDataType, ReturnType, NoiseType, NoiseBuilderType>> {
+public abstract class NoiseBuilder<ReturnType extends NoiseData<?, ReturnType>,
+        NoiseType extends INoiseGenerator<ReturnType>,
+        NoiseBuilderType extends NoiseBuilder<ReturnType, NoiseType, NoiseBuilderType>> {
     private static final Logger LOGGER = LogManager.getLogger(NoiseBuilder.class);
     private static final int INTERPOLATION_POINTS_UPPER_LIMIT = 50000;
     private static final NumberGenerator<Integer>
@@ -58,7 +58,7 @@ public abstract class NoiseBuilder<RawDataType,
         return self();
     }
 
-    public INoiseGenerator<RawDataType, ReturnType> build() throws NoiseBuilderException {
+    public INoiseGenerator<ReturnType> build() throws NoiseBuilderException {
         resetNumberGenerators();
         if (numberOfLayers == 1) {
             try {

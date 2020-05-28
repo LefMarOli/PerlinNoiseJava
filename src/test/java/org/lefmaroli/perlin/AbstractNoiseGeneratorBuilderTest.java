@@ -3,6 +3,7 @@ package org.lefmaroli.perlin;
 import org.junit.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
+import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class AbstractNoiseGeneratorBuilderTest {
 
     @Test
     public void testCreateSingleLayer() throws NoiseBuilderException {
-        INoiseGenerator<Double, MockNoiseData> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
+        INoiseGenerator<MockNoiseData> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
         assertTrue(built instanceof MockNoiseGeneratorLayer);
     }
 
@@ -86,7 +87,7 @@ public class AbstractNoiseGeneratorBuilderTest {
         }
     }
 
-    private static class MockNoiseGenerator implements INoiseGenerator<Double, MockNoiseData> {
+    private static class MockNoiseGenerator implements INoiseGenerator<MockNoiseData> {
 
         @Override
         public boolean equals(Object other) {
@@ -119,7 +120,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     private static class MockNoiseBuilder
-            extends NoiseBuilder<Double, MockNoiseData, MockNoiseGenerator, MockNoiseBuilder> {
+            extends NoiseBuilder<MockNoiseData, MockNoiseGenerator, MockNoiseBuilder> {
 
         MockNoiseBuilder() {
             super(5);
@@ -144,7 +145,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     private static class WrongSubClassImplementationMock
-            extends NoiseBuilder<Double, MockNoiseData, MockNoiseGenerator, WrongSubClassImplementationMock> {
+            extends NoiseBuilder<MockNoiseData, MockNoiseGenerator, WrongSubClassImplementationMock> {
 
         public WrongSubClassImplementationMock(int dimensions) {
             super(dimensions);

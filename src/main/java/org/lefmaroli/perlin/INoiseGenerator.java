@@ -1,6 +1,8 @@
 package org.lefmaroli.perlin;
 
-public interface INoiseGenerator<RawDataType, ReturnType extends NoiseData<RawDataType, ReturnType>> {
+import org.lefmaroli.perlin.data.NoiseData;
+
+public interface INoiseGenerator<ReturnType extends NoiseData> {
     ReturnType getNext(int count);
 
     double getMaxAmplitude();

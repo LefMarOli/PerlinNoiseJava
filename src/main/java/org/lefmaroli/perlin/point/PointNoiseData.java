@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin.point;
 
-import org.lefmaroli.perlin.NoiseData;
+import org.lefmaroli.perlin.data.NoiseData;
 
 import java.util.Objects;
 

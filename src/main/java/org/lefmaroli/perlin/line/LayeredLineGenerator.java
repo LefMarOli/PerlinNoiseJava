@@ -1,12 +1,12 @@
 package org.lefmaroli.perlin.line;
 
-import org.lefmaroli.perlin.MultiDimensionalLayeredNoiseGenerator;
+import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
 
 import java.util.List;
 import java.util.Objects;
 
 public class LayeredLineGenerator
-        extends MultiDimensionalLayeredNoiseGenerator<Double[][], LineNoiseDataContainer, LineNoiseGenerator>
+        extends MultiDimensionalLayeredNoiseGenerator<LineNoiseDataContainer, LineNoiseGenerator>
         implements LineNoiseGenerator {
 
     private final int lineLength;

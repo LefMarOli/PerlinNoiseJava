@@ -1,13 +1,13 @@
 package org.lefmaroli.perlin.line;
 
 import org.lefmaroli.factorgenerator.NumberGenerator;
-import org.lefmaroli.perlin.MultiDimensionalNoiseBuilder;
+import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import java.util.List;
 
 public class LineNoiseGeneratorBuilder
-        extends MultiDimensionalNoiseBuilder<Double[][], LineNoiseDataContainer, LineNoiseGenerator,
+        extends MultiDimensionalNoiseBuilder<LineNoiseDataContainer, LineNoiseGenerator,
         LineNoiseGeneratorBuilder> {
 
     private final int lineLength;

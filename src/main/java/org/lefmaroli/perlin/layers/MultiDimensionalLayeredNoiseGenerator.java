@@ -1,16 +1,20 @@
-package org.lefmaroli.perlin;
+package org.lefmaroli.perlin.layers;
+
+import org.lefmaroli.execution.FixedSizeScheduler;
+import org.lefmaroli.perlin.INoiseGenerator;
+import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
+import org.lefmaroli.perlin.data.NoiseData;
 
 import java.util.List;
 
-public abstract class MultiDimensionalLayeredNoiseGenerator<RawDataType,
-        ReturnType extends NoiseData<RawDataType, ReturnType>,
-        NoiseLayer extends INoiseGenerator<RawDataType, ReturnType> & MultiDimensionalNoiseGenerator>
-        extends LayeredNoiseGenerator<RawDataType, ReturnType, NoiseLayer> implements MultiDimensionalNoiseGenerator {
+public abstract class MultiDimensionalLayeredNoiseGenerator<ReturnType extends NoiseData<?, ReturnType>,
+        NoiseLayer extends INoiseGenerator<ReturnType> & MultiDimensionalNoiseGenerator>
+        extends LayeredNoiseGenerator<ReturnType, NoiseLayer> implements MultiDimensionalNoiseGenerator {
 
     private final boolean isCircular;
 
     protected MultiDimensionalLayeredNoiseGenerator(List<NoiseLayer> layers) {
-        super(layers);
+        super(layers, new FixedSizeScheduler<>(10));
         isCircular = checkCircularity(layers);
     }
 

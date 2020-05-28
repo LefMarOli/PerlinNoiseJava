@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin;
+package org.lefmaroli.perlin.dimensional;
 
 public interface MultiDimensionalNoiseGenerator {
     boolean isCircular();

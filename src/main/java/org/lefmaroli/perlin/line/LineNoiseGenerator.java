@@ -1,10 +1,10 @@
 package org.lefmaroli.perlin.line;
 
 import org.lefmaroli.perlin.INoiseGenerator;
-import org.lefmaroli.perlin.MultiDimensionalNoiseGenerator;
+import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
 
 public interface LineNoiseGenerator
-        extends INoiseGenerator<Double[][], LineNoiseDataContainer>, MultiDimensionalNoiseGenerator {
+        extends INoiseGenerator<LineNoiseDataContainer>, MultiDimensionalNoiseGenerator {
 
     @Override
     default int getDimensions() {

@@ -1,15 +1,16 @@
 package org.lefmaroli.perlin.point;
 
-import org.lefmaroli.perlin.LayeredNoiseGenerator;
+import org.lefmaroli.execution.FixedSizeScheduler;
+import org.lefmaroli.perlin.layers.LayeredNoiseGenerator;
 
 import java.util.List;
 import java.util.Objects;
 
-public class LayeredPointGenerator extends LayeredNoiseGenerator<Double[], PointNoiseDataContainer, PointNoiseGenerator>
+public class LayeredPointGenerator extends LayeredNoiseGenerator<PointNoiseDataContainer, PointNoiseGenerator>
         implements PointNoiseGenerator {
 
     LayeredPointGenerator(List<PointNoiseGenerator> layers) {
-        super(layers);
+        super(layers, new FixedSizeScheduler<>(10));
     }
 
     @Override
