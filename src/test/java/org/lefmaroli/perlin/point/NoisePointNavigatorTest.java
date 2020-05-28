@@ -18,7 +18,7 @@ public class NoisePointNavigatorTest {
     public void setup() throws NoiseBuilderException {
         IntegerGenerator defaultNoiseInterpolationPointCountGenerator = new IntegerGenerator(2048, 0.5);
         DoubleGenerator defaultAmplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
-        PointNoiseGenerator defaultNoisePointGenerator = new NoisePointGeneratorBuilder()
+        PointNoiseGenerator defaultNoisePointGenerator = new PointNoiseGeneratorBuilder()
                 .withNumberOfLayers(5)
                 .withNoiseInterpolationPointCountGenerator(defaultNoiseInterpolationPointCountGenerator)
                 .withAmplitudeGenerator(defaultAmplitudeFactorGenerator)

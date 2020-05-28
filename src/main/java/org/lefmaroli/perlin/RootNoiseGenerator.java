@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin;
 
-public interface BasicNoiseGenerator {
+public interface RootNoiseGenerator {
 
     int getNoiseInterpolationPointsCount();
 }

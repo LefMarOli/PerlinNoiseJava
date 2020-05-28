@@ -33,12 +33,12 @@ public abstract class LayeredNoiseGenerator<ReturnType,
         return maxAmplitude;
     }
 
-    protected List<NoiseLayer> getLayers() {
-        return layers;
-    }
-
     public int getNumberOfLayers() {
         return layers.size();
+    }
+
+    protected List<NoiseLayer> getLayers() {
+        return layers;
     }
 
     protected abstract ReturnType initializeResults(int count);

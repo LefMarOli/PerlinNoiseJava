@@ -5,15 +5,15 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import java.util.List;
 
-public class NoisePointGeneratorBuilder
-        extends NoiseBuilder<Double[], PointNoiseGenerator, NoisePointGeneratorBuilder> {
+public class PointNoiseGeneratorBuilder
+        extends NoiseBuilder<Double[], PointNoiseGenerator, PointNoiseGeneratorBuilder> {
 
-    public NoisePointGeneratorBuilder() {
+    public PointNoiseGeneratorBuilder() {
         super(1);
     }
 
     @Override
-    protected NoisePointGeneratorBuilder self() {
+    protected PointNoiseGeneratorBuilder self() {
         return this;
     }
 
@@ -30,6 +30,6 @@ public class NoisePointGeneratorBuilder
 
     @Override
     protected PointNoiseGenerator buildMultipleNoiseLayer(List<PointNoiseGenerator> layers) {
-        return new MultiLayerPointGenerator(layers);
+        return new LayeredPointGenerator(layers);
     }
 }

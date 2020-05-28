@@ -1,15 +1,19 @@
 package org.lefmaroli.perlin.line;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.random.RandomGenerator;
+import org.lefmaroli.rounding.RoundUtils;
 import org.lefmaroli.vector.Vector2D;
 
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerator {
+public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator {
 
     private static final double MAX_2D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
+    private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
 
     private final double maxAmplitude;
     private final int lineInterpolationPoints;
@@ -21,32 +25,46 @@ public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerato
     private final List<Queue<Double>> generated;
     private final int lineLength;
     private final int randomBounds;
+    private final boolean isCircular;
     private List<Vector2D> previousBounds;
 
     public LineGenerator(int lineLength, int lineInterpolationPoints, int noiseInterpolationPoints,
-                         double maxAmplitude, long randomSeed) {
+                         double maxAmplitude, long randomSeed, boolean isCircular) {
         if (lineInterpolationPoints < 0) {
             throw new IllegalArgumentException("Line interpolation points must be greater than 0");
-        }if (noiseInterpolationPoints < 0) {
+        }
+        if (noiseInterpolationPoints < 0) {
             throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
         }
-
         if (lineLength < 0) {
             throw new IllegalArgumentException("Line length must be greater than 0");
         }
         this.maxAmplitude = maxAmplitude;
-        this.lineInterpolationPoints = lineInterpolationPoints;
-        this.lineSegmentLength = lineInterpolationPoints + 2;
+        this.lineLength = lineLength;
+        this.isCircular = isCircular;
+        this.lineInterpolationPoints =
+                isCircular ? correctLineInterpolationPointsForCircularity(lineInterpolationPoints) :
+                        lineInterpolationPoints;
+        this.lineSegmentLength = lineInterpolationPoints;
         this.noiseInterpolationPoints = noiseInterpolationPoints;
-        this.noiseSegmentLength = noiseInterpolationPoints + 2;
+        this.noiseSegmentLength = noiseInterpolationPoints;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.generated = new ArrayList<>(lineLength);
-        this.lineLength = lineLength;
         this.randomBounds = 2 + lineLength / lineSegmentLength;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
-
         addGeneratedRows(lineLength);
+    }
+
+    private int correctLineInterpolationPointsForCircularity(int lineInterpolationPoints) {
+        int lineSegmentLength = lineInterpolationPoints;
+        int newInterpolationPointCount =
+                RoundUtils.roundNToClosestFactorOfM(lineSegmentLength, lineLength);
+        if (newInterpolationPointCount != lineInterpolationPoints) {
+            LOGGER.warn("Modified required line interpolation point count from " + lineInterpolationPoints + " to " +
+                    newInterpolationPointCount + " to respect circularity.");
+        }
+        return newInterpolationPointCount;
     }
 
     @Override
@@ -72,12 +90,14 @@ public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerato
                 lineInterpolationPoints == that.lineInterpolationPoints &&
                 noiseInterpolationPoints == that.noiseInterpolationPoints &&
                 randomSeed == that.randomSeed &&
-                lineLength == that.lineLength;
+                lineLength == that.lineLength &&
+                isCircular == that.isCircular;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxAmplitude, lineInterpolationPoints, noiseInterpolationPoints, randomSeed, lineLength);
+        return Objects.hash(maxAmplitude, lineInterpolationPoints, noiseInterpolationPoints, randomSeed, lineLength,
+                isCircular);
     }
 
     @Override
@@ -93,6 +113,7 @@ public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerato
                 ", noiseInterpolationPoints=" + noiseInterpolationPoints +
                 ", randomSeed=" + randomSeed +
                 ", lineLength=" + lineLength +
+                ", isCircular=" + isCircular +
                 '}';
     }
 
@@ -106,12 +127,17 @@ public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerato
         return noiseInterpolationPoints;
     }
 
+    @Override
+    public boolean isCircular() {
+        return isCircular;
+    }
+
     private static double adjustValueRange(double interpolatedValue) {
         return ((interpolatedValue / MAX_2D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
     }
 
-    private void addGeneratedRows(int width) {
-        for (int i = 0; i < width; i++) {
+    private void addGeneratedRows(int lineLength) {
+        for (int i = 0; i < lineLength; i++) {
             this.generated.add(new LinkedBlockingQueue<>());
         }
     }
@@ -144,11 +170,11 @@ public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerato
             Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
 
             int segmentYIndex = yIndex % lineSegmentLength;
-            double yDist = (double) (segmentYIndex + 1) / (lineSegmentLength + 1);
+            double yDist = (double) (segmentYIndex) / (lineSegmentLength);
 
             for (int segmentXIndex = 0; segmentXIndex < noiseSegmentLength; segmentXIndex++) {
 
-                double xDist = (double) (segmentXIndex + 1) / (noiseSegmentLength + 1);
+                double xDist = (double) (segmentXIndex) / (noiseSegmentLength);
 
                 Vector2D topLeftDistance = new Vector2D(xDist, yDist);
                 Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
@@ -173,7 +199,14 @@ public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerato
 
     private List<Vector2D> generateNewRandomBounds(int count) {
         List<Vector2D> newBounds = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < count - 2; i++) {
+            newBounds.add(randomGenerator.getRandomUnitVector2D());
+        }
+        if(isCircular){
+            newBounds.add(newBounds.get(0));
+            newBounds.add(newBounds.get(1));
+        }else{
+            newBounds.add(randomGenerator.getRandomUnitVector2D());
             newBounds.add(randomGenerator.getRandomUnitVector2D());
         }
         return newBounds;

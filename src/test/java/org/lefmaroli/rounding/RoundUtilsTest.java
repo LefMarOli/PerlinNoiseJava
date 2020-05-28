@@ -67,4 +67,30 @@ public class RoundUtilsTest {
             assertEquals(integer, RoundUtils.floorToPowerOfTwo(integer), 0);
         }
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentForFactorRounding(){
+        RoundUtils.roundNToClosestFactorOfM(5, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentForFactorRounding2(){
+        RoundUtils.roundNToClosestFactorOfM(5, -5);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentForFactorRounding3(){
+        RoundUtils.roundNToClosestFactorOfM(0, 5);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalArgumentForFactorRounding4(){
+        RoundUtils.roundNToClosestFactorOfM(-5, 5);
+    }
+
+    @Test
+    public void testRoundToClosestFactor(){
+        assertEquals(24, RoundUtils.roundNToClosestFactorOfM(23, 48));
+        assertEquals(16, RoundUtils.roundNToClosestFactorOfM(15, 48));
+    }
 }

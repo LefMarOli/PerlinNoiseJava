@@ -5,16 +5,16 @@ import org.lefmaroli.perlin.LayeredNoiseGenerator;
 import java.util.List;
 import java.util.Objects;
 
-public class MultiLayerPointGenerator extends LayeredNoiseGenerator<Double[], PointNoiseGenerator>
+public class LayeredPointGenerator extends LayeredNoiseGenerator<Double[], PointNoiseGenerator>
         implements PointNoiseGenerator {
 
-    MultiLayerPointGenerator(List<PointNoiseGenerator> layers) {
+    LayeredPointGenerator(List<PointNoiseGenerator> layers) {
         super(layers);
     }
 
     @Override
     public String toString() {
-        return "MultiLayerPointGenerator{" +
+        return "LayeredPointGenerator{" +
                 "layers=" + getLayers() +
                 ", maxAmplitude=" + getMaxAmplitude() +
                 '}';
@@ -24,7 +24,7 @@ public class MultiLayerPointGenerator extends LayeredNoiseGenerator<Double[], Po
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MultiLayerPointGenerator that = (MultiLayerPointGenerator) o;
+        LayeredPointGenerator that = (LayeredPointGenerator) o;
         return Double.compare(that.getMaxAmplitude(), getMaxAmplitude()) == 0 &&
                 getLayers().equals(that.getLayers());
     }

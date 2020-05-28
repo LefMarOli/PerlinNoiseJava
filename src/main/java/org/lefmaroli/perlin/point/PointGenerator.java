@@ -3,14 +3,14 @@ package org.lefmaroli.perlin.point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
-import org.lefmaroli.perlin.BasicNoiseGenerator;
+import org.lefmaroli.perlin.RootNoiseGenerator;
 
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class PointGenerator implements BasicNoiseGenerator, PointNoiseGenerator {
+public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
 

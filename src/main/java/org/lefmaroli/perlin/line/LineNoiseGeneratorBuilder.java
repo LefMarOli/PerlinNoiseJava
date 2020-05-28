@@ -1,22 +1,22 @@
 package org.lefmaroli.perlin.line;
 
 import org.lefmaroli.factorgenerator.NumberGenerator;
-import org.lefmaroli.perlin.NoiseBuilder;
+import org.lefmaroli.perlin.MultiDimensionalNoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 import java.util.List;
 
-public class NoiseLineGeneratorBuilder
-        extends NoiseBuilder<Double[][], LineNoiseGenerator, NoiseLineGeneratorBuilder> {
+public class LineNoiseGeneratorBuilder
+        extends MultiDimensionalNoiseBuilder<Double[][], LineNoiseGenerator, LineNoiseGeneratorBuilder> {
 
     private final int lineLength;
 
-    NoiseLineGeneratorBuilder(int lineLength) {
+    LineNoiseGeneratorBuilder(int lineLength) {
         super(2);
         this.lineLength = lineLength;
     }
 
-    NoiseLineGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator){
+    LineNoiseGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator){
         setInterpolationPointCountGeneratorForDimension(2, numberGenerator);
         return this;
     }
@@ -27,7 +27,7 @@ public class NoiseLineGeneratorBuilder
     }
 
     @Override
-    protected NoiseLineGeneratorBuilder self() {
+    protected LineNoiseGeneratorBuilder self() {
         return this;
     }
 
@@ -35,11 +35,11 @@ public class NoiseLineGeneratorBuilder
     protected LineNoiseGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
                                                        long randomSeed) {
         return new LineGenerator(lineLength, interpolationPoints.get(0), interpolationPoints.get(1), layerAmplitude,
-                randomSeed);
+                randomSeed, isCircular());
     }
 
     @Override
     protected LineNoiseGenerator buildMultipleNoiseLayer(List<LineNoiseGenerator> layers) {
-        return new MultiLayerLineGenerator(layers);
+        return new LayeredLineGenerator(layers);
     }
 }

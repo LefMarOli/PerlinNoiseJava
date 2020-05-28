@@ -11,9 +11,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class MultiLayerPointGeneratorTest {
+public class LayeredPointGeneratorTest {
 
-    private MultiLayerPointGenerator defaultGenerator;
+    private LayeredPointGenerator defaultGenerator;
     private List<PointNoiseGenerator> layers;
     private double maxAmplitude = 1.75;
 
@@ -23,7 +23,7 @@ public class MultiLayerPointGeneratorTest {
         layers.add(new PointGenerator(2048, 1.0, System.currentTimeMillis()));
         layers.add(new PointGenerator(1024, 0.5, System.currentTimeMillis()));
         layers.add(new PointGenerator(512, 0.25, System.currentTimeMillis()));
-        defaultGenerator = new MultiLayerPointGenerator(layers);
+        defaultGenerator = new LayeredPointGenerator(layers);
     }
 
     @Test
@@ -33,7 +33,7 @@ public class MultiLayerPointGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNoLayers(){
-        new MultiLayerPointGenerator(new ArrayList<>(5));
+        new LayeredPointGenerator(new ArrayList<>(5));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class MultiLayerPointGeneratorTest {
 
     @Test
     public void testEquals() {
-        MultiLayerPointGenerator sameGenerator = new MultiLayerPointGenerator(layers);
+        LayeredPointGenerator sameGenerator = new LayeredPointGenerator(layers);
         assertEquals(defaultGenerator, sameGenerator);
         assertEquals(defaultGenerator.hashCode(), sameGenerator.hashCode());
     }
@@ -78,13 +78,13 @@ public class MultiLayerPointGeneratorTest {
     public void testNotEquals() {
         List<PointNoiseGenerator> otherLayers = layers;
         otherLayers.add(new PointGenerator(8, 0.1, 5L));
-        MultiLayerPointGenerator otherGenerator = new MultiLayerPointGenerator(otherLayers);
+        LayeredPointGenerator otherGenerator = new LayeredPointGenerator(otherLayers);
         assertNotEquals(defaultGenerator, otherGenerator);
     }
 
     @Test
     public void testToString(){
-        ToStringVerifier.forClass(MultiLayerPointGenerator.class)
+        ToStringVerifier.forClass(LayeredPointGenerator.class)
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
                 .verify();

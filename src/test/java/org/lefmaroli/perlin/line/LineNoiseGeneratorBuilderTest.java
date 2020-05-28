@@ -10,29 +10,35 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class NoiseLineGeneratorBuilderTest {
+public class LineNoiseGeneratorBuilderTest {
 
     private int lineLength = 800;
 
     @Test
     public void testBuildNoiseLineNotNull() throws NoiseBuilderException {
-        LineNoiseGenerator noiseLineGenerator = new NoiseLineGeneratorBuilder(lineLength).build();
+        LineNoiseGenerator noiseLineGenerator = new LineNoiseGeneratorBuilder(lineLength).build();
         assertNotNull(noiseLineGenerator);
     }
 
     @Test
     public void testBuildNoiseLineCreateSameFromSameBuilder() throws NoiseBuilderException {
-        NoiseLineGeneratorBuilder noiseLineGeneratorBuilder = new NoiseLineGeneratorBuilder(lineLength);
-        LineNoiseGenerator noisePointGenerator = noiseLineGeneratorBuilder.build();
-        LineNoiseGenerator noisePointGenerator2 = noiseLineGeneratorBuilder.build();
+        LineNoiseGeneratorBuilder lineNoiseGeneratorBuilder = new LineNoiseGeneratorBuilder(lineLength);
+        LineNoiseGenerator noisePointGenerator = lineNoiseGeneratorBuilder.build();
+        LineNoiseGenerator noisePointGenerator2 = lineNoiseGeneratorBuilder.build();
         assertNotNull(noisePointGenerator2);
         assertEquals(noisePointGenerator, noisePointGenerator2);
     }
 
     @Test
     public void testBuilderPatternForSubclass() {
-        new NoiseLineGeneratorBuilder(lineLength)
+        new LineNoiseGeneratorBuilder(lineLength)
                 .withLineInterpolationPointCountGenerator(new IntegerGenerator(5, 0.5));
+    }
+
+    @Test
+    public void testBuilderPatternForCircularity(){
+        new LineNoiseGeneratorBuilder(lineLength)
+                .withCircularBounds();
     }
 
     //Fake test to visualize data, doesn't assert anything
@@ -41,7 +47,7 @@ public class NoiseLineGeneratorBuilderTest {
     public void getNextLines() throws NoiseBuilderException {
         IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(128, 0.9);
         IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(128, 0.5);
-        LineNoiseGenerator generator = new NoiseLineGeneratorBuilder(lineLength)
+        LineNoiseGenerator generator = new LineNoiseGeneratorBuilder(lineLength)
                 .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
                 .withNoiseInterpolationPointCountGenerator(noiseInterpolationPointCountGenerator)
                 .withNumberOfLayers(4)

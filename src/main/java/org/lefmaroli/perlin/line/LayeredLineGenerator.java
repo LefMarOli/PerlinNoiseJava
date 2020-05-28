@@ -1,16 +1,16 @@
 package org.lefmaroli.perlin.line;
 
-import org.lefmaroli.perlin.LayeredNoiseGenerator;
+import org.lefmaroli.perlin.MultiDimensionalLayeredNoiseGenerator;
 
 import java.util.List;
 import java.util.Objects;
 
-public class MultiLayerLineGenerator extends LayeredNoiseGenerator<Double[][], LineNoiseGenerator>
+public class LayeredLineGenerator extends MultiDimensionalLayeredNoiseGenerator<Double[][], LineNoiseGenerator>
         implements LineNoiseGenerator {
 
     private final int lineLength;
 
-    MultiLayerLineGenerator(List<LineNoiseGenerator> layers) {
+    LayeredLineGenerator(List<LineNoiseGenerator> layers) {
         super(layers);
         this.lineLength = layers.get(0).getLineLength();
         assertAllLayersHaveSameLineLength(layers);
@@ -25,7 +25,7 @@ public class MultiLayerLineGenerator extends LayeredNoiseGenerator<Double[][], L
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MultiLayerLineGenerator that = (MultiLayerLineGenerator) o;
+        LayeredLineGenerator that = (LayeredLineGenerator) o;
         return lineLength == that.lineLength &&
                 Double.compare(that.getMaxAmplitude(), getMaxAmplitude()) == 0 &&
                 getLayers().equals(that.getLayers());
@@ -38,10 +38,11 @@ public class MultiLayerLineGenerator extends LayeredNoiseGenerator<Double[][], L
 
     @Override
     public String toString() {
-        return "MultiLayerLineGenerator{" +
+        return "LayeredLineGenerator{" +
                 "lineLength=" + lineLength +
                 ", layers=" + getLayers() +
                 ", maxAmplitude=" + getMaxAmplitude() +
+                ", isCircular=" + isCircular() +
                 '}';
     }
 
