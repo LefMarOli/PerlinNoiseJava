@@ -52,7 +52,7 @@ public class LayeredLineGeneratorTest {
     @Test
     public void testGetNextCount() {
         int expectedCount = 75;
-        Double[][] nextLines = defaultGenerator.getNext(expectedCount);
+        Double[][] nextLines = defaultGenerator.getNext(expectedCount).getAsRawData();
         assertEquals(expectedCount, nextLines.length, 0);
         for (Double[] line : nextLines) {
             assertEquals(defaultLineLength, line.length, 0);
@@ -61,12 +61,12 @@ public class LayeredLineGeneratorTest {
 
     @Test
     public void testGetNextBoundedValues() {
-        Double[][] lines = defaultGenerator.getNext(100);
+        Double[][] lines = defaultGenerator.getNext(100).getAsRawData();
         for (Double[] line : lines) {
             for (Double value : line) {
                 assertNotNull(value);
-                assertTrue(value > 0.0);
-                assertTrue(value < maxAmplitude);
+                assertTrue("Actual value smaller than 0.0: "+ value, value >= 0.0);
+                assertTrue(value <= maxAmplitude);
             }
         }
     }

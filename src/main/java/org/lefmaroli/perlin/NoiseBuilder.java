@@ -12,13 +12,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class NoiseBuilder<ReturnType, NoiseType extends INoiseGenerator<ReturnType>,
-        NoiseBuilderType extends NoiseBuilder> {
+public abstract class NoiseBuilder<RawDataType,
+        ReturnType extends NoiseData<RawDataType, ReturnType>,
+        NoiseType extends INoiseGenerator<RawDataType, ReturnType>,
+        NoiseBuilderType extends NoiseBuilder<RawDataType, ReturnType, NoiseType, NoiseBuilderType>> {
     private static final Logger LOGGER = LogManager.getLogger(NoiseBuilder.class);
     private static final int INTERPOLATION_POINTS_UPPER_LIMIT = 50000;
     private static final NumberGenerator<Integer>
             DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR = new IntegerGenerator(64, 0.5);
-    private final NoiseBuilderType thisObj;
     private final int dimensions;
     protected int numberOfLayers = 5;
     protected long randomSeed = System.currentTimeMillis();
@@ -26,7 +27,6 @@ public abstract class NoiseBuilder<ReturnType, NoiseType extends INoiseGenerator
     private NumberGenerator<Double> amplitudeGenerator = new DoubleGenerator(1.0, 0.5);
 
     public NoiseBuilder(int dimensions) {
-        thisObj = self();
         this.dimensions = dimensions;
         this.interpolationPointCountGenerators = new ArrayList<>(dimensions);
         for (int i = 0; i < dimensions; i++) {
@@ -37,17 +37,17 @@ public abstract class NoiseBuilder<ReturnType, NoiseType extends INoiseGenerator
     public NoiseBuilderType withNoiseInterpolationPointCountGenerator(
             NumberGenerator<Integer> interpolationPointCountGenerator) {
         setInterpolationPointCountGeneratorForDimension(1, interpolationPointCountGenerator);
-        return thisObj;
+        return self();
     }
 
     public NoiseBuilderType withAmplitudeGenerator(NumberGenerator<Double> amplitudeGenerator) {
         this.amplitudeGenerator = amplitudeGenerator;
-        return thisObj;
+        return self();
     }
 
     public NoiseBuilderType withRandomSeed(long randomSeed) {
         this.randomSeed = randomSeed;
-        return thisObj;
+        return self();
     }
 
     public NoiseBuilderType withNumberOfLayers(int numberOfLayers) {
@@ -55,10 +55,10 @@ public abstract class NoiseBuilder<ReturnType, NoiseType extends INoiseGenerator
             throw new IllegalArgumentException("Number of layers must be at least 1");
         }
         this.numberOfLayers = numberOfLayers;
-        return thisObj;
+        return self();
     }
 
-    public INoiseGenerator<ReturnType> build() throws NoiseBuilderException {
+    public INoiseGenerator<RawDataType, ReturnType> build() throws NoiseBuilderException {
         resetNumberGenerators();
         if (numberOfLayers == 1) {
             try {

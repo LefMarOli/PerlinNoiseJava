@@ -5,7 +5,7 @@ import org.lefmaroli.perlin.LayeredNoiseGenerator;
 import java.util.List;
 import java.util.Objects;
 
-public class LayeredPointGenerator extends LayeredNoiseGenerator<Double[], PointNoiseGenerator>
+public class LayeredPointGenerator extends LayeredNoiseGenerator<Double[], PointNoiseDataContainer, PointNoiseGenerator>
         implements PointNoiseGenerator {
 
     LayeredPointGenerator(List<PointNoiseGenerator> layers) {
@@ -35,28 +35,7 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<Double[], Point
     }
 
     @Override
-    protected Double[] initializeResults(int count) {
-        Double[] results = new Double[count];
-        for (int i = 0; i < count; i++) {
-            results[i] = 0.0;
-        }
-        return results;
-    }
-
-    @Override
-    protected void addToResults(Double[] layerData, Double[] results) {
-        for (int i = 0; i < results.length; i++) {
-            results[i] = results[i] + layerData[i];
-        }
-    }
-
-    @Override
-    protected Double[] normalize(Double[] results) {
-        if (getMaxAmplitude() != 1.0) {
-            for (int i = 0; i < results.length; i++) {
-                results[i] = results[i] / getMaxAmplitude();
-            }
-        }
-        return results;
+    protected PointNoiseDataContainer initializeResults(int count) {
+        return new PointNoiseDataContainer(count);
     }
 }

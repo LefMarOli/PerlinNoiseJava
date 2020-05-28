@@ -5,9 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.RootNoiseGenerator;
 
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
@@ -37,7 +35,7 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
     }
 
     @Override
-    public Double[] getNext(int count) {
+    public PointNoiseDataContainer getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }
@@ -45,11 +43,11 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
             generateNextSegment();
         }
 
-        Double[] results = new Double[count];
+        List<PointNoiseData> results = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            results[i] = generated.poll();
+            results.add(new PointNoiseData(generated.poll()));
         }
-        return results;
+        return new PointNoiseDataContainer(results);
     }
 
     @Override

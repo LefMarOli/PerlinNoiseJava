@@ -6,6 +6,7 @@ import com.jparams.verifier.tostring.preset.Presets;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -29,17 +30,17 @@ public class PointGeneratorTest {
 
     @Test
     public void testGetNextSegmentCount() {
-        Double[] nextSegment = defaultGenerator.getNext(expectedCount);
-        assertEquals(expectedCount, nextSegment.length, 0);
+        List<PointNoiseData> nextSegment = defaultGenerator.getNext(expectedCount).getAsList();
+        assertEquals(expectedCount, nextSegment.size(), 0);
     }
 
     @Test
     public void testValuesBounded() {
-        Double[] nextSegment = defaultGenerator.getNext(expectedCount);
-        for (Double value : nextSegment) {
-            assertNotNull(value);
-            assertTrue(value < 1.0);
-            assertTrue(value > 0.0);
+        List<PointNoiseData> nextSegment = defaultGenerator.getNext(expectedCount).getAsList();
+        for (PointNoiseData pointNoiseData : nextSegment) {
+            assertNotNull(pointNoiseData);
+            assertTrue(pointNoiseData.getAsRawData() < 1.0);
+            assertTrue(pointNoiseData.getAsRawData() > 0.0);
         }
     }
 
@@ -49,22 +50,21 @@ public class PointGeneratorTest {
         double amplitudeFactor = random.nextDouble() * 100;
         PointGenerator amplifiedLayer = new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
 
-        Double[] values = defaultGenerator.getNext(expectedCount);
-        Double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount);
+        Double[] values = defaultGenerator.getNext(expectedCount).getAsRawData();
+        Double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount).getAsRawData();
 
-        Double[] expectedAmplifiedValues = new Double[values.length];
         for (int i = 0; i < values.length; i++) {
-            expectedAmplifiedValues[i] = values[i] * amplitudeFactor;
+            values[i] = values[i] * amplitudeFactor;
         }
-        assertExpectedArrayEqualsActual(expectedAmplifiedValues, actualAmplifiedValues, 1e-18);
+        assertExpectedArrayEqualsActual(values, actualAmplifiedValues, 1e-18);
     }
 
     @Test
     public void testCreateSamePoints() {
         PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
-        Double[] nextSegment1 = defaultGenerator.getNext(expectedCount);
-        Double[] nextSegment2 = sameLayer.getNext(expectedCount);
-        assertExpectedArrayEqualsActual(nextSegment1, nextSegment2, 0.0);
+        List<PointNoiseData> nextSegment1 = defaultGenerator.getNext(expectedCount).getAsList();
+        List<PointNoiseData> nextSegment2 = sameLayer.getNext(expectedCount).getAsList();
+        assertEquals(nextSegment1, nextSegment2);
     }
 
     @Test(expected = IllegalArgumentException.class)

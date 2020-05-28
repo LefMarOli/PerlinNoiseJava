@@ -28,7 +28,7 @@ public class App {
 
         LineChart lineChart = new LineChart("Perlin1D", "Sequence #", "Value");
         String dataLabel = "DataSet";
-        lineChart.addEquidistantDataSeries(noisePointNavigator.getNext(50), dataLabel);
+        lineChart.addEquidistantDataSeries(noisePointNavigator.getNextValues(50), dataLabel);
         lineChart.setVisible();
 
         boolean activateUpdate = true;
@@ -41,7 +41,7 @@ public class App {
                     EventQueue.invokeLater(() -> {
                         lineChart.updateDataSeries(dataSeries -> {
                             int itemCount = dataSeries.getItemCount();
-                            dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, noisePointNavigator.getNext());
+                            dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, noisePointNavigator.getNextValue());
                             if (itemCount > 5000) {
                                 dataSeries.remove(0);
                             }

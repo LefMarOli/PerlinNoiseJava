@@ -2,9 +2,10 @@ package org.lefmaroli.perlin;
 
 import java.util.List;
 
-public abstract class MultiDimensionalLayeredNoiseGenerator<ReturnType,
-        NoiseLayer extends INoiseGenerator<ReturnType> & MultiDimensionalNoiseGenerator>
-        extends LayeredNoiseGenerator<ReturnType, NoiseLayer> implements MultiDimensionalNoiseGenerator {
+public abstract class MultiDimensionalLayeredNoiseGenerator<RawDataType,
+        ReturnType extends NoiseData<RawDataType, ReturnType>,
+        NoiseLayer extends INoiseGenerator<RawDataType, ReturnType> & MultiDimensionalNoiseGenerator>
+        extends LayeredNoiseGenerator<RawDataType, ReturnType, NoiseLayer> implements MultiDimensionalNoiseGenerator {
 
     private final boolean isCircular;
 

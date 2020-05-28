@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.point;
 
 import org.lefmaroli.perlin.INoiseGenerator;
 
-public interface PointNoiseGenerator extends INoiseGenerator<Double[]> {
+public interface PointNoiseGenerator extends INoiseGenerator<Double[], PointNoiseDataContainer> {
 
     @Override
     default int getDimensions() {

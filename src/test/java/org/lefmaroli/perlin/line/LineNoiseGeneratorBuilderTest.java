@@ -7,6 +7,8 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -54,7 +56,7 @@ public class LineNoiseGeneratorBuilderTest {
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
                 .build();
         int requestedLines = 800;
-        Double[][] lines = generator.getNext(requestedLines);
+        Double[][] lines = generator.getNext(requestedLines).getAsRawData();
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
@@ -62,7 +64,7 @@ public class LineNoiseGeneratorBuilderTest {
             if (System.currentTimeMillis() - previousTime > 5) {
                 previousTime = System.currentTimeMillis();
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
-                lines[lines.length - 1] = generator.getNext(1)[0];
+                lines[lines.length - 1] = generator.getNext(1).getAsRawData()[0];
                 image.updateImage(lines);
             }
         }

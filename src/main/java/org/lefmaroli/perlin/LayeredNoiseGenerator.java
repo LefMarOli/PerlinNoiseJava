@@ -2,9 +2,10 @@ package org.lefmaroli.perlin;
 
 import java.util.List;
 
-public abstract class LayeredNoiseGenerator<ReturnType,
-        NoiseLayer extends INoiseGenerator<ReturnType>>
-        implements INoiseGenerator<ReturnType> {
+public abstract class LayeredNoiseGenerator<RawDataType,
+        ReturnType extends NoiseData<RawDataType, ReturnType>,
+        NoiseLayer extends INoiseGenerator<RawDataType, ReturnType>>
+        implements INoiseGenerator<RawDataType, ReturnType> {
 
     private final double maxAmplitude;
     private final List<NoiseLayer> layers;
@@ -43,16 +44,13 @@ public abstract class LayeredNoiseGenerator<ReturnType,
 
     protected abstract ReturnType initializeResults(int count);
 
-    protected abstract void addToResults(ReturnType layerData, ReturnType results);
-
-    protected abstract ReturnType normalize(ReturnType data);
-
     private ReturnType generateResults(int count) {
         ReturnType results = initializeResults(count);
         for (NoiseLayer layer : layers) {
             ReturnType layerData = layer.getNext(count);
-            addToResults(layerData, results);
+            results.add(layerData);
         }
-        return normalize(results);
+        results.normalizeBy(maxAmplitude);
+        return results;
     }
 }

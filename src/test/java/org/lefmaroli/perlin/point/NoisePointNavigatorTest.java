@@ -29,7 +29,7 @@ public class NoisePointNavigatorTest {
     @Test
     public void getNextTestCount() {
         int expected = 500;
-        List<Double> next = defaultNoisePointNavigator.getNext(expected);
+        List<PointNoiseData> next = defaultNoisePointNavigator.getNext(expected);
         assertEquals(expected, defaultNoisePointNavigator.getCurrentIndex());
         assertEquals(expected, next.size(), 0);
     }
@@ -48,8 +48,8 @@ public class NoisePointNavigatorTest {
     @Test
     public void getPreviousTestCount() {
         int requested = 500;
-        List<Double> next = defaultNoisePointNavigator.getNext(requested);
-        List<Double> previous = defaultNoisePointNavigator.getPrevious(requested);
+        List<PointNoiseData> next = defaultNoisePointNavigator.getNext(requested);
+        List<PointNoiseData> previous = defaultNoisePointNavigator.getPrevious(requested);
         assertEquals(0, defaultNoisePointNavigator.getCurrentIndex());
         assertEquals(requested, next.size(), 0);
         assertEquals(requested, previous.size(), 0);
@@ -65,10 +65,10 @@ public class NoisePointNavigatorTest {
     @Test
     public void getPreviousReverseOrderTest(){
         int requested = 500;
-        List<Double> next = defaultNoisePointNavigator.getNext(requested);
-        List<Double> previous = defaultNoisePointNavigator.getPrevious(requested);
+        List<PointNoiseData> next = defaultNoisePointNavigator.getNext(requested);
+        List<PointNoiseData> previous = defaultNoisePointNavigator.getPrevious(requested);
         for (int i = 0; i < requested; i++) {
-            assertEquals(next.get(i), previous.get(requested - 1 - i), 0.0);
+            assertEquals(next.get(i), previous.get(requested - 1 - i));
         }
     }
 

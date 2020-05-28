@@ -7,7 +7,8 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import java.util.List;
 
 public class LineNoiseGeneratorBuilder
-        extends MultiDimensionalNoiseBuilder<Double[][], LineNoiseGenerator, LineNoiseGeneratorBuilder> {
+        extends MultiDimensionalNoiseBuilder<Double[][], LineNoiseDataContainer, LineNoiseGenerator,
+                LineNoiseGeneratorBuilder> {
 
     private final int lineLength;
 
@@ -16,7 +17,7 @@ public class LineNoiseGeneratorBuilder
         this.lineLength = lineLength;
     }
 
-    LineNoiseGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator){
+    LineNoiseGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator) {
         setInterpolationPointCountGeneratorForDimension(2, numberGenerator);
         return this;
     }

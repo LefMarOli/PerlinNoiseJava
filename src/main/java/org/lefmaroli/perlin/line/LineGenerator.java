@@ -67,7 +67,7 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     }
 
     @Override
-    public Double[][] getNext(int count) {
+    public LineNoiseDataContainer getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }
@@ -147,15 +147,17 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         }
     }
 
-    private Double[][] constructLinesFromGeneratedData(int count) {
-        Double[][] newLines = new Double[count][lineLength];
+    private LineNoiseDataContainer constructLinesFromGeneratedData(int count) {
+        List<LineNoiseData> newLines = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
+            List<Double> values = new ArrayList<>(lineLength);
             for (int j = 0; j < lineLength; j++) {
                 Queue<Double> row = generated.get(j);
-                newLines[i][j] = row.poll();
+                values.add(row.poll());
             }
+            newLines.add(new LineNoiseData(values));
         }
-        return newLines;
+        return new LineNoiseDataContainer(newLines);
     }
 
     private void generateNextSegment() {
@@ -201,10 +203,10 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         for (int i = 0; i < count - 2; i++) {
             newBounds.add(randomGenerator.getRandomUnitVector2D());
         }
-        if(isCircular){
+        if (isCircular) {
             newBounds.add(newBounds.get(0));
             newBounds.add(newBounds.get(1));
-        }else{
+        } else {
             newBounds.add(randomGenerator.getRandomUnitVector2D());
             newBounds.add(randomGenerator.getRandomUnitVector2D());
         }

@@ -3,7 +3,7 @@ package org.lefmaroli.perlin.line;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.MultiDimensionalNoiseGenerator;
 
-public interface LineNoiseGenerator extends INoiseGenerator<Double[][]>, MultiDimensionalNoiseGenerator {
+public interface LineNoiseGenerator extends INoiseGenerator<Double[][], LineNoiseDataContainer>, MultiDimensionalNoiseGenerator {
 
     int getLineLength();
 

@@ -5,11 +5,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class NoisePointNavigator {
 
     private static final Logger LOGGER = LogManager.getLogger(NoisePointNavigator.class);
-    private final Vector<Double> generated = new Vector<>();
+    private final Vector<PointNoiseData> generated = new Vector<>();
     private final AtomicInteger currentIndex = new AtomicInteger(0);
     private final PointNoiseGenerator noiseGenerator;
 
@@ -17,7 +18,7 @@ public class NoisePointNavigator {
         this.noiseGenerator = noiseGenerator;
     }
 
-    public List<Double> getNext(int count) {
+    public List<PointNoiseData> getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Parameter count must be greater than 0");
         } else {
@@ -25,7 +26,11 @@ public class NoisePointNavigator {
         }
     }
 
-    private List<Double> getNextValuesFromCurrentIndex(int count) {
+    public List<Double> getNextValues(int count){
+        return getNext(count).stream().map(PointNoiseData::getAsRawData).collect(Collectors.toList());
+    }
+
+    private List<PointNoiseData> getNextValuesFromCurrentIndex(int count) {
         int currentIndexPosition = currentIndex.getAndUpdate(value -> value + count);
         generateNewData(count, currentIndexPosition);
         return new ArrayList<>(generated.subList(currentIndexPosition, currentIndexPosition + count));
@@ -33,23 +38,27 @@ public class NoisePointNavigator {
 
     private void generateNewData(int count, int currentIndexPosition) {
         if (generated.size() < currentIndexPosition + count) {
-            Collections.addAll(generated, noiseGenerator.getNext(count));
+            generated.addAll(noiseGenerator.getNext(count).getAsList());
         }
     }
 
-    public Double getNext() {
+    public PointNoiseData getNext() {
         return getNext(1).get(0);
+    }
+
+    public Double getNextValue(){
+        return getNextValues(1).get(0);
     }
 
     public int getCurrentIndex() {
         return currentIndex.get();
     }
 
-    public Double getPrevious() {
+    public PointNoiseData getPrevious() {
         return getPrevious(1).get(0);
     }
 
-    public List<Double> getPrevious(int count) {
+    public List<PointNoiseData> getPrevious(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Parameter count must be greater than 0");
         } else {
@@ -57,7 +66,7 @@ public class NoisePointNavigator {
         }
     }
 
-    private List<Double> getPreviousValues(int count) {
+    private List<PointNoiseData> getPreviousValues(int count) {
         int previousIndex = getAndUpdateIndexToPreviousIfInRange(count);
         if (previousIndex - count < 0) {
             throw new IndexOutOfBoundsException(
@@ -67,8 +76,8 @@ public class NoisePointNavigator {
         return getPreviousValuesFromIndex(count, previousIndex);
     }
 
-    private List<Double> getPreviousValuesFromIndex(int count, int fromIndex) {
-        List<Double> toReturn = new ArrayList<>(generated.subList(fromIndex - count, fromIndex));
+    private List<PointNoiseData> getPreviousValuesFromIndex(int count, int fromIndex) {
+        List<PointNoiseData> toReturn = new ArrayList<>(generated.subList(fromIndex - count, fromIndex));
         Collections.reverse(toReturn);
         return toReturn;
     }

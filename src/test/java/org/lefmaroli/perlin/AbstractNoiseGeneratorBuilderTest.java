@@ -5,6 +5,7 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -12,7 +13,25 @@ import static org.junit.Assert.assertTrue;
 
 public class AbstractNoiseGeneratorBuilderTest {
 
-    private static class MockNoiseGenerator implements INoiseGenerator<Double[]> {
+    private static class MockNoiseData implements NoiseData<Double, MockNoiseData>{
+
+        @Override
+        public void add(MockNoiseData other) {
+
+        }
+
+        @Override
+        public void normalizeBy(double maxValue) {
+
+        }
+
+        @Override
+        public Double getAsRawData() {
+            return 0.0;
+        }
+    }
+
+    private static class MockNoiseGenerator implements INoiseGenerator<Double, MockNoiseData> {
 
         @Override
         public boolean equals(Object other) {
@@ -30,8 +49,8 @@ public class AbstractNoiseGeneratorBuilderTest {
         }
 
         @Override
-        public Double[] getNext(int count) {
-            return new Double[0];
+        public MockNoiseData getNext(int count) {
+            return new MockNoiseData();
         }
 
         @Override
@@ -45,7 +64,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     private static class MockNoiseBuilder
-            extends NoiseBuilder<Double[], MockNoiseGenerator, MockNoiseBuilder> {
+            extends NoiseBuilder<Double, MockNoiseData, MockNoiseGenerator, MockNoiseBuilder> {
 
         MockNoiseBuilder() {
             super(5);
@@ -70,7 +89,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     private static class WrongSubClassImplementationMock
-            extends NoiseBuilder<Double[], MockNoiseGenerator, WrongSubClassImplementationMock> {
+            extends NoiseBuilder<Double, MockNoiseData, MockNoiseGenerator, WrongSubClassImplementationMock> {
 
         public WrongSubClassImplementationMock(int dimensions) {
             super(dimensions);
@@ -130,7 +149,7 @@ public class AbstractNoiseGeneratorBuilderTest {
 
     @Test
     public void testCreateSingleLayer() throws NoiseBuilderException {
-        INoiseGenerator<Double[]> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
+        INoiseGenerator<Double, MockNoiseData> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
         assertTrue(built instanceof MockNoiseGeneratorLayer);
     }
 

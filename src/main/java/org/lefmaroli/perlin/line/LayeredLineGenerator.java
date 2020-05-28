@@ -5,7 +5,8 @@ import org.lefmaroli.perlin.MultiDimensionalLayeredNoiseGenerator;
 import java.util.List;
 import java.util.Objects;
 
-public class LayeredLineGenerator extends MultiDimensionalLayeredNoiseGenerator<Double[][], LineNoiseGenerator>
+public class LayeredLineGenerator
+        extends MultiDimensionalLayeredNoiseGenerator<Double[][], LineNoiseDataContainer, LineNoiseGenerator>
         implements LineNoiseGenerator {
 
     private final int lineLength;
@@ -56,35 +57,7 @@ public class LayeredLineGenerator extends MultiDimensionalLayeredNoiseGenerator<
     }
 
     @Override
-    protected void addToResults(Double[][] layerData, Double[][] results) {
-        for (int i = 0; i < layerData.length; i++) {
-            for (int j = 0; j < lineLength; j++) {
-                results[i][j] = results[i][j] + layerData[i][j];
-            }
-        }
-    }
-
-    @Override
-    protected Double[][] initializeResults(int count) {
-        Double[][] results = new Double[count][lineLength];
-        for (int i = 0; i < count; i++) {
-            for (int j = 0; j < lineLength; j++) {
-                results[i][j] = 0.0;
-            }
-        }
-        return results;
-    }
-
-    @Override
-    protected Double[][] normalize(Double[][] results) {
-        double maxAmplitude = getMaxAmplitude();
-        if (maxAmplitude != 1.0) {
-            for (int i = 0; i < results.length; i++) {
-                for (int j = 0; j < lineLength; j++) {
-                    results[i][j] = results[i][j] / maxAmplitude;
-                }
-            }
-        }
-        return results;
+    protected LineNoiseDataContainer initializeResults(int count) {
+       return new LineNoiseDataContainer(count, lineLength);
     }
 }
