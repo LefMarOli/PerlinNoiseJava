@@ -8,11 +8,11 @@ public class PointNoiseData implements NoiseData<Double, PointNoiseData> {
 
     private double value;
 
-    PointNoiseData(double value){
+    PointNoiseData(double value) {
         this.value = value;
     }
 
-    PointNoiseData(){
+    PointNoiseData() {
         this.value = 0.0;
     }
 

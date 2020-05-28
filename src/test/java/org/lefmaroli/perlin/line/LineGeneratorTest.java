@@ -184,7 +184,7 @@ public class LineGeneratorTest {
     }
 
     @Test
-    public void testNotEqualsNotSameCircularity(){
+    public void testNotEqualsNotSameCircularity() {
         LineGenerator otherGenerator =
                 new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
                         defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed, !isCircular);
@@ -202,7 +202,7 @@ public class LineGeneratorTest {
     }
 
     @Test
-    public void testCircularBounds(){
+    public void testCircularBounds() {
         LineGenerator otherGenerator =
                 new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
                         defaultInterpolationPointsAlongNoiseSpace, 1.0, randomSeed, true);
@@ -224,7 +224,7 @@ public class LineGeneratorTest {
                         defaultInterpolationPointsAlongLine,
                         1.0, randomSeed, true);
         Double[][] lines = generator.getNext(requestedLines).getAsRawData();
-        Double[][] appended = new Double[requestedLines][lineLength*2];
+        Double[][] appended = new Double[requestedLines][lineLength * 2];
         for (int i = 0; i < lineLength; i++) {
             for (int j = 0; j < requestedLines; j++) {
                 appended[j][i] = lines[j][i];
@@ -242,7 +242,7 @@ public class LineGeneratorTest {
                 Double[] appendedNewValues = new Double[lineLength * 2];
                 for (int i = 0; i < newValues.length; i++) {
                     appendedNewValues[i] = newValues[i];
-                    appendedNewValues[i+lineLength] = newValues[i];
+                    appendedNewValues[i + lineLength] = newValues[i];
                 }
                 appended[lines.length - 1] = appendedNewValues;
                 image.updateImage(appended);
@@ -252,7 +252,7 @@ public class LineGeneratorTest {
 
     @Ignore
     @Test
-    public void testAppendCircularLines(){
+    public void testAppendCircularLines() {
         LineGenerator layer2D = new LineGenerator(lineLength, 100, defaultInterpolationPointsAlongNoiseSpace, 1.0,
                 System.currentTimeMillis(), true);
         Double[][] lines = layer2D.getNext(1).getAsRawData();
@@ -271,7 +271,7 @@ public class LineGeneratorTest {
         chart.setYAxisRange(0.0, 1.0);
 
         long previousTime = System.currentTimeMillis();
-        while(true);
+        while (true) ;
     }
 
     @Ignore

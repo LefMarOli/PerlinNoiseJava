@@ -23,7 +23,7 @@ public class Interpolation {
     }
 
     public static double twoDimensional(double x1y1, double x2y1, double x1y2,
-                                        double x2y2, double muX, double muY){
+                                        double x2y2, double muX, double muY) {
         double topInterpolation = Interpolation.linear(x1y1, x2y1, muX);
         double bottomInterpolation = Interpolation.linear(x1y2, x2y2, muX);
         return Interpolation.linear(topInterpolation, bottomInterpolation, muY);

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class LineNoiseGeneratorBuilder
         extends MultiDimensionalNoiseBuilder<Double[][], LineNoiseDataContainer, LineNoiseGenerator,
-                LineNoiseGeneratorBuilder> {
+        LineNoiseGeneratorBuilder> {
 
     private final int lineLength;
 
@@ -17,14 +17,14 @@ public class LineNoiseGeneratorBuilder
         this.lineLength = lineLength;
     }
 
-    LineNoiseGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator) {
-        setInterpolationPointCountGeneratorForDimension(2, numberGenerator);
-        return this;
-    }
-
     @Override
     public LineNoiseGenerator build() throws NoiseBuilderException {
         return (LineNoiseGenerator) super.build();
+    }
+
+    LineNoiseGeneratorBuilder withLineInterpolationPointCountGenerator(NumberGenerator<Integer> numberGenerator) {
+        setInterpolationPointCountGeneratorForDimension(2, numberGenerator);
+        return this;
     }
 
     @Override

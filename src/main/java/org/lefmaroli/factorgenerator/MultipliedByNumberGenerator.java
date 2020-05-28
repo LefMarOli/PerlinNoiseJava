@@ -26,11 +26,11 @@ public abstract class MultipliedByNumberGenerator<NumberType extends Number> imp
         }
     }
 
-    protected abstract NumberType getXMultipliedByY(NumberType x, double y);
-
     @Override
     public void reset() {
         firstCall = true;
     }
+
+    protected abstract NumberType getXMultipliedByY(NumberType x, double y);
 
 }

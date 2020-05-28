@@ -4,9 +4,9 @@ import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
 import org.lefmaroli.perlin.point.NoisePointNavigator;
 import org.lefmaroli.perlin.point.PointNoiseGenerator;
+import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
 
 import java.awt.*;
 
@@ -41,7 +41,8 @@ public class App {
                     EventQueue.invokeLater(() -> {
                         lineChart.updateDataSeries(dataSeries -> {
                             int itemCount = dataSeries.getItemCount();
-                            dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1, noisePointNavigator.getNextValue());
+                            dataSeries.add(dataSeries.getX(itemCount - 1).doubleValue() + 1,
+                                    noisePointNavigator.getNextValue());
                             if (itemCount > 5000) {
                                 dataSeries.remove(0);
                             }

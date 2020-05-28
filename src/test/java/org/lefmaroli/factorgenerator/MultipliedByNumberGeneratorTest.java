@@ -46,7 +46,7 @@ public class MultipliedByNumberGeneratorTest {
     }
 
     @Test
-    public void testReset(){
+    public void testReset() {
         IntegerGenerator generator = new IntegerGenerator(new Random().nextInt(), 5489.5946);
         double firstValue = generator.getNext();
         for (int i = 0; i < 50000; i++) {
@@ -59,7 +59,7 @@ public class MultipliedByNumberGeneratorTest {
     }
 
     @Test
-    public void testDoubleCopy(){
+    public void testDoubleCopy() {
         Random random = new Random();
         double initialValue = random.nextDouble();
         double factor = random.nextDouble();
@@ -70,7 +70,7 @@ public class MultipliedByNumberGeneratorTest {
     }
 
     @Test
-    public void testIntegerCopy(){
+    public void testIntegerCopy() {
         Random random = new Random();
         int initialValue = random.nextInt();
         double factor = random.nextDouble();

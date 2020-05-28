@@ -5,7 +5,8 @@ import org.lefmaroli.perlin.NoiseDataContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LineNoiseDataContainer implements NoiseDataContainer<Double[][], Double[], LineNoiseDataContainer, LineNoiseData> {
+public class LineNoiseDataContainer
+        implements NoiseDataContainer<Double[][], Double[], LineNoiseDataContainer, LineNoiseData> {
 
     private final List<LineNoiseData> data;
 

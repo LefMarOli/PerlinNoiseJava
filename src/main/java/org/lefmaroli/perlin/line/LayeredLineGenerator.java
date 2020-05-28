@@ -47,6 +47,11 @@ public class LayeredLineGenerator
                 '}';
     }
 
+    @Override
+    protected LineNoiseDataContainer initializeResults(int count) {
+        return new LineNoiseDataContainer(count, lineLength);
+    }
+
     private void assertAllLayersHaveSameLineLength(List<LineNoiseGenerator> layers) {
         for (int i = 0; i < layers.size(); i++) {
             if (layers.get(i).getLineLength() != lineLength) {
@@ -54,10 +59,5 @@ public class LayeredLineGenerator
                         "Layer " + i + " does not have the same line length as the first provided layer");
             }
         }
-    }
-
-    @Override
-    protected LineNoiseDataContainer initializeResults(int count) {
-       return new LineNoiseDataContainer(count, lineLength);
     }
 }

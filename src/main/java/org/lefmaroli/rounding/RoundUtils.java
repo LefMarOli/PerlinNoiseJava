@@ -36,10 +36,10 @@ public class RoundUtils {
     }
 
     public static int roundNToClosestFactorOfM(int n, int m) {
-        if(m <= 0){
+        if (m <= 0) {
             throw new IllegalArgumentException("m must be greater than 0");
         }
-        if(n <= 0){
+        if (n <= 0) {
             throw new IllegalArgumentException("n must be greater than 0");
         }
         if (n % m == 0) {
@@ -50,7 +50,7 @@ public class RoundUtils {
             int closestFactor = 0;
             for (Integer factor : factorsOfM) {
                 int distance = Math.abs(n - factor);
-                if(distance < minDistance){
+                if (distance < minDistance) {
                     minDistance = distance;
                     closestFactor = factor;
                 }

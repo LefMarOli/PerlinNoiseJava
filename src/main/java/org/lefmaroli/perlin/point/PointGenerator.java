@@ -14,7 +14,6 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
 
     private final double maxAmplitude;
     private final int interpolationPoints;
-    private final double segmentLength;
     private final Random randomGenerator;
     private final long randomSeed;
     private final Queue<Double> generated = new LinkedBlockingQueue<>();
@@ -22,15 +21,14 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
 
     public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
         if (interpolationPoints < 0) {
-            throw new IllegalArgumentException("Interpolation points must be greater or equal to 4");
+            throw new IllegalArgumentException("Interpolation points must be greater than 0");
         }
         this.maxAmplitude = maxAmplitude;
         this.interpolationPoints = interpolationPoints;
-        this.segmentLength = interpolationPoints + 2;
         this.randomSeed = randomSeed;
         this.randomGenerator = new Random(randomSeed);
         this.previousBound = randomGenerator.nextDouble();
-        LOGGER.debug("Created layer with max amplitude of " + maxAmplitude + " and " + interpolationPoints +
+        LOGGER.debug("Created with max amplitude of " + maxAmplitude + " and " + interpolationPoints +
                 " interpolation points.");
     }
 
@@ -70,13 +68,13 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
         if (o == null || getClass() != o.getClass()) return false;
         PointGenerator that = (PointGenerator) o;
         return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                Double.compare(that.segmentLength, segmentLength) == 0 &&
+                Double.compare(that.interpolationPoints, interpolationPoints) == 0 &&
                 randomSeed == that.randomSeed;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxAmplitude, segmentLength, randomSeed);
+        return Objects.hash(maxAmplitude, interpolationPoints, randomSeed);
     }
 
     @Override
@@ -87,8 +85,8 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
     private void generateNextSegment() {
         double newBound = randomGenerator.nextDouble();
         double currentPos = 0.0;
-        while (currentPos < segmentLength) {
-            double relativePositionInSegment = currentPos / segmentLength;
+        while (currentPos < interpolationPoints) {
+            double relativePositionInSegment = currentPos / interpolationPoints;
             double interpolatedValue = Interpolation.linearWithFade(previousBound, newBound, relativePositionInSegment);
             generated.add(interpolatedValue * maxAmplitude);
             currentPos++;

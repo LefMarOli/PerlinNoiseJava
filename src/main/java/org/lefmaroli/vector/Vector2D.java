@@ -10,7 +10,11 @@ public class Vector2D {
         this.y = y;
     }
 
-    public double getLength(){
+    public static double getVectorProduct(Vector2D lhs, Vector2D rhs) {
+        return lhs.getVectorProduct(rhs);
+    }
+
+    public double getLength() {
         return Math.sqrt(x * x + y * y);
     }
 
@@ -20,15 +24,11 @@ public class Vector2D {
 
     public Vector2D normalize() {
         double length = getLength();
-        if(length > 0.0)
+        if (length > 0.0) {
             return new Vector2D(x / length, y / length);
-        else{
+        } else {
             return this;
         }
-    }
-
-    public static double getVectorProduct(Vector2D lhs, Vector2D rhs) {
-        return lhs.getVectorProduct(rhs);
     }
 
     @Override

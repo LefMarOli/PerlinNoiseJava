@@ -37,7 +37,7 @@ public class SimpleGrayScaleImage {
         this.framedImage.setVisible(true);
     }
 
-    public void updateImage(Double[][] newData){
+    public void updateImage(Double[][] newData) {
         assertNewDataHasSameDimensions(newData);
         Graphics2D g = (Graphics2D) image.getGraphics();
         for (int i = 0; i < width; i++) {
@@ -54,7 +54,7 @@ public class SimpleGrayScaleImage {
         });
     }
 
-    private void assertDataIsRectangular(Double[][] data){
+    private void assertDataIsRectangular(Double[][] data) {
         if (data.length < 1) {
             throw new IllegalArgumentException("Provided data is empty");
         }
@@ -66,8 +66,8 @@ public class SimpleGrayScaleImage {
         }
     }
 
-    private void assertNewDataHasSameDimensions(Double[][] data){
-        if(data.length != width){
+    private void assertNewDataHasSameDimensions(Double[][] data) {
+        if (data.length != width) {
             throw new IllegalArgumentException("Provided data has changed width");
         }
         for (Double[] row : data) {
@@ -77,7 +77,7 @@ public class SimpleGrayScaleImage {
         }
     }
 
-    private JFrame initializeImageFrame(JLabel label){
+    private JFrame initializeImageFrame(JLabel label) {
         JFrame frame = new JFrame();
         frame.setSize(image.getWidth(), image.getHeight());
         frame.getContentPane().add(label, BorderLayout.CENTER);

@@ -21,9 +21,9 @@ public abstract class NoiseBuilder<RawDataType,
     private static final NumberGenerator<Integer>
             DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR = new IntegerGenerator(64, 0.5);
     private final int dimensions;
+    private final List<NumberGenerator<Integer>> interpolationPointCountGenerators;
     protected int numberOfLayers = 5;
     protected long randomSeed = System.currentTimeMillis();
-    private final List<NumberGenerator<Integer>> interpolationPointCountGenerators;
     private NumberGenerator<Double> amplitudeGenerator = new DoubleGenerator(1.0, 0.5);
 
     public NoiseBuilder(int dimensions) {

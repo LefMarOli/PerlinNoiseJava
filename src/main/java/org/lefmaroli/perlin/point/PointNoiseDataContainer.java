@@ -5,7 +5,8 @@ import org.lefmaroli.perlin.NoiseDataContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PointNoiseDataContainer implements NoiseDataContainer<Double[], Double, PointNoiseDataContainer, PointNoiseData> {
+public class PointNoiseDataContainer
+        implements NoiseDataContainer<Double[], Double, PointNoiseDataContainer, PointNoiseData> {
 
     private final List<PointNoiseData> data;
 

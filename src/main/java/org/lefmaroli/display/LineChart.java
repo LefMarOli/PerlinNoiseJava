@@ -25,14 +25,14 @@ public class LineChart {
     private final JFrame framedChart;
     private ChartPanel chartPanel;
 
-    public LineChart(String title, String xAxisLabel, String yAxisLabel){
+    public LineChart(String title, String xAxisLabel, String yAxisLabel) {
         this.title = title;
         this.xAxisLabel = xAxisLabel;
         this.yAxisLabel = yAxisLabel;
         this.framedChart = getFramedChart();
     }
 
-    public void addEquidistantDataSeries(Double[] dataSeries, String dataSeriesLabel){
+    public void addEquidistantDataSeries(Double[] dataSeries, String dataSeriesLabel) {
         addEquidistantDataSeries(Arrays.asList(dataSeries), dataSeriesLabel);
     }
 
@@ -46,16 +46,16 @@ public class LineChart {
         dataset.addSeries(series);
     }
 
-    public void updateDataSeries(Consumer<XYSeries> updateFunction, String dataSeriesLabel){
+    public void updateDataSeries(Consumer<XYSeries> updateFunction, String dataSeriesLabel) {
         XYSeries series = dataset.getSeries(dataSeriesLabel);
         updateFunction.accept(series);
     }
 
-    public void setVisible(){
+    public void setVisible() {
         framedChart.setVisible(true);
     }
 
-    public void setYAxisRange(double from, double to){
+    public void setYAxisRange(double from, double to) {
         chartPanel.getChart().getXYPlot().getRangeAxis().setRange(from, to);
     }
 
@@ -84,8 +84,8 @@ public class LineChart {
         return this.chartPanel;
     }
 
-    private void configureChart(JFreeChart chart){
-        if(!title.isEmpty()) {
+    private void configureChart(JFreeChart chart) {
+        if (!title.isEmpty()) {
             chart.setTitle(new TextTitle(title,
                             new Font("Serif", java.awt.Font.BOLD, 18)
                     )
@@ -94,7 +94,7 @@ public class LineChart {
         configureXYPlot(chart.getXYPlot());
     }
 
-    private void configureXYPlot(XYPlot plot){
+    private void configureXYPlot(XYPlot plot) {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         for (int i = 0; i < dataset.getSeriesCount(); i++) {
             renderer.setSeriesStroke(i, new BasicStroke(2.0f));
@@ -104,7 +104,7 @@ public class LineChart {
         setGridLines(plot);
     }
 
-    private void setGridLines(XYPlot plot){
+    private void setGridLines(XYPlot plot) {
         plot.setRangeGridlinesVisible(true);
         plot.setRangeGridlinePaint(Color.BLACK);
 

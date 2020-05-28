@@ -35,7 +35,7 @@ public class NoisePointNavigatorTest {
     }
 
     @Test
-    public void getNextSingle(){
+    public void getNextSingle() {
         defaultNoisePointNavigator.getNext();
         assertEquals(1, defaultNoisePointNavigator.getCurrentIndex());
     }
@@ -56,14 +56,14 @@ public class NoisePointNavigatorTest {
     }
 
     @Test
-    public void getPreviousSingleTest(){
+    public void getPreviousSingleTest() {
         defaultNoisePointNavigator.getNext();
         defaultNoisePointNavigator.getPrevious();
         assertEquals(0, defaultNoisePointNavigator.getCurrentIndex());
     }
 
     @Test
-    public void getPreviousReverseOrderTest(){
+    public void getPreviousReverseOrderTest() {
         int requested = 500;
         List<PointNoiseData> next = defaultNoisePointNavigator.getNext(requested);
         List<PointNoiseData> previous = defaultNoisePointNavigator.getPrevious(requested);

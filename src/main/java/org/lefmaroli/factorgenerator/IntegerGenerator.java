@@ -1,6 +1,6 @@
 package org.lefmaroli.factorgenerator;
 
-public class IntegerGenerator extends MultipliedByNumberGenerator<Integer>{
+public class IntegerGenerator extends MultipliedByNumberGenerator<Integer> {
 
     public IntegerGenerator(Integer initialValue, double factor) {
         super(initialValue, factor);

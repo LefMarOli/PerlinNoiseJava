@@ -13,10 +13,10 @@ import static org.junit.Assert.*;
 
 public class LayeredLineGeneratorTest {
 
-    private LayeredLineGenerator defaultGenerator;
-    private List<LineNoiseGenerator> layers;
     private static final double maxAmplitude = 1.75;
     private static final int defaultLineLength = 125;
+    private LayeredLineGenerator defaultGenerator;
+    private List<LineNoiseGenerator> layers;
     private boolean isCircularDefault = false;
 
     @Before
@@ -65,7 +65,7 @@ public class LayeredLineGeneratorTest {
         for (Double[] line : lines) {
             for (Double value : line) {
                 assertNotNull(value);
-                assertTrue("Actual value smaller than 0.0: "+ value, value >= 0.0);
+                assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
                 assertTrue(value <= maxAmplitude);
             }
         }

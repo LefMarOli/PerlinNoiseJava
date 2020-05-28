@@ -13,13 +13,13 @@ public class PointNoiseGeneratorBuilder
     }
 
     @Override
-    protected PointNoiseGeneratorBuilder self() {
-        return this;
+    public PointNoiseGenerator build() throws NoiseBuilderException {
+        return (PointNoiseGenerator) super.build();
     }
 
     @Override
-    public PointNoiseGenerator build() throws NoiseBuilderException {
-        return (PointNoiseGenerator) super.build();
+    protected PointNoiseGeneratorBuilder self() {
+        return this;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class LayeredPointGeneratorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateWithNoLayers(){
+    public void testCreateWithNoLayers() {
         new LayeredPointGenerator(new ArrayList<>(5));
     }
 
@@ -53,7 +53,7 @@ public class LayeredPointGeneratorTest {
     }
 
     @Test
-    public void testGetMaxAmplitude(){
+    public void testGetMaxAmplitude() {
         assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
     }
 
@@ -83,7 +83,7 @@ public class LayeredPointGeneratorTest {
     }
 
     @Test
-    public void testToString(){
+    public void testToString() {
         ToStringVerifier.forClass(LayeredPointGenerator.class)
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)

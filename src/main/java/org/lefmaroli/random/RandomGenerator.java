@@ -8,15 +8,15 @@ public class RandomGenerator {
 
     private final Random basicRandGenerator;
 
-    RandomGenerator(){
+    RandomGenerator() {
         this(System.currentTimeMillis());
     }
 
-    public RandomGenerator(long seed){
+    public RandomGenerator(long seed) {
         this.basicRandGenerator = new Random(seed);
     }
 
-    public Vector2D getRandomUnitVector2D(){
+    public Vector2D getRandomUnitVector2D() {
         double angle = basicRandGenerator.nextDouble() * 2 * Math.PI;
         return new Vector2D(Math.cos(angle), Math.sin(angle));
     }

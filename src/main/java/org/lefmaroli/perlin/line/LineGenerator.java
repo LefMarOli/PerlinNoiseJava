@@ -7,7 +7,10 @@ import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.rounding.RoundUtils;
 import org.lefmaroli.vector.Vector2D;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator {
@@ -18,8 +21,6 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     private final double maxAmplitude;
     private final int lineInterpolationPoints;
     private final int noiseInterpolationPoints;
-    private final int lineSegmentLength;
-    private final int noiseSegmentLength;
     private final long randomSeed;
     private final RandomGenerator randomGenerator;
     private final List<Queue<Double>> generated;
@@ -45,25 +46,13 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         this.lineInterpolationPoints =
                 isCircular ? correctLineInterpolationPointsForCircularity(lineInterpolationPoints) :
                         lineInterpolationPoints;
-        this.lineSegmentLength = lineInterpolationPoints;
         this.noiseInterpolationPoints = noiseInterpolationPoints;
-        this.noiseSegmentLength = noiseInterpolationPoints;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.generated = new ArrayList<>(lineLength);
-        this.randomBounds = 2 + lineLength / lineSegmentLength;
+        this.randomBounds = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
         addGeneratedRows(lineLength);
-    }
-
-    private int correctLineInterpolationPointsForCircularity(int lineInterpolationPoints) {
-        int newInterpolationPointCount =
-                RoundUtils.roundNToClosestFactorOfM(lineInterpolationPoints, lineLength);
-        if (newInterpolationPointCount != lineInterpolationPoints) {
-            LOGGER.warn("Modified required line interpolation point count from " + lineInterpolationPoints + " to " +
-                    newInterpolationPointCount + " to respect circularity.");
-        }
-        return newInterpolationPointCount;
     }
 
     @Override
@@ -135,6 +124,16 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         return ((interpolatedValue / MAX_2D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
     }
 
+    private int correctLineInterpolationPointsForCircularity(int lineInterpolationPoints) {
+        int newInterpolationPointCount =
+                RoundUtils.roundNToClosestFactorOfM(lineInterpolationPoints, lineLength);
+        if (newInterpolationPointCount != lineInterpolationPoints) {
+            LOGGER.warn("Modified required line interpolation point count from " + lineInterpolationPoints + " to " +
+                    newInterpolationPointCount + " to respect circularity.");
+        }
+        return newInterpolationPointCount;
+    }
+
     private void addGeneratedRows(int lineLength) {
         for (int i = 0; i < lineLength; i++) {
             this.generated.add(new LinkedBlockingQueue<>());
@@ -164,18 +163,18 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         List<Vector2D> newBounds = generateNewRandomBounds(randomBounds);
 
         for (int yIndex = 0; yIndex < lineLength; yIndex++) {
-            int lowerBoundIndex = yIndex / lineSegmentLength;
+            int lowerBoundIndex = yIndex / lineInterpolationPoints;
             Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
             Vector2D topRightBound = newBounds.get(lowerBoundIndex);
             Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
             Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
 
-            int segmentYIndex = yIndex % lineSegmentLength;
-            double yDist = (double) (segmentYIndex) / (lineSegmentLength);
+            int segmentYIndex = yIndex % lineInterpolationPoints;
+            double yDist = (double) (segmentYIndex) / (lineInterpolationPoints);
 
-            for (int segmentXIndex = 0; segmentXIndex < noiseSegmentLength; segmentXIndex++) {
+            for (int segmentXIndex = 0; segmentXIndex < noiseInterpolationPoints; segmentXIndex++) {
 
-                double xDist = (double) (segmentXIndex) / (noiseSegmentLength);
+                double xDist = (double) (segmentXIndex) / (noiseInterpolationPoints);
 
                 Vector2D topLeftDistance = new Vector2D(xDist, yDist);
                 Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);

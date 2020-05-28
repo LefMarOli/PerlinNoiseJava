@@ -3,7 +3,10 @@ package org.lefmaroli.perlin.point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -26,27 +29,15 @@ public class NoisePointNavigator {
         }
     }
 
-    public List<Double> getNextValues(int count){
+    public List<Double> getNextValues(int count) {
         return getNext(count).stream().map(PointNoiseData::getAsRawData).collect(Collectors.toList());
-    }
-
-    private List<PointNoiseData> getNextValuesFromCurrentIndex(int count) {
-        int currentIndexPosition = currentIndex.getAndUpdate(value -> value + count);
-        generateNewData(count, currentIndexPosition);
-        return new ArrayList<>(generated.subList(currentIndexPosition, currentIndexPosition + count));
-    }
-
-    private void generateNewData(int count, int currentIndexPosition) {
-        if (generated.size() < currentIndexPosition + count) {
-            generated.addAll(noiseGenerator.getNext(count).getAsList());
-        }
     }
 
     public PointNoiseData getNext() {
         return getNext(1).get(0);
     }
 
-    public Double getNextValue(){
+    public Double getNextValue() {
         return getNextValues(1).get(0);
     }
 
@@ -63,6 +54,18 @@ public class NoisePointNavigator {
             throw new IllegalArgumentException("Parameter count must be greater than 0");
         } else {
             return getPreviousValues(count);
+        }
+    }
+
+    private List<PointNoiseData> getNextValuesFromCurrentIndex(int count) {
+        int currentIndexPosition = currentIndex.getAndUpdate(value -> value + count);
+        generateNewData(count, currentIndexPosition);
+        return new ArrayList<>(generated.subList(currentIndexPosition, currentIndexPosition + count));
+    }
+
+    private void generateNewData(int count, int currentIndexPosition) {
+        if (generated.size() < currentIndexPosition + count) {
+            generated.addAll(noiseGenerator.getNext(count).getAsList());
         }
     }
 

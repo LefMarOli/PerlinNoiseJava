@@ -5,7 +5,6 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -13,7 +12,63 @@ import static org.junit.Assert.assertTrue;
 
 public class AbstractNoiseGeneratorBuilderTest {
 
-    private static class MockNoiseData implements NoiseData<Double, MockNoiseData>{
+    @Test
+    public void testBuilderPattern() {
+        MockNoiseBuilder noisePointBuilder = new MockNoiseBuilder();
+        assertNotNull(noisePointBuilder.withRandomSeed(0L));
+        assertNotNull(noisePointBuilder.withNumberOfLayers(5));
+        assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
+        assertNotNull(noisePointBuilder.withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 1.0)));
+    }
+
+    @Test(expected = NoiseBuilderException.class)
+    public void testToFewInterpolationPoints() throws NoiseBuilderException {
+        new MockNoiseBuilder()
+                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 0.5))
+                .withNumberOfLayers(5)
+                .build();
+    }
+
+    @Test(expected = NoiseBuilderException.class)
+    public void testTooManyInterpolationPoints() throws NoiseBuilderException {
+        new MockNoiseBuilder()
+                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 5000))
+                .withNumberOfLayers(15)
+                .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWithNoLayers() {
+        new MockNoiseBuilder().withNumberOfLayers(0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWithNegativeNumberOfLayers() {
+        new MockNoiseBuilder().withNumberOfLayers(-8);
+    }
+
+    @Test
+    public void testCreateSingleLayer() throws NoiseBuilderException {
+        INoiseGenerator<Double, MockNoiseData> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
+        assertTrue(built instanceof MockNoiseGeneratorLayer);
+    }
+
+    @Test(expected = NoiseBuilderException.class)
+    public void testCreateSingleLayerWithNoInterpolationPoints() throws NoiseBuilderException {
+        new MockNoiseBuilder()
+                .withNumberOfLayers(1)
+                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(0, 500))
+                .build();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongImplementationOfBuilderClass() {
+        int dimensions = 5;
+        new WrongSubClassImplementationMock(dimensions)
+                .setInterpolationPointCountGeneratorForDimension(dimensions + 1, new IntegerGenerator(1, 0.5));
+    }
+
+    private static class MockNoiseData implements NoiseData<Double, MockNoiseData> {
 
         @Override
         public void add(MockNoiseData other) {
@@ -110,61 +165,5 @@ public class AbstractNoiseGeneratorBuilderTest {
         protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers) {
             return null;
         }
-    }
-
-    @Test
-    public void testBuilderPattern() {
-        MockNoiseBuilder noisePointBuilder = new MockNoiseBuilder();
-        assertNotNull(noisePointBuilder.withRandomSeed(0L));
-        assertNotNull(noisePointBuilder.withNumberOfLayers(5));
-        assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-        assertNotNull(noisePointBuilder.withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 1.0)));
-    }
-
-    @Test(expected = NoiseBuilderException.class)
-    public void testToFewInterpolationPoints() throws NoiseBuilderException {
-        new MockNoiseBuilder()
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 0.5))
-                .withNumberOfLayers(5)
-                .build();
-    }
-
-    @Test(expected = NoiseBuilderException.class)
-    public void testTooManyInterpolationPoints() throws NoiseBuilderException {
-        new MockNoiseBuilder()
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 5000))
-                .withNumberOfLayers(15)
-                .build();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateWithNoLayers() {
-        new MockNoiseBuilder().withNumberOfLayers(0);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateWithNegativeNumberOfLayers() {
-        new MockNoiseBuilder().withNumberOfLayers(-8);
-    }
-
-    @Test
-    public void testCreateSingleLayer() throws NoiseBuilderException {
-        INoiseGenerator<Double, MockNoiseData> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
-        assertTrue(built instanceof MockNoiseGeneratorLayer);
-    }
-
-    @Test(expected = NoiseBuilderException.class)
-    public void testCreateSingleLayerWithNoInterpolationPoints() throws NoiseBuilderException {
-        new MockNoiseBuilder()
-                .withNumberOfLayers(1)
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(0, 500))
-                .build();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testWrongImplementationOfBuilderClass(){
-        int dimensions = 5;
-        new WrongSubClassImplementationMock(dimensions)
-                .setInterpolationPointCountGeneratorForDimension(dimensions +1, new IntegerGenerator(1, 0.5));
     }
 }

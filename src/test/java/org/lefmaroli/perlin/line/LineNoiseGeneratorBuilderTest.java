@@ -7,8 +7,6 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -38,7 +36,7 @@ public class LineNoiseGeneratorBuilderTest {
     }
 
     @Test
-    public void testBuilderPatternForCircularity(){
+    public void testBuilderPatternForCircularity() {
         new LineNoiseGeneratorBuilder(lineLength)
                 .withCircularBounds();
     }
