@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public abstract class NoiseBuilder<NoiseType extends NoiseGenerator,
+public abstract class NoiseBuilder<ReturnType, NoiseType extends INoiseGenerator<ReturnType>,
         NoiseBuilderType extends NoiseBuilder> {
     private static final Logger LOGGER = LogManager.getLogger(NoiseBuilder.class);
     private static final int INTERPOLATION_POINTS_UPPER_LIMIT = 50000;
@@ -58,7 +58,7 @@ public abstract class NoiseBuilder<NoiseType extends NoiseGenerator,
         return thisObj;
     }
 
-    public NoiseGenerator build() throws NoiseBuilderException {
+    public INoiseGenerator<ReturnType> build() throws NoiseBuilderException {
         resetNumberGenerators();
         if (numberOfLayers == 1) {
             try {

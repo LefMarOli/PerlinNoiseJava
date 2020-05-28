@@ -10,9 +10,9 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class NoiseGeneratorBuilderTest {
+public class AbstractNoiseGeneratorBuilderTest {
 
-    private static class MockNoiseGenerator extends NoiseGenerator {
+    private static class MockNoiseGenerator implements INoiseGenerator<Double[]> {
 
         @Override
         public boolean equals(Object other) {
@@ -30,6 +30,11 @@ public class NoiseGeneratorBuilderTest {
         }
 
         @Override
+        public Double[] getNext(int count) {
+            return new Double[0];
+        }
+
+        @Override
         public double getMaxAmplitude() {
             return 0.0;
         }
@@ -40,7 +45,7 @@ public class NoiseGeneratorBuilderTest {
     }
 
     private static class MockNoiseBuilder
-            extends NoiseBuilder<MockNoiseGenerator, MockNoiseBuilder> {
+            extends NoiseBuilder<Double[], MockNoiseGenerator, MockNoiseBuilder> {
 
         MockNoiseBuilder() {
             super(5);
@@ -64,8 +69,8 @@ public class NoiseGeneratorBuilderTest {
 
     }
 
-    private class WrongSubClassImplementationMock
-            extends NoiseBuilder<MockNoiseGenerator, WrongSubClassImplementationMock> {
+    private static class WrongSubClassImplementationMock
+            extends NoiseBuilder<Double[], MockNoiseGenerator, WrongSubClassImplementationMock> {
 
         public WrongSubClassImplementationMock(int dimensions) {
             super(dimensions);
@@ -78,13 +83,12 @@ public class NoiseGeneratorBuilderTest {
 
         @Override
         protected MockNoiseGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
-                                                           long randomSeed) throws NoiseBuilderException {
+                                                           long randomSeed) {
             return null;
         }
 
         @Override
-        protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers)
-                throws NoiseBuilderException {
+        protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers) {
             return null;
         }
     }
@@ -126,7 +130,7 @@ public class NoiseGeneratorBuilderTest {
 
     @Test
     public void testCreateSingleLayer() throws NoiseBuilderException {
-        NoiseGenerator built = new MockNoiseBuilder().withNumberOfLayers(1).build();
+        INoiseGenerator<Double[]> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
         assertTrue(built instanceof MockNoiseGeneratorLayer);
     }
 

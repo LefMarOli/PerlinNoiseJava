@@ -4,9 +4,9 @@ import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.point.NoisePointGenerator;
 import org.lefmaroli.perlin.point.NoisePointGeneratorBuilder;
 import org.lefmaroli.perlin.point.NoisePointNavigator;
+import org.lefmaroli.perlin.point.PointNoiseGenerator;
 
 import java.awt.*;
 
@@ -18,7 +18,7 @@ public class App {
 
         IntegerGenerator interpolationPointCountGenerator = new IntegerGenerator(2048, 0.5);
         DoubleGenerator amplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
-        NoisePointGenerator grid1D = new NoisePointGeneratorBuilder()
+        PointNoiseGenerator grid1D = new NoisePointGeneratorBuilder()
                 .withNumberOfLayers(16)
                 .withNoiseInterpolationPointCountGenerator(interpolationPointCountGenerator)
                 .withAmplitudeGenerator(amplitudeFactorGenerator)

@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class PointGenerator extends NoisePointGenerator implements BasicNoiseGenerator {
+public class PointGenerator implements BasicNoiseGenerator, PointNoiseGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
 
@@ -37,7 +37,7 @@ public class PointGenerator extends NoisePointGenerator implements BasicNoiseGen
     }
 
     @Override
-    public Double[] getNextPoints(int count) {
+    public Double[] getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }

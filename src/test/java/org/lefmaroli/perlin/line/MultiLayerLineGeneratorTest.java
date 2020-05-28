@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class MultiLayerLineGeneratorTest {
 
     private MultiLayerLineGenerator defaultGenerator;
-    private List<NoiseLineGenerator> layers;
+    private List<LineNoiseGenerator> layers;
     private static final double maxAmplitude = 1.75;
     private static final int defaultLineLength = 125;
 
@@ -39,7 +39,7 @@ public class MultiLayerLineGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithDifferentLineLengthLayers() {
-        List<NoiseLineGenerator> newLayerSet = layers;
+        List<LineNoiseGenerator> newLayerSet = layers;
         newLayerSet.add(new LineGenerator(defaultLineLength + 5, 256, 256, 0.1225, System.currentTimeMillis()));
         new MultiLayerLineGenerator(newLayerSet);
     }
@@ -48,7 +48,7 @@ public class MultiLayerLineGeneratorTest {
     @Test
     public void testGetNextCount() {
         int expectedCount = 75;
-        Double[][] nextLines = defaultGenerator.getNextLines(expectedCount);
+        Double[][] nextLines = defaultGenerator.getNext(expectedCount);
         assertEquals(expectedCount, nextLines.length, 0);
         for (Double[] line : nextLines) {
             assertEquals(defaultLineLength, line.length, 0);
@@ -57,7 +57,7 @@ public class MultiLayerLineGeneratorTest {
 
     @Test
     public void testGetNextBoundedValues() {
-        Double[][] lines = defaultGenerator.getNextLines(100);
+        Double[][] lines = defaultGenerator.getNext(100);
         for (Double[] line : lines) {
             for (Double value : line) {
                 assertNotNull(value);
@@ -79,7 +79,7 @@ public class MultiLayerLineGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextNegativeCount() {
-        defaultGenerator.getNextLines(-6);
+        defaultGenerator.getNext(-6);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class MultiLayerLineGeneratorTest {
 
     @Test
     public void testNotEquals() {
-        List<NoiseLineGenerator> otherLayers = layers;
+        List<LineNoiseGenerator> otherLayers = layers;
         otherLayers.add(new LineGenerator(defaultLineLength, 8, 8, 0.1, 5L));
         MultiLayerLineGenerator otherGenerator = new MultiLayerLineGenerator(otherLayers);
         assertNotEquals(defaultGenerator, otherGenerator);

@@ -29,13 +29,13 @@ public class PointGeneratorTest {
 
     @Test
     public void testGetNextSegmentCount() {
-        Double[] nextSegment = defaultGenerator.getNextPoints(expectedCount);
+        Double[] nextSegment = defaultGenerator.getNext(expectedCount);
         assertEquals(expectedCount, nextSegment.length, 0);
     }
 
     @Test
     public void testValuesBounded() {
-        Double[] nextSegment = defaultGenerator.getNextPoints(expectedCount);
+        Double[] nextSegment = defaultGenerator.getNext(expectedCount);
         for (Double value : nextSegment) {
             assertNotNull(value);
             assertTrue(value < 1.0);
@@ -49,8 +49,8 @@ public class PointGeneratorTest {
         double amplitudeFactor = random.nextDouble() * 100;
         PointGenerator amplifiedLayer = new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
 
-        Double[] values = defaultGenerator.getNextPoints(expectedCount);
-        Double[] actualAmplifiedValues = amplifiedLayer.getNextPoints(expectedCount);
+        Double[] values = defaultGenerator.getNext(expectedCount);
+        Double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount);
 
         Double[] expectedAmplifiedValues = new Double[values.length];
         for (int i = 0; i < values.length; i++) {
@@ -62,8 +62,8 @@ public class PointGeneratorTest {
     @Test
     public void testCreateSamePoints() {
         PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
-        Double[] nextSegment1 = defaultGenerator.getNextPoints(expectedCount);
-        Double[] nextSegment2 = sameLayer.getNextPoints(expectedCount);
+        Double[] nextSegment1 = defaultGenerator.getNext(expectedCount);
+        Double[] nextSegment2 = sameLayer.getNext(expectedCount);
         assertExpectedArrayEqualsActual(nextSegment1, nextSegment2, 0.0);
     }
 
@@ -75,7 +75,7 @@ public class PointGeneratorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNegativeCount() {
         PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-        layer.getNextPoints(-5);
+        layer.getNext(-5);
     }
 
     @Test

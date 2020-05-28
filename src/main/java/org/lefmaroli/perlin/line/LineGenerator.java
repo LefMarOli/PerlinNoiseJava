@@ -7,7 +7,7 @@ import org.lefmaroli.vector.Vector2D;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class LineGenerator extends NoiseLineGenerator implements BasicLineNoiseGenerator{
+public class LineGenerator implements BasicLineNoiseGenerator, LineNoiseGenerator {
 
     private static final double MAX_2D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
 
@@ -50,7 +50,7 @@ public class LineGenerator extends NoiseLineGenerator implements BasicLineNoiseG
     }
 
     @Override
-    public Double[][] getNextLines(int count) {
+    public Double[][] getNext(int count) {
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }

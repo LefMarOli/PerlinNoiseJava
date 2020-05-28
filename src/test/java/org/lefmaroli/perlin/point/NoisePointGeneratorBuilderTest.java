@@ -11,15 +11,15 @@ public class NoisePointGeneratorBuilderTest {
 
     @Test
     public void testBuildNoisePointNotNull() throws NoiseBuilderException {
-        NoisePointGenerator noisePointGenerator = new NoisePointGeneratorBuilder().build();
+        PointNoiseGenerator noisePointGenerator = new NoisePointGeneratorBuilder().build();
         assertNotNull(noisePointGenerator);
     }
 
     @Test
     public void testBuildNoisePointCreateSameFromSameBuilder() throws NoiseBuilderException {
         NoisePointGeneratorBuilder noisePointGeneratorBuilder = new NoisePointGeneratorBuilder();
-        NoisePointGenerator noisePointGenerator = noisePointGeneratorBuilder.build();
-        NoisePointGenerator noisePointGenerator2 = noisePointGeneratorBuilder.build();
+        PointNoiseGenerator noisePointGenerator = noisePointGeneratorBuilder.build();
+        PointNoiseGenerator noisePointGenerator2 = noisePointGeneratorBuilder.build();
         assertNotNull(noisePointGenerator2);
         assertEquals(noisePointGenerator, noisePointGenerator2);
     }

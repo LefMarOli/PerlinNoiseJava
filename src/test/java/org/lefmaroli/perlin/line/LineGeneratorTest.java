@@ -50,7 +50,7 @@ public class LineGeneratorTest {
 
     @Test
     public void getNextLinesCorrectSize() {
-        Double[][] lines = defaultLineGenerator.getNextLines(requestedLines);
+        Double[][] lines = defaultLineGenerator.getNext(requestedLines);
         assertEquals(requestedLines, lines.length, 0);
         for (Double[] line : lines) {
             assertEquals(lineLength, line.length, 0);
@@ -80,12 +80,12 @@ public class LineGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextLinesInvalidCount() {
-        defaultLineGenerator.getNextLines(-5);
+        defaultLineGenerator.getNext(-5);
     }
 
     @Test
     public void testValuesBounded() {
-        Double[][] lines = defaultLineGenerator.getNextLines(requestedLines);
+        Double[][] lines = defaultLineGenerator.getNext(requestedLines);
         for (Double[] line : lines) {
             for (Double value : line) {
                 assertNotNull(value);
@@ -103,8 +103,8 @@ public class LineGeneratorTest {
         double newMaxAmplitude = random.nextDouble() * 100;
         LineGenerator amplifiedLayer = new LineGenerator(lineLength, 50, 50, newMaxAmplitude, randomSeed);
 
-        Double[][] lines = layer.getNextLines(requestedLines);
-        Double[][] amplifiedLines = amplifiedLayer.getNextLines(requestedLines);
+        Double[][] lines = layer.getNext(requestedLines);
+        Double[][] amplifiedLines = amplifiedLayer.getNext(requestedLines);
 
         for (Double[] line : lines) {
             for (int j = 0; j < line.length; j++) {
@@ -122,8 +122,8 @@ public class LineGeneratorTest {
         long randomSeed = System.currentTimeMillis();
         LineGenerator layer = new LineGenerator(lineLength, 50, 50, 1.0, randomSeed);
         LineGenerator sameLayer = new LineGenerator(lineLength, 50, 50, 1.0, randomSeed);
-        Double[][] nextSegment1 = layer.getNextLines(requestedLines);
-        Double[][] nextSegment2 = sameLayer.getNextLines(requestedLines);
+        Double[][] nextSegment1 = layer.getNext(requestedLines);
+        Double[][] nextSegment2 = sameLayer.getNext(requestedLines);
 
         assertEquals(nextSegment1.length, nextSegment2.length, 0);
         for (int i = 0; i < nextSegment1.length; i++) {
@@ -203,7 +203,7 @@ public class LineGeneratorTest {
         LineGenerator generator =
                 new LineGenerator(lineLength, defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
                         1.0, randomSeed);
-        Double[][] lines = generator.getNextLines(requestedLines);
+        Double[][] lines = generator.getNext(requestedLines);
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
@@ -211,7 +211,7 @@ public class LineGeneratorTest {
             if (System.currentTimeMillis() - previousTime > 5) {
                 previousTime = System.currentTimeMillis();
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
-                lines[lines.length - 1] = generator.getNextLines(1)[0];
+                lines[lines.length - 1] = generator.getNext(1)[0];
                 image.updateImage(lines);
             }
         }
@@ -222,7 +222,7 @@ public class LineGeneratorTest {
     public void testMorphingLine() {
         LineGenerator layer2D = new LineGenerator(lineLength, 100, defaultInterpolationPointsAlongNoiseSpace, 1.0,
                 System.currentTimeMillis());
-        Double[][] lines = layer2D.getNextLines(1);
+        Double[][] lines = layer2D.getNext(1);
         LineChart chart = new LineChart("Morphing line", "length", "values");
         String label = "line";
         chart.addEquidistantDataSeries(lines[0], label);
@@ -234,7 +234,7 @@ public class LineGeneratorTest {
             if (System.currentTimeMillis() - previousTime > 15) {
                 previousTime = System.currentTimeMillis();
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
-                lines[lines.length - 1] = layer2D.getNextLines(1)[0];
+                lines[lines.length - 1] = layer2D.getNext(1)[0];
                 EventQueue.invokeLater(() -> {
                     chart.updateDataSeries(dataSeries -> {
                         for (int i = 0; i < lines[0].length; i++) {

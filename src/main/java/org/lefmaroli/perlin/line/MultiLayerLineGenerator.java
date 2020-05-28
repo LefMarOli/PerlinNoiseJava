@@ -1,43 +1,19 @@
 package org.lefmaroli.perlin.line;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.lefmaroli.perlin.LayeredNoiseGenerator;
 
 import java.util.List;
 import java.util.Objects;
 
-public class MultiLayerLineGenerator extends NoiseLineGenerator {
-
-    private final static Logger LOGGER = LogManager.getLogger(MultiLayerLineGenerator.class);
+public class MultiLayerLineGenerator extends LayeredNoiseGenerator<Double[][], LineNoiseGenerator>
+        implements LineNoiseGenerator {
 
     private final int lineLength;
-    private final List<NoiseLineGenerator> layers;
-    private final double maxAmplitude;
 
-    MultiLayerLineGenerator(List<NoiseLineGenerator> layers) {
-        if (layers.size() < 1) {
-            throw new IllegalArgumentException("Number of layers must at least be 1");
-        }
+    MultiLayerLineGenerator(List<LineNoiseGenerator> layers) {
+        super(layers);
         this.lineLength = layers.get(0).getLineLength();
-        assertAllLayersHaveSameLineLength(this.lineLength, layers);
-        this.layers = layers;
-        double sum = 0.0;
-        for (NoiseLineGenerator layer : layers) {
-            sum += layer.getMaxAmplitude();
-        }
-        this.maxAmplitude = sum;
-    }
-
-    public int getNumberOfLayers() {
-        return layers.size();
-    }
-
-    @Override
-    public Double[][] getNextLines(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Parameter count must be greater than 0");
-        }
-        return generateResults(count);
+        assertAllLayersHaveSameLineLength(layers);
     }
 
     @Override
@@ -51,30 +27,25 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
         if (o == null || getClass() != o.getClass()) return false;
         MultiLayerLineGenerator that = (MultiLayerLineGenerator) o;
         return lineLength == that.lineLength &&
-                Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                layers.equals(that.layers);
+                Double.compare(that.getMaxAmplitude(), getMaxAmplitude()) == 0 &&
+                getLayers().equals(that.getLayers());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineLength, layers, maxAmplitude);
-    }
-
-    @Override
-    public double getMaxAmplitude() {
-        return maxAmplitude;
+        return Objects.hash(lineLength, getLayers(), getMaxAmplitude());
     }
 
     @Override
     public String toString() {
         return "MultiLayerLineGenerator{" +
                 "lineLength=" + lineLength +
-                ", layers=" + layers +
-                ", maxAmplitude=" + maxAmplitude +
+                ", layers=" + getLayers() +
+                ", maxAmplitude=" + getMaxAmplitude() +
                 '}';
     }
 
-    private static void assertAllLayersHaveSameLineLength(int lineLength, List<NoiseLineGenerator> layers) {
+    private void assertAllLayersHaveSameLineLength(List<LineNoiseGenerator> layers) {
         for (int i = 0; i < layers.size(); i++) {
             if (layers.get(i).getLineLength() != lineLength) {
                 throw new IllegalArgumentException(
@@ -83,20 +54,17 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
         }
     }
 
-    private Double[][] generateResults(int count) {
-        Double[][] results = initializeResults(count);
-        for (NoiseLineGenerator layer : layers) {
-            Double[][] layerData = layer.getNextLines(count);
-            for (int i = 0; i < count; i++) {
-                for (int j = 0; j < lineLength; j++) {
-                    results[i][j] = results[i][j] + layerData[i][j];
-                }
+    @Override
+    protected void addToResults(Double[][] layerData, Double[][] results) {
+        for (int i = 0; i < layerData.length; i++) {
+            for (int j = 0; j < lineLength; j++) {
+                results[i][j] = results[i][j] + layerData[i][j];
             }
         }
-        return normalizeResults(results);
     }
 
-    private Double[][] initializeResults(int count) {
+    @Override
+    protected Double[][] initializeResults(int count) {
         Double[][] results = new Double[count][lineLength];
         for (int i = 0; i < count; i++) {
             for (int j = 0; j < lineLength; j++) {
@@ -106,7 +74,9 @@ public class MultiLayerLineGenerator extends NoiseLineGenerator {
         return results;
     }
 
-    private Double[][] normalizeResults(Double[][] results) {
+    @Override
+    protected Double[][] normalize(Double[][] results) {
+        double maxAmplitude = getMaxAmplitude();
         if (maxAmplitude != 1.0) {
             for (int i = 0; i < results.length; i++) {
                 for (int j = 0; j < lineLength; j++) {

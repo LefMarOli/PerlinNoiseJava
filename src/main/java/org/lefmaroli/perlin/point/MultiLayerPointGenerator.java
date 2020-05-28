@@ -1,35 +1,22 @@
 package org.lefmaroli.perlin.point;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.lefmaroli.perlin.LayeredNoiseGenerator;
 
 import java.util.List;
 import java.util.Objects;
 
-public class MultiLayerPointGenerator extends NoisePointGenerator {
+public class MultiLayerPointGenerator extends LayeredNoiseGenerator<Double[], PointNoiseGenerator>
+        implements PointNoiseGenerator {
 
-    private final static Logger LOGGER = LogManager.getLogger(MultiLayerPointGenerator.class);
-
-    private final List<NoisePointGenerator> layers;
-    private final double maxAmplitude;
-
-    MultiLayerPointGenerator(List<NoisePointGenerator> layers){
-        if(layers.size() < 1){
-            throw new IllegalArgumentException("Number of layers must at least be 1");
-        }
-        this.layers = layers;
-        double sum = 0.0;
-        for (NoisePointGenerator layer : layers) {
-            sum += layer.getMaxAmplitude();
-        }
-        this.maxAmplitude = sum;
+    MultiLayerPointGenerator(List<PointNoiseGenerator> layers) {
+        super(layers);
     }
 
     @Override
     public String toString() {
         return "MultiLayerPointGenerator{" +
-                "layers=" + layers +
-                ", maxAmplitude=" + maxAmplitude +
+                "layers=" + getLayers() +
+                ", maxAmplitude=" + getMaxAmplitude() +
                 '}';
     }
 
@@ -38,33 +25,17 @@ public class MultiLayerPointGenerator extends NoisePointGenerator {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MultiLayerPointGenerator that = (MultiLayerPointGenerator) o;
-        return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                layers.equals(that.layers);
+        return Double.compare(that.getMaxAmplitude(), getMaxAmplitude()) == 0 &&
+                getLayers().equals(that.getLayers());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(layers, maxAmplitude);
-    }
-
-    public int getNumberOfLayers() {
-        return layers.size();
+        return Objects.hash(getLayers(), getMaxAmplitude());
     }
 
     @Override
-    public Double[] getNextPoints(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Parameter count must be greater than 0");
-        }
-        return generateResults(count);
-    }
-
-    @Override
-    public double getMaxAmplitude() {
-        return maxAmplitude;
-    }
-
-    private static Double[] initializeResults(int count) {
+    protected Double[] initializeResults(int count) {
         Double[] results = new Double[count];
         for (int i = 0; i < count; i++) {
             results[i] = 0.0;
@@ -72,21 +43,18 @@ public class MultiLayerPointGenerator extends NoisePointGenerator {
         return results;
     }
 
-    private Double[] generateResults(int count) {
-        Double[] results = initializeResults(count);
-        for (NoisePointGenerator layer : layers) {
-            Double[] layerData = layer.getNextPoints(count);
-            for (int i = 0; i < count; i++) {
-                results[i] = results[i] + layerData[i];
-            }
+    @Override
+    protected void addToResults(Double[] layerData, Double[] results) {
+        for (int i = 0; i < results.length; i++) {
+            results[i] = results[i] + layerData[i];
         }
-        return normalizeResults(results);
     }
 
-    private Double[] normalizeResults(Double[] results) {
-        if (maxAmplitude != 1.0) {
+    @Override
+    protected Double[] normalize(Double[] results) {
+        if (getMaxAmplitude() != 1.0) {
             for (int i = 0; i < results.length; i++) {
-                results[i] = results[i] / maxAmplitude;
+                results[i] = results[i] / getMaxAmplitude();
             }
         }
         return results;

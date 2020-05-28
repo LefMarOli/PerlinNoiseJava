@@ -11,9 +11,9 @@ public class NoisePointNavigator {
     private static final Logger LOGGER = LogManager.getLogger(NoisePointNavigator.class);
     private final Vector<Double> generated = new Vector<>();
     private final AtomicInteger currentIndex = new AtomicInteger(0);
-    private final NoisePointGenerator noiseGenerator;
+    private final PointNoiseGenerator noiseGenerator;
 
-    public NoisePointNavigator(NoisePointGenerator noiseGenerator) {
+    public NoisePointNavigator(PointNoiseGenerator noiseGenerator) {
         this.noiseGenerator = noiseGenerator;
     }
 
@@ -33,7 +33,7 @@ public class NoisePointNavigator {
 
     private void generateNewData(int count, int currentIndexPosition) {
         if (generated.size() < currentIndexPosition + count) {
-            Collections.addAll(generated, noiseGenerator.getNextPoints(count));
+            Collections.addAll(generated, noiseGenerator.getNext(count));
         }
     }
 

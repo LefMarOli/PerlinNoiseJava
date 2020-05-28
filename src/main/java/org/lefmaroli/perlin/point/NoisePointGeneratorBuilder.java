@@ -6,7 +6,7 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import java.util.List;
 
 public class NoisePointGeneratorBuilder
-        extends NoiseBuilder<NoisePointGenerator, NoisePointGeneratorBuilder> {
+        extends NoiseBuilder<Double[], PointNoiseGenerator, NoisePointGeneratorBuilder> {
 
     public NoisePointGeneratorBuilder() {
         super(1);
@@ -18,18 +18,18 @@ public class NoisePointGeneratorBuilder
     }
 
     @Override
-    public NoisePointGenerator build() throws NoiseBuilderException {
-        return (NoisePointGenerator) super.build();
+    public PointNoiseGenerator build() throws NoiseBuilderException {
+        return (PointNoiseGenerator) super.build();
     }
 
     @Override
-    protected NoisePointGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
+    protected PointNoiseGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
                                                         long randomSeed) {
         return new PointGenerator(interpolationPoints.get(0), layerAmplitude, randomSeed);
     }
 
     @Override
-    protected NoisePointGenerator buildMultipleNoiseLayer(List<NoisePointGenerator> layers) {
+    protected PointNoiseGenerator buildMultipleNoiseLayer(List<PointNoiseGenerator> layers) {
         return new MultiLayerPointGenerator(layers);
     }
 }

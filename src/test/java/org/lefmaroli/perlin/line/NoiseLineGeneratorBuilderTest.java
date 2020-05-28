@@ -16,15 +16,15 @@ public class NoiseLineGeneratorBuilderTest {
 
     @Test
     public void testBuildNoiseLineNotNull() throws NoiseBuilderException {
-        NoiseLineGenerator noiseLineGenerator = new NoiseLineGeneratorBuilder(lineLength).build();
+        LineNoiseGenerator noiseLineGenerator = new NoiseLineGeneratorBuilder(lineLength).build();
         assertNotNull(noiseLineGenerator);
     }
 
     @Test
     public void testBuildNoiseLineCreateSameFromSameBuilder() throws NoiseBuilderException {
         NoiseLineGeneratorBuilder noiseLineGeneratorBuilder = new NoiseLineGeneratorBuilder(lineLength);
-        NoiseLineGenerator noisePointGenerator = noiseLineGeneratorBuilder.build();
-        NoiseLineGenerator noisePointGenerator2 = noiseLineGeneratorBuilder.build();
+        LineNoiseGenerator noisePointGenerator = noiseLineGeneratorBuilder.build();
+        LineNoiseGenerator noisePointGenerator2 = noiseLineGeneratorBuilder.build();
         assertNotNull(noisePointGenerator2);
         assertEquals(noisePointGenerator, noisePointGenerator2);
     }
@@ -41,14 +41,14 @@ public class NoiseLineGeneratorBuilderTest {
     public void getNextLines() throws NoiseBuilderException {
         IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(128, 0.9);
         IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(128, 0.5);
-        NoiseLineGenerator generator = new NoiseLineGeneratorBuilder(lineLength)
+        LineNoiseGenerator generator = new NoiseLineGeneratorBuilder(lineLength)
                 .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
                 .withNoiseInterpolationPointCountGenerator(noiseInterpolationPointCountGenerator)
                 .withNumberOfLayers(4)
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
                 .build();
         int requestedLines = 800;
-        Double[][] lines = generator.getNextLines(requestedLines);
+        Double[][] lines = generator.getNext(requestedLines);
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
@@ -56,7 +56,7 @@ public class NoiseLineGeneratorBuilderTest {
             if (System.currentTimeMillis() - previousTime > 5) {
                 previousTime = System.currentTimeMillis();
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
-                lines[lines.length - 1] = generator.getNextLines(1)[0];
+                lines[lines.length - 1] = generator.getNext(1)[0];
                 image.updateImage(lines);
             }
         }

@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class MultiLayerPointGeneratorTest {
 
     private MultiLayerPointGenerator defaultGenerator;
-    private List<NoisePointGenerator> layers;
+    private List<PointNoiseGenerator> layers;
     private double maxAmplitude = 1.75;
 
     @Before
@@ -39,13 +39,13 @@ public class MultiLayerPointGeneratorTest {
     @Test
     public void testGetNextCount() {
         int expectedCount = 75;
-        Double[] nextSegment = defaultGenerator.getNextPoints(expectedCount);
+        Double[] nextSegment = defaultGenerator.getNext(expectedCount);
         assertEquals(expectedCount, nextSegment.length, 0);
     }
 
     @Test
     public void testGetNextBoundedValues() {
-        Double[] nextSegment = defaultGenerator.getNextPoints(10000);
+        Double[] nextSegment = defaultGenerator.getNext(10000);
         for (Double value : nextSegment) {
             assertTrue(value <= 1.0);
             assertTrue(value >= 0.0);
@@ -64,7 +64,7 @@ public class MultiLayerPointGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextNegativeCount() {
-        defaultGenerator.getNextPoints(-6);
+        defaultGenerator.getNext(-6);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class MultiLayerPointGeneratorTest {
 
     @Test
     public void testNotEquals() {
-        List<NoisePointGenerator> otherLayers = layers;
+        List<PointNoiseGenerator> otherLayers = layers;
         otherLayers.add(new PointGenerator(8, 0.1, 5L));
         MultiLayerPointGenerator otherGenerator = new MultiLayerPointGenerator(otherLayers);
         assertNotEquals(defaultGenerator, otherGenerator);
