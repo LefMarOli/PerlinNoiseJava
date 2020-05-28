@@ -89,8 +89,22 @@ public class RoundUtilsTest {
     }
 
     @Test
-    public void testRoundToClosestFactor(){
+    public void testRoundToClosestFactorUnder(){
         assertEquals(24, RoundUtils.roundNToClosestFactorOfM(23, 48));
+    }
+
+    @Test
+    public void testRoundToClosestFactorLower(){
         assertEquals(16, RoundUtils.roundNToClosestFactorOfM(15, 48));
+    }
+
+    @Test
+    public void testRoundToClosestFactorExactly(){
+        assertEquals(16, RoundUtils.roundNToClosestFactorOfM(16, 48));
+    }
+
+    @Test
+    public void testRoundToClosestFactorSameDistanceDefaultsToLowest(){
+        assertEquals(2, RoundUtils.roundNToClosestFactorOfM(3, 16));
     }
 }

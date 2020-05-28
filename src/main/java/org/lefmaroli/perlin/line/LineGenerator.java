@@ -57,9 +57,8 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     }
 
     private int correctLineInterpolationPointsForCircularity(int lineInterpolationPoints) {
-        int lineSegmentLength = lineInterpolationPoints;
         int newInterpolationPointCount =
-                RoundUtils.roundNToClosestFactorOfM(lineSegmentLength, lineLength);
+                RoundUtils.roundNToClosestFactorOfM(lineInterpolationPoints, lineLength);
         if (newInterpolationPointCount != lineInterpolationPoints) {
             LOGGER.warn("Modified required line interpolation point count from " + lineInterpolationPoints + " to " +
                     newInterpolationPointCount + " to respect circularity.");
