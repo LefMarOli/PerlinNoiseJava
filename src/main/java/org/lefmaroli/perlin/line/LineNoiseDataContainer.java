@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineNoiseDataContainer
-        implements NoiseDataContainer<Double[][], Double[], LineNoiseDataContainer, LineNoiseData> {
+        implements NoiseDataContainer<Double[][], LineNoiseDataContainer, LineNoiseData> {
 
     private final List<LineNoiseData> data;
 

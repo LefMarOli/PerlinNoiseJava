@@ -3,9 +3,8 @@ package org.lefmaroli.perlin.data;
 import java.util.List;
 
 public interface NoiseDataContainer<RawDataType,
-        RawUnderlyingDataType,
-        NoiseDataType extends NoiseData<RawDataType, NoiseDataType>,
-        UnderlyingDataType extends NoiseData<RawUnderlyingDataType, UnderlyingDataType>>
+        NoiseDataType extends NoiseData<?, NoiseDataType>,
+        UnderlyingDataType extends NoiseData<?, UnderlyingDataType>>
         extends NoiseData<RawDataType, NoiseDataType> {
     List<UnderlyingDataType> getAsList();
 }

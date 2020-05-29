@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PointNoiseDataContainer
-        implements NoiseDataContainer<Double[], Double, PointNoiseDataContainer, PointNoiseData> {
+        implements NoiseDataContainer<Double[], PointNoiseDataContainer, PointNoiseData> {
 
     private final List<PointNoiseData> data;
 
