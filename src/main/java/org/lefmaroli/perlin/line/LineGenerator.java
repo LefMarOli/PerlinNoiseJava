@@ -28,7 +28,6 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     private final int randomBounds;
     private final boolean isCircular;
     private List<Vector2D> previousBounds;
-    private final DistanceMapper2D distanceMapper2D;
 
     public LineGenerator(int lineLength, int lineInterpolationPoints, int noiseInterpolationPoints,
                          double maxAmplitude, long randomSeed, boolean isCircular) {
@@ -54,7 +53,6 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         this.randomBounds = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
         addGeneratedRows(lineLength);
-        this.distanceMapper2D = new DistanceMapper2D(noiseInterpolationPoints, lineInterpolationPoints);
         LOGGER.debug("Created new " + toString());
     }
 
@@ -179,10 +177,10 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
 
                 double xDist = (double) (x) / (noiseInterpolationPoints);
 
-                Vector2D topLeftDist = distanceMapper2D.getForCoordinates(x, y).getTopLeftDistance();
-                Vector2D topRightDist = distanceMapper2D.getForCoordinates(x, y).getTopRightDistance();
-                Vector2D bottomLeftDist = distanceMapper2D.getForCoordinates(x, y).getBottomLeftDistance();
-                Vector2D bottomRightDist = distanceMapper2D.getForCoordinates(x, y).getBottomRightDistance();
+                Vector2D topLeftDist = new Vector2D(xDist, yDist);
+                Vector2D topRightDist = new Vector2D(xDist - 1.0, yDist);
+                Vector2D bottomLeftDist = new Vector2D(xDist, yDist - 1.0);
+                Vector2D bottomRightDist = new Vector2D(xDist - 1.0, yDist - 1.0);
 
                 double topLeftBoundImpact = topLeftBound.getVectorProduct(topLeftDist);
                 double topRightBoundImpact = topRightBound.getVectorProduct(topRightDist);
