@@ -28,6 +28,7 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     private final int randomBounds;
     private final boolean isCircular;
     private List<Vector2D> previousBounds;
+    private final DistanceMapper2D distanceMapper2D;
 
     public LineGenerator(int lineLength, int lineInterpolationPoints, int noiseInterpolationPoints,
                          double maxAmplitude, long randomSeed, boolean isCircular) {
@@ -53,6 +54,8 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         this.randomBounds = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
         addGeneratedRows(lineLength);
+        this.distanceMapper2D = new DistanceMapper2D(noiseInterpolationPoints, lineInterpolationPoints);
+        LOGGER.debug("Created new " + toString());
     }
 
     @Override
@@ -169,22 +172,22 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
             Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
             Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
 
-            int segmentYIndex = yIndex % lineInterpolationPoints;
-            double yDist = (double) (segmentYIndex) / (lineInterpolationPoints);
+            int y = yIndex % lineInterpolationPoints;
+            double yDist = (double) (y) / (lineInterpolationPoints);
 
-            for (int segmentXIndex = 0; segmentXIndex < noiseInterpolationPoints; segmentXIndex++) {
+            for (int x = 0; x < noiseInterpolationPoints; x++) {
 
-                double xDist = (double) (segmentXIndex) / (noiseInterpolationPoints);
+                double xDist = (double) (x) / (noiseInterpolationPoints);
 
-                Vector2D topLeftDistance = new Vector2D(xDist, yDist);
-                Vector2D topRightDistance = new Vector2D(xDist - 1.0, yDist);
-                Vector2D bottomLeftDistance = new Vector2D(xDist, yDist - 1.0);
-                Vector2D bottomRightDistance = new Vector2D(xDist - 1.0, yDist - 1.0);
+                Vector2D topLeftDist = distanceMapper2D.getForCoordinates(x, y).getTopLeftDistance();
+                Vector2D topRightDist = distanceMapper2D.getForCoordinates(x, y).getTopRightDistance();
+                Vector2D bottomLeftDist = distanceMapper2D.getForCoordinates(x, y).getBottomLeftDistance();
+                Vector2D bottomRightDist = distanceMapper2D.getForCoordinates(x, y).getBottomRightDistance();
 
-                double topLeftBoundImpact = topLeftBound.getVectorProduct(topLeftDistance);
-                double topRightBoundImpact = topRightBound.getVectorProduct(topRightDistance);
-                double bottomLeftBoundImpact = bottomLeftBound.getVectorProduct(bottomLeftDistance);
-                double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDistance);
+                double topLeftBoundImpact = topLeftBound.getVectorProduct(topLeftDist);
+                double topRightBoundImpact = topRightBound.getVectorProduct(topRightDist);
+                double bottomLeftBoundImpact = bottomLeftBound.getVectorProduct(bottomLeftDist);
+                double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDist);
 
                 double interpolatedValue = Interpolation
                         .twoDimensionalWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,

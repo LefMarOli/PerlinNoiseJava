@@ -22,6 +22,14 @@ public class Vector2D {
         return (this.x * other.x) + (this.y * other.y);
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     public Vector2D normalize() {
         double length = getLength();
         if (length > 0.0) {
