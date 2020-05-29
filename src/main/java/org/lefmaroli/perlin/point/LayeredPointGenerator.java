@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin.point;
 
-import org.lefmaroli.execution.FixedSizeScheduler;
+import org.lefmaroli.execution.ExecutorServiceScheduler;
 import org.lefmaroli.perlin.layers.LayeredNoiseGenerator;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<PointNoiseDataC
         implements PointNoiseGenerator {
 
     LayeredPointGenerator(List<PointNoiseGenerator> layers) {
-        super(layers, new FixedSizeScheduler<>(10));
+        super(layers, new ExecutorServiceScheduler<>(10));
     }
 
     @Override

@@ -2,12 +2,15 @@ package org.lefmaroli.execution;
 
 import java.util.concurrent.*;
 
-public class FixedSizeScheduler<ReturnType> implements TaskScheduler<ReturnType> {
+public class ExecutorServiceScheduler<ReturnType> implements TaskScheduler<ReturnType> {
 
     private final ExecutorService executorService;
 
-    public FixedSizeScheduler(int size){
+    public ExecutorServiceScheduler(int size){
         this.executorService = Executors.newFixedThreadPool(size);
+    }
+    public ExecutorServiceScheduler(ExecutorService executorService){
+        this.executorService = executorService;
     }
 
     @Override
