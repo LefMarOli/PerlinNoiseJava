@@ -71,13 +71,13 @@ public class InterpolationTest {
         //0----1
         //|    |
         //1----0
-        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.5, 0.5), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0, 0.5), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 1, 0.5), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.5, 0), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.5, 1), 0.0);
+        assertEquals(0.5, Interpolation.linear2DWithFade(0, 1, 1, 0, 0.5, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.linear2DWithFade(0, 1, 1, 0, 0, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.linear2DWithFade(0, 1, 1, 0, 1, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.linear2DWithFade(0, 1, 1, 0, 0.5, 0), 0.0);
+        assertEquals(0.5, Interpolation.linear2DWithFade(0, 1, 1, 0, 0.5, 1), 0.0);
 
-        assertEquals(0.2729698272, Interpolation.twoDimensionalWithFade(0, 1, 1, 0, 0.3, 0.3), 1E-9);
+        assertEquals(0.2729698272, Interpolation.linear2DWithFade(0, 1, 1, 0, 0.3, 0.3), 1E-9);
     }
 
     @Test
@@ -85,12 +85,12 @@ public class InterpolationTest {
         //0----1
         //|    |
         //1----0
-        assertEquals(0.5, Interpolation.twoDimensional(0, 1, 1, 0, 0.5, 0.5), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensional(0, 1, 1, 0, 0, 0.5), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensional(0, 1, 1, 0, 1, 0.5), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensional(0, 1, 1, 0, 0.5, 0), 0.0);
-        assertEquals(0.5, Interpolation.twoDimensional(0, 1, 1, 0, 0.5, 1), 0.0);
-        assertEquals(0.42, Interpolation.twoDimensional(0, 1, 1, 0, 0.3, 0.3), 1E-9);
+        assertEquals(0.5, Interpolation.linear2D(0, 1, 1, 0, 0.5, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.linear2D(0, 1, 1, 0, 0, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.linear2D(0, 1, 1, 0, 1, 0.5), 0.0);
+        assertEquals(0.5, Interpolation.linear2D(0, 1, 1, 0, 0.5, 0), 0.0);
+        assertEquals(0.5, Interpolation.linear2D(0, 1, 1, 0, 0.5, 1), 0.0);
+        assertEquals(0.42, Interpolation.linear2D(0, 1, 1, 0, 0.3, 0.3), 1E-9);
     }
 
     @Test
@@ -98,12 +98,12 @@ public class InterpolationTest {
         //0.3----10.9
         // |      |
         //-7------64.3
-        assertEquals(17.125, Interpolation.twoDimensional(0.3, 10.9, -7, 64.3, 0.5, 0.5), 1E-9);
-        assertEquals(-3.35, Interpolation.twoDimensional(0.3, 10.9, -7, 64.3, 0, 0.5), 1E-9);
-        assertEquals(37.6, Interpolation.twoDimensional(0.3, 10.9, -7, 64.3, 1, 0.5), 1E-9);
-        assertEquals(5.6, Interpolation.twoDimensional(0.3, 10.9, -7, 64.3, 0.5, 0), 1E-9);
-        assertEquals(28.65, Interpolation.twoDimensional(0.3, 10.9, -7, 64.3, 0.5, 1), 1E-9);
-        assertEquals(6.753, Interpolation.twoDimensional(0.3, 10.9, -7, 64.3, 0.3, 0.3), 1E-9);
+        assertEquals(17.125, Interpolation.linear2D(0.3, 10.9, -7, 64.3, 0.5, 0.5), 1E-9);
+        assertEquals(-3.35, Interpolation.linear2D(0.3, 10.9, -7, 64.3, 0, 0.5), 1E-9);
+        assertEquals(37.6, Interpolation.linear2D(0.3, 10.9, -7, 64.3, 1, 0.5), 1E-9);
+        assertEquals(5.6, Interpolation.linear2D(0.3, 10.9, -7, 64.3, 0.5, 0), 1E-9);
+        assertEquals(28.65, Interpolation.linear2D(0.3, 10.9, -7, 64.3, 0.5, 1), 1E-9);
+        assertEquals(6.753, Interpolation.linear2D(0.3, 10.9, -7, 64.3, 0.3, 0.3), 1E-9);
     }
 
     @Test
@@ -111,11 +111,11 @@ public class InterpolationTest {
         //0.3----10.9
         // |      |
         //-7------64.3
-        assertEquals(17.125, Interpolation.twoDimensionalWithFade(0.3, 10.9, -7, 64.3, 0.5, 0.5), 1E-9);
-        assertEquals(-3.35, Interpolation.twoDimensionalWithFade(0.3, 10.9, -7, 64.3, 0, 0.5), 1E-9);
-        assertEquals(37.6, Interpolation.twoDimensionalWithFade(0.3, 10.9, -7, 64.3, 1, 0.5), 1E-9);
-        assertEquals(5.6, Interpolation.twoDimensionalWithFade(0.3, 10.9, -7, 64.3, 0.5, 0), 1E-9);
-        assertEquals(28.65, Interpolation.twoDimensionalWithFade(0.3, 10.9, -7, 64.3, 0.5, 1), 1E-9);
-        assertEquals(2.45248574448, Interpolation.twoDimensionalWithFade(0.3, 10.9, -7, 64.3, 0.3, 0.3), 1E-9);
+        assertEquals(17.125, Interpolation.linear2DWithFade(0.3, 10.9, -7, 64.3, 0.5, 0.5), 1E-9);
+        assertEquals(-3.35, Interpolation.linear2DWithFade(0.3, 10.9, -7, 64.3, 0, 0.5), 1E-9);
+        assertEquals(37.6, Interpolation.linear2DWithFade(0.3, 10.9, -7, 64.3, 1, 0.5), 1E-9);
+        assertEquals(5.6, Interpolation.linear2DWithFade(0.3, 10.9, -7, 64.3, 0.5, 0), 1E-9);
+        assertEquals(28.65, Interpolation.linear2DWithFade(0.3, 10.9, -7, 64.3, 0.5, 1), 1E-9);
+        assertEquals(2.45248574448, Interpolation.linear2DWithFade(0.3, 10.9, -7, 64.3, 0.3, 0.3), 1E-9);
     }
 }

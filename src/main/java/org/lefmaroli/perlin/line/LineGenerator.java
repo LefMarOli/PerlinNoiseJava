@@ -188,7 +188,7 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
                 double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDist);
 
                 double interpolatedValue = Interpolation
-                        .twoDimensionalWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
+                        .linear2DWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
                                 bottomRightBoundImpact, xDist, yDist);
                 double adjustedValue = adjustValueRange(interpolatedValue);
                 double amplifiedValue = adjustedValue * maxAmplitude;
