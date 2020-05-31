@@ -7,7 +7,8 @@ import org.lefmaroli.perlin.RootNoiseGenerator;
 
 import java.util.*;
 
-public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
+public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, PointNoiseData>
+        implements PointNoiseGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
 
@@ -15,7 +16,6 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
     private final int interpolationPoints;
     private final Random randomGenerator;
     private final long randomSeed;
-    private final Queue<PointNoiseData> generated = new LinkedList<>();
     private double previousBound;
 
     public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
@@ -27,38 +27,7 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
         this.randomSeed = randomSeed;
         this.randomGenerator = new Random(randomSeed);
         this.previousBound = randomGenerator.nextDouble();
-        LOGGER.debug("Created with max amplitude of " + maxAmplitude + " and " + interpolationPoints +
-                " interpolation points.");
-    }
-
-    @Override
-    public PointNoiseDataContainer getNext(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be greater than 0");
-        }
-        return new PointNoiseDataContainer(computeAtLeast(count));
-    }
-
-    private List<PointNoiseData> computeAtLeast(int count){
-        List<PointNoiseData> results = new ArrayList<>(count);
-        if(count < generated.size()){
-            for (int i = 0; i < count; i++) {
-                results.add(generated.poll());
-            }
-        }else{
-            for (int i = 0; i < generated.size(); i++) {
-                results.add(generated.poll());
-            }
-            int newCount = count - results.size();
-            while(newCount > interpolationPoints){
-                results.addAll(generateNextSegment());
-                newCount -= interpolationPoints;
-            }
-            List<PointNoiseData> lastSegment = generateNextSegment();
-            results.addAll(lastSegment.subList(0, newCount));
-            generated.addAll(lastSegment.subList(newCount, lastSegment.size()));
-        }
-        return results;
+        LOGGER.debug("Created new " + toString());
     }
 
     @Override
@@ -95,7 +64,8 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
         return interpolationPoints;
     }
 
-    private List<PointNoiseData> generateNextSegment() {
+    @Override
+    protected List<PointNoiseData> generateNextSegment() {
         double newBound = randomGenerator.nextDouble();
         double currentPos = 0.0;
         List<PointNoiseData> results = new ArrayList<>(interpolationPoints);
@@ -107,5 +77,10 @@ public class PointGenerator implements RootNoiseGenerator, PointNoiseGenerator {
         }
         previousBound = newBound;
         return results;
+    }
+
+    @Override
+    protected PointNoiseDataContainer getInContainer(List<PointNoiseData> data) {
+        return new PointNoiseDataContainer(data);
     }
 }

@@ -7,9 +7,11 @@ import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.rounding.RoundUtils;
 import org.lefmaroli.vector.Vector2D;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator {
+public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGenerator {
 
     private static final double MAX_2D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
     private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
@@ -19,7 +21,6 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     private final int noiseInterpolationPoints;
     private final long randomSeed;
     private final RandomGenerator randomGenerator;
-    private final Queue<LineNoiseData> generated;
     private final int lineLength;
     private final int randomBounds;
     private final boolean isCircular;
@@ -45,18 +46,9 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         this.noiseInterpolationPoints = noiseInterpolationPoints;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
-        this.generated = new LinkedList<>();
         this.randomBounds = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
         LOGGER.debug("Created new " + toString());
-    }
-
-    @Override
-    public LineNoiseDataContainer getNext(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be greater than 0");
-        }
-        return computeAtLeast(count);
     }
 
     @Override
@@ -129,48 +121,33 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         return newInterpolationPointCount;
     }
 
-    private LineNoiseDataContainer computeAtLeast(int count) {
-        List<LineNoiseData> results = new ArrayList<>(count);
-        if (count < generated.size()) {
-            for (int i = 0; i < count; i++) {
-                results.add(generated.poll());
-            }
-        } else {
-            for (int i = 0; i < generated.size(); i++) {
-                results.add(generated.poll());
-            }
-            int newCount = count - results.size();
-            while (newCount > noiseInterpolationPoints) {
-                results.addAll(generateNextSegment());
-                newCount -= noiseInterpolationPoints;
-            }
-            List<LineNoiseData> lastSegment = generateNextSegment();
-            results.addAll(lastSegment.subList(0, newCount));
-            generated.addAll(lastSegment.subList(newCount, lastSegment.size()));
-        }
-        return new LineNoiseDataContainer(results);
-    }
-
-    private List<LineNoiseData> generateNextSegment() {
+    @Override
+    protected List<LineNoiseData> generateNextSegment() {
         List<Vector2D> newBounds = generateNewRandomBounds(randomBounds);
         List<LineNoiseData> results = new ArrayList<>(noiseInterpolationPoints);
         for (int xIndex = 0; xIndex < noiseInterpolationPoints; xIndex++) {
-            results.add(processX2(xIndex, newBounds));
+            results.add(processX(xIndex, newBounds));
         }
         previousBounds = newBounds;
         return results;
     }
 
-    private LineNoiseData processX2(int xIndex, List<Vector2D> newBounds) {
+    @Override
+    protected LineNoiseDataContainer getInContainer(List<LineNoiseData> data) {
+        return new LineNoiseDataContainer(data);
+    }
+
+
+    private LineNoiseData processX(int xIndex, List<Vector2D> newBounds) {
         double xDist = (double) (xIndex) / (noiseInterpolationPoints);
         List<Double> lineData = new ArrayList<>(lineLength);
         for (int yIndex = 0; yIndex < lineLength; yIndex++) {
-            lineData.add(processY2(xDist, yIndex, newBounds));
+            lineData.add(processY(xDist, yIndex, newBounds));
         }
         return new LineNoiseData(lineData);
     }
 
-    private double processY2(double xDist, int yIndex, List<Vector2D> newBounds) {
+    private double processY(double xDist, int yIndex, List<Vector2D> newBounds) {
         int lowerBoundIndex = yIndex / lineInterpolationPoints;
         Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
         Vector2D topRightBound = newBounds.get(lowerBoundIndex);

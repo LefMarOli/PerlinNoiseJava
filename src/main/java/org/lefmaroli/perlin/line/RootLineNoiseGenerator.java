@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.line;
 
 import org.lefmaroli.perlin.RootNoiseGenerator;
 
-public interface RootLineNoiseGenerator extends RootNoiseGenerator {
+public abstract class RootLineNoiseGenerator extends RootNoiseGenerator<LineNoiseDataContainer, LineNoiseData> {
 
-    int getLineInterpolationPointsCount();
+    public abstract int getLineInterpolationPointsCount();
 }
