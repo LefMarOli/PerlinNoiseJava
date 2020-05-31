@@ -100,7 +100,7 @@ public class LineNoiseGeneratorBuilderTest {
         duration /= numberOfIterations;
 
         logger.info("Mean duration: " + duration);
-        //No optimisation = 10seconds
+        //Current performance is 3562.6
     }
 
 }

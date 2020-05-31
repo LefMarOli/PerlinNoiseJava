@@ -53,7 +53,7 @@ public class PointNoiseGeneratorBuilderTest {
         duration /= numberOfIterations;
 
         logger.info("Mean duration: " + duration);
-        //No optimisation = 4ms
+        //Current performance: 1.012
     }
 
 }

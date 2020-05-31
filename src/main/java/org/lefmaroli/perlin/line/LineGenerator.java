@@ -7,11 +7,7 @@ import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.rounding.RoundUtils;
 import org.lefmaroli.vector.Vector2D;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.*;
 
 public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator {
 
@@ -23,7 +19,7 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
     private final int noiseInterpolationPoints;
     private final long randomSeed;
     private final RandomGenerator randomGenerator;
-    private final List<Queue<Double>> generated;
+    private final Queue<LineNoiseData> generated;
     private final int lineLength;
     private final int randomBounds;
     private final boolean isCircular;
@@ -49,10 +45,9 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         this.noiseInterpolationPoints = noiseInterpolationPoints;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
-        this.generated = new ArrayList<>(lineLength);
+        this.generated = new LinkedList<>();
         this.randomBounds = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
-        addGeneratedRows(lineLength);
         LOGGER.debug("Created new " + toString());
     }
 
@@ -61,8 +56,7 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         if (count < 1) {
             throw new IllegalArgumentException("Count must be greater than 0");
         }
-        assertEnoughDataIsGenerated(count);
-        return constructLinesFromGeneratedData(count);
+        return computeAtLeast(count);
     }
 
     @Override
@@ -135,67 +129,74 @@ public class LineGenerator implements RootLineNoiseGenerator, LineNoiseGenerator
         return newInterpolationPointCount;
     }
 
-    private void addGeneratedRows(int lineLength) {
-        for (int i = 0; i < lineLength; i++) {
-            this.generated.add(new LinkedBlockingQueue<>());
-        }
-    }
-
-    private void assertEnoughDataIsGenerated(int count) {
-        while (generated.get(0).size() < count) {
-            generateNextSegment();
-        }
-    }
-
-    private LineNoiseDataContainer constructLinesFromGeneratedData(int count) {
-        List<LineNoiseData> newLines = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            List<Double> values = new ArrayList<>(lineLength);
-            for (int j = 0; j < lineLength; j++) {
-                Queue<Double> row = generated.get(j);
-                values.add(row.poll());
+    private LineNoiseDataContainer computeAtLeast(int count) {
+        List<LineNoiseData> results = new ArrayList<>(count);
+        if (count < generated.size()) {
+            for (int i = 0; i < count; i++) {
+                results.add(generated.poll());
             }
-            newLines.add(new LineNoiseData(values));
+        } else {
+            for (int i = 0; i < generated.size(); i++) {
+                results.add(generated.poll());
+            }
+            int newCount = count - results.size();
+            while (newCount > noiseInterpolationPoints) {
+                results.addAll(generateNextSegment());
+                newCount -= noiseInterpolationPoints;
+            }
+            List<LineNoiseData> lastSegment = generateNextSegment();
+            results.addAll(lastSegment.subList(0, newCount));
+            generated.addAll(lastSegment.subList(newCount, lastSegment.size()));
         }
-        return new LineNoiseDataContainer(newLines);
+        return new LineNoiseDataContainer(results);
     }
 
-    private void generateNextSegment() {
+    private List<LineNoiseData> generateNextSegment() {
         List<Vector2D> newBounds = generateNewRandomBounds(randomBounds);
-
-        for (int yIndex = 0; yIndex < lineLength; yIndex++) {
-            int lowerBoundIndex = yIndex / lineInterpolationPoints;
-            Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
-            Vector2D topRightBound = newBounds.get(lowerBoundIndex);
-            Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
-            Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
-
-            int y = yIndex % lineInterpolationPoints;
-            double yDist = (double) (y) / (lineInterpolationPoints);
-
-            for (int x = 0; x < noiseInterpolationPoints; x++) {
-
-                double xDist = (double) (x) / (noiseInterpolationPoints);
-
-                Vector2D topLeftDist = new Vector2D(xDist, yDist);
-                Vector2D topRightDist = new Vector2D(xDist - 1.0, yDist);
-                Vector2D bottomLeftDist = new Vector2D(xDist, yDist - 1.0);
-                Vector2D bottomRightDist = new Vector2D(xDist - 1.0, yDist - 1.0);
-
-                double topLeftBoundImpact = topLeftBound.getVectorProduct(topLeftDist);
-                double topRightBoundImpact = topRightBound.getVectorProduct(topRightDist);
-                double bottomLeftBoundImpact = bottomLeftBound.getVectorProduct(bottomLeftDist);
-                double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDist);
-
-                double interpolatedValue = Interpolation
-                        .linear2DWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
-                                bottomRightBoundImpact, xDist, yDist);
-                double adjustedValue = adjustValueRange(interpolatedValue);
-                double amplifiedValue = adjustedValue * maxAmplitude;
-                generated.get(yIndex).add(amplifiedValue);
-            }
+        List<LineNoiseData> results = new ArrayList<>(noiseInterpolationPoints);
+        for (int xIndex = 0; xIndex < noiseInterpolationPoints; xIndex++) {
+            results.add(processX2(xIndex, newBounds));
         }
         previousBounds = newBounds;
+        return results;
+    }
+
+    private LineNoiseData processX2(int xIndex, List<Vector2D> newBounds) {
+        double xDist = (double) (xIndex) / (noiseInterpolationPoints);
+        List<Double> lineData = new ArrayList<>(lineLength);
+        for (int yIndex = 0; yIndex < lineLength; yIndex++) {
+            lineData.add(processY2(xDist, yIndex, newBounds));
+        }
+        return new LineNoiseData(lineData);
+    }
+
+    private double processY2(double xDist, int yIndex, List<Vector2D> newBounds) {
+        int lowerBoundIndex = yIndex / lineInterpolationPoints;
+        Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
+        Vector2D topRightBound = newBounds.get(lowerBoundIndex);
+        Vector2D bottomLeftBound = previousBounds.get(lowerBoundIndex + 1);
+        Vector2D bottomRightBound = newBounds.get(lowerBoundIndex + 1);
+        int y = yIndex % lineInterpolationPoints;
+        double yDist = (double) (y) / (lineInterpolationPoints);
+        return interpolate(topLeftBound, topRightBound, bottomLeftBound, bottomRightBound, yDist, xDist);
+    }
+
+    private double interpolate(Vector2D topLeftBound, Vector2D topRightBound, Vector2D bottomLeftBound,
+                               Vector2D bottomRightBound, double yDist, double xDist) {
+        Vector2D topLeftDist = new Vector2D(xDist, yDist);
+        Vector2D topRightDist = new Vector2D(xDist - 1.0, yDist);
+        Vector2D bottomLeftDist = new Vector2D(xDist, yDist - 1.0);
+        Vector2D bottomRightDist = new Vector2D(xDist - 1.0, yDist - 1.0);
+
+        double topLeftBoundImpact = topLeftBound.getVectorProduct(topLeftDist);
+        double topRightBoundImpact = topRightBound.getVectorProduct(topRightDist);
+        double bottomLeftBoundImpact = bottomLeftBound.getVectorProduct(bottomLeftDist);
+        double bottomRightBoundImpact = bottomRightBound.getVectorProduct(bottomRightDist);
+
+        double interpolatedValue = Interpolation
+                .linear2DWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
+                        bottomRightBoundImpact, xDist, yDist);
+        return adjustValueRange(interpolatedValue) * maxAmplitude;
     }
 
     private List<Vector2D> generateNewRandomBounds(int count) {
