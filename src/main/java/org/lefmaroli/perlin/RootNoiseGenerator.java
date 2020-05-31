@@ -5,15 +5,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
+public abstract class RootNoiseGenerator<ContainerDataType, DataType, BoundsType> {
 
     private final Queue<DataType> generated = new LinkedList<>();
+    private BoundsType previousBounds;
+    private final int noiseInterpolationPointsCount;
 
-    public abstract int getNoiseInterpolationPointsCount();
+    public RootNoiseGenerator(int noiseInterpolationPointsCount){
+        if (noiseInterpolationPointsCount < 0) {
+            throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
+        }
+        this.noiseInterpolationPointsCount = noiseInterpolationPointsCount;
+    }
 
-    protected abstract List<DataType> generateNextSegment();
+    public int getNoiseInterpolationPointsCount(){
+        return noiseInterpolationPointsCount;
+    }
+
+    protected abstract List<DataType> generateNextSegment(BoundsType previous, BoundsType current);
 
     protected abstract ContainerDataType getInContainer(List<DataType> data);
+
+    protected abstract BoundsType getNewBounds();
 
     public ContainerDataType getNext(int count) {
         if (count < 1) {
@@ -23,6 +36,9 @@ public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
     }
 
     private ContainerDataType computeAtLeast(int count) {
+        if(previousBounds == null){
+            previousBounds = getNewBounds();
+        }
         List<DataType> results = new ArrayList<>(count);
         if (count < generated.size()) {
             for (int i = 0; i < count; i++) {
@@ -35,10 +51,14 @@ public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
             int newCount = count - results.size();
             int noiseInterpolationPointsCount = getNoiseInterpolationPointsCount();
             while (newCount > noiseInterpolationPointsCount) {
-                results.addAll(generateNextSegment());
+                BoundsType newBounds = getNewBounds();
+                results.addAll(generateNextSegment(previousBounds, newBounds));
                 newCount -= noiseInterpolationPointsCount;
+                previousBounds = newBounds;
             }
-            List<DataType> lastSegment = generateNextSegment();
+            BoundsType newBounds = getNewBounds();
+            List<DataType> lastSegment = generateNextSegment(previousBounds, newBounds);
+            previousBounds = newBounds;
             results.addAll(lastSegment.subList(0, newCount));
             generated.addAll(lastSegment.subList(newCount, lastSegment.size()));
         }

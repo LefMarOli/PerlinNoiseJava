@@ -18,21 +18,17 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
     private final double maxAmplitude;
     private final int lineInterpolationPoints;
-    private final int noiseInterpolationPoints;
     private final long randomSeed;
     private final RandomGenerator randomGenerator;
     private final int lineLength;
-    private final int randomBounds;
+    private final int randomBoundsCount;
     private final boolean isCircular;
-    private List<Vector2D> previousBounds;
 
     public LineGenerator(int lineLength, int lineInterpolationPoints, int noiseInterpolationPoints,
                          double maxAmplitude, long randomSeed, boolean isCircular) {
+        super(noiseInterpolationPoints);
         if (lineInterpolationPoints < 0) {
             throw new IllegalArgumentException("Line interpolation points must be greater than 0");
-        }
-        if (noiseInterpolationPoints < 0) {
-            throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
         }
         if (lineLength < 0) {
             throw new IllegalArgumentException("Line length must be greater than 0");
@@ -43,11 +39,9 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         this.lineInterpolationPoints =
                 isCircular ? correctLineInterpolationPointsForCircularity(lineInterpolationPoints) :
                         lineInterpolationPoints;
-        this.noiseInterpolationPoints = noiseInterpolationPoints;
         this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
-        this.randomBounds = 2 + lineLength / lineInterpolationPoints;
-        this.previousBounds = new ArrayList<>(generateNewRandomBounds(randomBounds));
+        this.randomBoundsCount = 2 + lineLength / lineInterpolationPoints;
         LOGGER.debug("Created new " + toString());
     }
 
@@ -63,7 +57,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         LineGenerator that = (LineGenerator) o;
         return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
                 lineInterpolationPoints == that.lineInterpolationPoints &&
-                noiseInterpolationPoints == that.noiseInterpolationPoints &&
+                getNoiseInterpolationPointsCount() == that.getNoiseInterpolationPointsCount() &&
                 randomSeed == that.randomSeed &&
                 lineLength == that.lineLength &&
                 isCircular == that.isCircular;
@@ -71,7 +65,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxAmplitude, lineInterpolationPoints, noiseInterpolationPoints, randomSeed, lineLength,
+        return Objects.hash(maxAmplitude, lineInterpolationPoints, getNoiseInterpolationPointsCount(), randomSeed, lineLength,
                 isCircular);
     }
 
@@ -85,7 +79,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         return "LineGenerator{" +
                 "maxAmplitude=" + maxAmplitude +
                 ", lineInterpolationPoints=" + lineInterpolationPoints +
-                ", noiseInterpolationPoints=" + noiseInterpolationPoints +
+                ", noiseInterpolationPointsCount=" + getNoiseInterpolationPointsCount() +
                 ", randomSeed=" + randomSeed +
                 ", lineLength=" + lineLength +
                 ", isCircular=" + isCircular +
@@ -95,11 +89,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     @Override
     public int getLineInterpolationPointsCount() {
         return lineInterpolationPoints;
-    }
-
-    @Override
-    public int getNoiseInterpolationPointsCount() {
-        return noiseInterpolationPoints;
     }
 
     @Override
@@ -122,13 +111,11 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     }
 
     @Override
-    protected List<LineNoiseData> generateNextSegment() {
-        List<Vector2D> newBounds = generateNewRandomBounds(randomBounds);
-        List<LineNoiseData> results = new ArrayList<>(noiseInterpolationPoints);
-        for (int xIndex = 0; xIndex < noiseInterpolationPoints; xIndex++) {
-            results.add(processX(xIndex, newBounds));
+    protected List<LineNoiseData> generateNextSegment(List<Vector2D> previousBounds, List<Vector2D> currentBounds) {
+        List<LineNoiseData> results = new ArrayList<>(getNoiseInterpolationPointsCount());
+        for (int xIndex = 0; xIndex < getNoiseInterpolationPointsCount(); xIndex++) {
+            results.add(processX(xIndex, previousBounds, currentBounds));
         }
-        previousBounds = newBounds;
         return results;
     }
 
@@ -137,17 +124,33 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         return new LineNoiseDataContainer(data);
     }
 
+    @Override
+    protected List<Vector2D> getNewBounds() {
+        List<Vector2D> newBounds = new ArrayList<>(randomBoundsCount);
+        for (int i = 0; i < randomBoundsCount - 2; i++) {
+            newBounds.add(randomGenerator.getRandomUnitVector2D());
+        }
+        if (isCircular) {
+            newBounds.add(newBounds.get(0));
+            newBounds.add(newBounds.get(1));
+        } else {
+            newBounds.add(randomGenerator.getRandomUnitVector2D());
+            newBounds.add(randomGenerator.getRandomUnitVector2D());
+        }
+        return newBounds;
+    }
 
-    private LineNoiseData processX(int xIndex, List<Vector2D> newBounds) {
-        double xDist = (double) (xIndex) / (noiseInterpolationPoints);
+
+    private LineNoiseData processX(int xIndex, List<Vector2D> previousBounds, List<Vector2D> newBounds) {
+        double xDist = (double) (xIndex) / (getNoiseInterpolationPointsCount());
         List<Double> lineData = new ArrayList<>(lineLength);
         for (int yIndex = 0; yIndex < lineLength; yIndex++) {
-            lineData.add(processY(xDist, yIndex, newBounds));
+            lineData.add(processY(xDist, yIndex, previousBounds, newBounds));
         }
         return new LineNoiseData(lineData);
     }
 
-    private double processY(double xDist, int yIndex, List<Vector2D> newBounds) {
+    private double processY(double xDist, int yIndex, List<Vector2D> previousBounds, List<Vector2D> newBounds) {
         int lowerBoundIndex = yIndex / lineInterpolationPoints;
         Vector2D topLeftBound = previousBounds.get(lowerBoundIndex);
         Vector2D topRightBound = newBounds.get(lowerBoundIndex);
@@ -174,20 +177,5 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
                 .linear2DWithFade(topLeftBoundImpact, topRightBoundImpact, bottomLeftBoundImpact,
                         bottomRightBoundImpact, xDist, yDist);
         return adjustValueRange(interpolatedValue) * maxAmplitude;
-    }
-
-    private List<Vector2D> generateNewRandomBounds(int count) {
-        List<Vector2D> newBounds = new ArrayList<>(count);
-        for (int i = 0; i < count - 2; i++) {
-            newBounds.add(randomGenerator.getRandomUnitVector2D());
-        }
-        if (isCircular) {
-            newBounds.add(newBounds.get(0));
-            newBounds.add(newBounds.get(1));
-        } else {
-            newBounds.add(randomGenerator.getRandomUnitVector2D());
-            newBounds.add(randomGenerator.getRandomUnitVector2D());
-        }
-        return newBounds;
     }
 }

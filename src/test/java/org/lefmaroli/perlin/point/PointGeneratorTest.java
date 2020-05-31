@@ -119,7 +119,7 @@ public class PointGeneratorTest {
         ToStringVerifier.forClass(PointGenerator.class)
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
-                .withIgnoredFields("randomGenerator", "previousBound", "generated", "segmentLength")
+                .withIgnoredFields("randomGenerator", "previousBounds", "generated", "segmentLength")
                 .verify();
     }
 
