@@ -12,28 +12,12 @@ public class Vector3D {
         this.z = z;
     }
 
-    public static double getVectorProduct(Vector3D lhs, Vector3D rhs) {
-        return lhs.getVectorProduct(rhs);
-    }
-
     public double getLength() {
         return Math.sqrt(x * x + y * y + z * z);
     }
 
     public double getVectorProduct(Vector3D other) {
         return (this.x * other.x) + (this.y * other.y) + (this.z * other.z);
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ(){
-        return z;
     }
 
     public Vector3D normalize() {

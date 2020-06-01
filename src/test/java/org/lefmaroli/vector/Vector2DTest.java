@@ -1,5 +1,8 @@
 package org.lefmaroli.vector;
 
+import com.jparams.verifier.tostring.NameStyle;
+import com.jparams.verifier.tostring.ToStringVerifier;
+import com.jparams.verifier.tostring.preset.Presets;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +52,14 @@ public class Vector2DTest {
         assertEquals(1.0, new Vector2D(0.0, -1.0).getLength(), 0.0);
         assertEquals(Math.sqrt(2.0), new Vector2D(1.0, 1.0).getLength(), 1E-18);
         assertEquals(Math.sqrt(2.0), new Vector2D(-1.0, -1.0).getLength(), 1E-18);
+    }
+
+    @Test
+    public void testToString() {
+        ToStringVerifier.forClass(Vector2D.class)
+                .withClassName(NameStyle.SIMPLE_NAME)
+                .withPreset(Presets.INTELLI_J)
+                .verify();
     }
 
     private void assertVectorProductEqualSymmetrically(Vector2D first, Vector2D second, double expectedValue,

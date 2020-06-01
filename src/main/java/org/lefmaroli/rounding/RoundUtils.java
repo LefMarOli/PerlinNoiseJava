@@ -42,7 +42,7 @@ public class RoundUtils {
         if (n <= 0) {
             throw new IllegalArgumentException("n must be greater than 0");
         }
-        if (n % m == 0) {
+        if (m % n == 0) {
             return n;
         } else {
             List<Integer> factorsOfM = getFactorsOf(m);
