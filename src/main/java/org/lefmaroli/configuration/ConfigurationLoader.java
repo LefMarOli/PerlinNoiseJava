@@ -13,34 +13,68 @@ import java.util.Properties;
 
 public class ConfigurationLoader {
 
-    public static final String ENVIRONMENT_TARGET_ENVIRONMENT_PROPERTY = "envTarget";
-    public static final String DEFAULT_ENVIRONMENT_TARGET = "dev";
-    public static final String JITTER_STRATEGY_TYPE_PROPERTY = "jitterStrategyType";
-    public static final String JITTER_STRATEGY_PROPERTY = "jitterStrategy";
-
     private static final Properties appProperties = new Properties();
     private static final Logger LOGGER = LogManager.getLogger(ConfigurationLoader.class);
 
-    static {
-        String environmentTarget = System.getenv(ENVIRONMENT_TARGET_ENVIRONMENT_PROPERTY);
-        if (environmentTarget == null) {
-            environmentTarget = DEFAULT_ENVIRONMENT_TARGET;
-        }
-        appProperties.put(ENVIRONMENT_TARGET_ENVIRONMENT_PROPERTY, environmentTarget);
-        String location = "classpath:" + environmentTarget + ".properties";
-        Resource resource = new PathMatchingResourcePatternResolver().getResource(location);
-        try {
-            appProperties.load(resource.getInputStream());
-        } catch (IOException e) {
-            LOGGER.error("Could not load properties from resource " + resource.getFilename());
+    private static void retrieveEnvironmentTarget() {
+        if (!isEnvironmentTargetSet()) {
+            String environmentTarget = System.getenv(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+            if (environmentTarget == null) {
+                environmentTarget = System.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+                if(environmentTarget == null){
+                    environmentTarget = ConfigurationProperties.DEFAULT_ENVIRONMENT_TARGET;
+                }
+            }
+            appProperties.clear();
+            appProperties.put(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, environmentTarget);
+            loadConfigurations();
         }
     }
 
+    private static boolean isEnvironmentTargetSet() {
+        return appProperties.containsKey(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+    }
+
+    public static String getEnv(){
+        retrieveEnvironmentTarget();
+        return appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+    }
+
+    private static void loadConfigurations() {
+        String location = "classpath:" +
+                appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY) +
+                ".properties";
+        Resource[] resources;
+        try {
+            resources = new PathMatchingResourcePatternResolver().getResources(location);
+        } catch (IOException e) {
+            throw new ConfigurationException("Trouble reading properties file matching pattern " + location, e);
+        }
+        if (resources.length == 0) {
+            throw new ConfigurationException("Unable to find properties file matching pattern " + location);
+        }
+        for (Resource resource : resources) {
+            LOGGER.debug("Loading properties from resource: " + resource.getFilename());
+            try {
+                appProperties.load(resource.getInputStream());
+            } catch (IOException e) {
+                throw new ConfigurationException("Could not load properties from resource " + resource.getFilename(),
+                        e);
+            }
+        }
+    }
+
+    public static void clear(){
+        appProperties.clear();
+    }
+
     public static JitterStrategy getJitterStrategy() {
-        if (!appProperties.containsKey(JITTER_STRATEGY_PROPERTY)) {
-            String jitterStrategyType = appProperties.getProperty(JITTER_STRATEGY_TYPE_PROPERTY);
+        retrieveEnvironmentTarget();
+        if (!appProperties.containsKey(ConfigurationProperties.JITTER_STRATEGY_PROPERTY)) {
+            String jitterStrategyType =
+                    appProperties.getProperty(ConfigurationProperties.JITTER_STRATEGY_TYPE_PROPERTY);
             if (jitterStrategyType == null) {
-                throw new ConfigurationException("Missing property " + JITTER_STRATEGY_TYPE_PROPERTY);
+                throw new MissingConfigurationException(ConfigurationProperties.JITTER_STRATEGY_TYPE_PROPERTY);
             } else {
                 Class<?> jitterStrategyClass;
                 try {
@@ -62,10 +96,10 @@ public class ConfigurationLoader {
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     throw new ConfigurationException("Unable to create new instance of " + jitterStrategyType, e);
                 }
-                appProperties.put(JITTER_STRATEGY_PROPERTY, instance);
+                appProperties.put(ConfigurationProperties.JITTER_STRATEGY_PROPERTY, instance);
             }
         }
-        return (JitterStrategy) appProperties.get(JITTER_STRATEGY_PROPERTY);
+        return (JitterStrategy) appProperties.get(ConfigurationProperties.JITTER_STRATEGY_PROPERTY);
     }
 
 }

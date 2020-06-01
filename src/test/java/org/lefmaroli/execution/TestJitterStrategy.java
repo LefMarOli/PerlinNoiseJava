@@ -23,23 +23,6 @@ public class TestJitterStrategy implements JitterStrategy{
                 return;
             case 3:
                 Thread.onSpinWait();
-                return;
-//            case 4:
-//                try {
-//                    Thread.currentThread().wait();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                return;
-//            case 5:
-//                Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-//                return;
-//            case 6:
-//                Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-//                return;
-//            case 7:
-//                Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
-//                return;
         }
     }
 }

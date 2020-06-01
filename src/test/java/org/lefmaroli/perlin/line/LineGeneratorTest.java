@@ -205,7 +205,7 @@ public class LineGeneratorTest {
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
                 .withIgnoredFields("lineSegmentLength", "noiseSegmentLength", "randomGenerator", "generated",
-                        "randomBounds", "previousBounds")
+                        "randomBoundsCount", "previousBounds")
                 .verify();
     }
 
