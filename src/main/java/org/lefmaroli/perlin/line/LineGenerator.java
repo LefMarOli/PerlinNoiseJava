@@ -32,7 +32,12 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         this.maxAmplitude = maxAmplitude;
         this.lineLength = lineLength;
         this.isCircular = isCircular;
-        this.lineInterpolationPoints = correctInterpolationPointsForCircularity(lineInterpolationPoints, lineLength);
+        if (isCircular) {
+            this.lineInterpolationPoints =
+                    correctInterpolationPointsForCircularity(lineInterpolationPoints, lineLength);
+        } else {
+            this.lineInterpolationPoints = lineInterpolationPoints;
+        }
         if (this.lineInterpolationPoints != lineInterpolationPoints) {
             LOGGER.warn("Modified required line interpolation point count from " + lineInterpolationPoints + " to " +
                     this.lineInterpolationPoints + " to respect circularity.");

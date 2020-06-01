@@ -6,6 +6,7 @@ import com.jparams.verifier.tostring.preset.Presets;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 
 import java.util.List;
@@ -16,11 +17,11 @@ import static org.junit.Assert.*;
 public class SliceGeneratorTest {
 
     private SliceGenerator defaultGenerator;
-    private static final int noiseInterpolationPoints = 100;
-    private static final int widthInterpolationPoints = 100;
-    private static final int heightInterpolationPoints = 100;
-    private static final int sliceWidth = 700;
-    private static final int sliceHeight = 700;
+    private static final int noiseInterpolationPoints = 154;
+    private static final int widthInterpolationPoints = 35;
+    private static final int heightInterpolationPoints = 86;
+    private static final int sliceWidth = 200;
+    private static final int sliceHeight = 200;
     private final long randomSeed = System.currentTimeMillis();
     private static final double maxAmplitude = 1.0;
     private static final boolean isCircular = false;
@@ -263,13 +264,91 @@ public class SliceGeneratorTest {
                 .verify();
     }
 
-    @Ignore
     @Test
-    public void testCircularity(){
+    public void testCircularBounds() {
         SliceGenerator generator =
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), true);
+        double[][] line = generator.getNext(1).getAsRawData()[0];
+        double[] firstLine = line[0];
+        double[] secondLine = line[1];
+        double[] lastLine = line[generator.getSliceWidth() - 1];
+        for (int i = 0; i < firstLine.length; i++) {
+            double mu = secondLine[i] - firstLine[i];
+            double otherMu = firstLine[i] - lastLine[i];
+            assertEquals(mu, otherMu, 0.001);
+        }
 
+        double[] firstColumn = new double[generator.getSliceWidth()];
+        double[] secondColumn = new double[generator.getSliceWidth()];
+        double[] lastColumn = new double[generator.getSliceWidth()];
+        for (int i = 0; i < generator.getSliceWidth(); i++) {
+            firstColumn[i] = line[i][0];
+            secondColumn[i] = line[i][1];
+            lastColumn[i] = line[i][generator.getSliceHeight() - 1];
+        }
+        for (int i = 0; i < firstColumn.length; i++) {
+            double mu = secondColumn[i] - firstColumn[i];
+            double otherMu = firstColumn[i] - lastColumn[i];
+            assertEquals(mu, otherMu, 0.001);
+        }
+    }
+
+    @Ignore
+    @Test
+    public void visualizeLine() {
+        SliceGenerator generator =
+                new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
+                        sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), true);
+        double[][] slices = generator.getNext(1).getAsRawData()[0];
+        double[][] patched = new double[generator.getSliceWidth() * 3][generator.getSliceHeight() * 3];
+        for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+            for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
+                patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+            }
+        }
+        LineChart chart = new LineChart("Morphing line", "length", "values");
+        String label = "line";
+        double[] ySlice = new double[generator.getSliceWidth() * 3];
+        for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+            ySlice[i] = patched[i][25];
+        }
+        chart.addEquidistantDataSeries(ySlice, label);
+        chart.setVisible();
+        chart.setYAxisRange(0.0, 1.0);
+        while (true) ;
+    }
+
+    @Ignore
+    @Test
+    public void testCircularity() throws InterruptedException {
+        SliceGenerator generator =
+                new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
+                        sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), true);
+        double[][] slices = generator.getNext(1).getAsRawData()[0];
+        double[][] patched = new double[generator.getSliceWidth() * 3][generator.getSliceHeight() * 3];
+        for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+            for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
+                patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+            }
+        }
+        SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 1);
+        image.setVisible();
+        long previousTime = System.currentTimeMillis();
+        while (true) {
+            if (System.currentTimeMillis() - previousTime > 1) {
+                previousTime = System.currentTimeMillis();
+                double[][] newSlices = generator.getNext(1).getAsRawData()[0];
+                for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+                    for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
+                        patched[i][j] = newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+                    }
+                }
+                image.updateImage(patched);
+            } else {
+                Thread.sleep(1);
+            }
+        }
     }
 
     @Ignore
@@ -278,7 +357,7 @@ public class SliceGeneratorTest {
         SliceGenerator generator =
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), false);
-        int count = 500;
+        int count = 1;
         double[][][] slices = generator.getNext(count).getAsRawData();
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 1);
         image.setVisible();
@@ -288,7 +367,7 @@ public class SliceGeneratorTest {
                 previousTime = System.currentTimeMillis();
                 double[][][] newSlices = generator.getNext(1).getAsRawData();
                 image.updateImage(newSlices[0]);
-            }else{
+            } else {
                 Thread.sleep(1);
             }
         }
