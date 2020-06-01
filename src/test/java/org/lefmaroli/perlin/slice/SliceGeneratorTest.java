@@ -118,8 +118,8 @@ public class SliceGeneratorTest {
         for (double[][] slice : slices) {
             for (double[] line : slice) {
                 for (double value : line) {
-//                    assertTrue("Value " + value + "not bounded by 0", value > 0.0);
-//                    assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
+                    assertTrue("Value " + value + "not bounded by 0", value > 0.0);
+                    assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
                     if (value > max) {
                         max = value;
                     }
