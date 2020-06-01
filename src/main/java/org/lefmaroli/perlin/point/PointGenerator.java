@@ -13,17 +13,13 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
     private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
 
     private final double maxAmplitude;
-    private final int interpolationPoints;
     private final Random randomGenerator;
     private final long randomSeed;
     private double previousBound;
 
     public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
-        if (interpolationPoints < 0) {
-            throw new IllegalArgumentException("Interpolation points must be greater than 0");
-        }
+        super(interpolationPoints);
         this.maxAmplitude = maxAmplitude;
-        this.interpolationPoints = interpolationPoints;
         this.randomSeed = randomSeed;
         this.randomGenerator = new Random(randomSeed);
         this.previousBound = randomGenerator.nextDouble();
@@ -39,7 +35,7 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
     public String toString() {
         return "PointGenerator{" +
                 "maxAmplitude=" + maxAmplitude +
-                ", interpolationPoints=" + interpolationPoints +
+                ", noiseInterpolationPoints=" + getNoiseInterpolationPoints() +
                 ", randomSeed=" + randomSeed +
                 '}';
     }
@@ -50,27 +46,22 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
         if (o == null || getClass() != o.getClass()) return false;
         PointGenerator that = (PointGenerator) o;
         return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                Double.compare(that.interpolationPoints, interpolationPoints) == 0 &&
+                Double.compare(that.getNoiseInterpolationPoints(), getNoiseInterpolationPoints()) == 0 &&
                 randomSeed == that.randomSeed;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(maxAmplitude, interpolationPoints, randomSeed);
-    }
-
-    @Override
-    public int getNoiseInterpolationPointsCount() {
-        return interpolationPoints;
+        return Objects.hash(maxAmplitude, getNoiseInterpolationPoints(), randomSeed);
     }
 
     @Override
     protected List<PointNoiseData> generateNextSegment() {
         double newBound = randomGenerator.nextDouble();
         double currentPos = 0.0;
-        List<PointNoiseData> results = new ArrayList<>(interpolationPoints);
-        while (currentPos < interpolationPoints) {
-            double relativePositionInSegment = currentPos / interpolationPoints;
+        List<PointNoiseData> results = new ArrayList<>(getNoiseInterpolationPoints());
+        while (currentPos < getNoiseInterpolationPoints()) {
+            double relativePositionInSegment = currentPos / getNoiseInterpolationPoints();
             double interpolatedValue = Interpolation.linearWithFade(previousBound, newBound, relativePositionInSegment);
             results.add(new PointNoiseData(interpolatedValue * maxAmplitude));
             currentPos++;

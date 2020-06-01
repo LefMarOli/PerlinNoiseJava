@@ -2,7 +2,7 @@ package org.lefmaroli.execution;
 
 import java.util.concurrent.*;
 
-public class ExecutorServiceScheduler<ReturnType> implements TaskScheduler<ReturnType> {
+public class ExecutorServiceScheduler implements TaskScheduler {
 
     private final ExecutorService executorService;
 
@@ -14,7 +14,7 @@ public class ExecutorServiceScheduler<ReturnType> implements TaskScheduler<Retur
     }
 
     @Override
-    public CompletableFuture<ReturnType> schedule(Callable<ReturnType> task) {
+    public <ReturnType> CompletableFuture<ReturnType> schedule(Callable<ReturnType> task) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return task.call();

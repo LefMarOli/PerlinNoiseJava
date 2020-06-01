@@ -125,7 +125,7 @@ public class PointGeneratorTest {
 
     @Test
     public void getInterpolationPointsCount() {
-        assertEquals(interpolationPoints, defaultGenerator.getNoiseInterpolationPointsCount());
+        assertEquals(interpolationPoints, defaultGenerator.getNoiseInterpolationPoints());
     }
 
     private static void assertExpectedArrayEqualsActual(Double[] expected, Double[] actual, double delta) {

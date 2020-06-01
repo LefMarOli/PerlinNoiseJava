@@ -10,7 +10,7 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<PointNoiseDataC
         implements PointNoiseGenerator {
 
     LayeredPointGenerator(List<PointNoiseGenerator> layers) {
-        super(layers, new ExecutorServiceScheduler<>(10));
+        super(layers, new ExecutorServiceScheduler(10));
     }
 
     @Override

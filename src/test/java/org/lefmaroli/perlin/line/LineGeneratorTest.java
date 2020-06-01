@@ -29,25 +29,26 @@ public class LineGeneratorTest {
 
     @Before
     public void setup() {
-        defaultLineGenerator = new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed, isCircular);
+        defaultLineGenerator = new LineGenerator(defaultInterpolationPointsAlongNoiseSpace,
+                defaultInterpolationPointsAlongLine, lineLength,
+                maxAmplitude, randomSeed, isCircular);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateInvalidLineLength() {
-        new LineGenerator(-5, defaultInterpolationPointsAlongLine, defaultInterpolationPointsAlongNoiseSpace, 1.0,
+        new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine, -5, 1.0,
                 System.currentTimeMillis(), isCircular);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateInvalidInterpolationPointsAlongLine() {
-        new LineGenerator(lineLength, -1, defaultInterpolationPointsAlongNoiseSpace, 1.0,
+        new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, -1, lineLength, 1.0,
                 System.currentTimeMillis(), isCircular);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateInvalidInterpolationPointsAlongNoiseSpace() {
-        new LineGenerator(lineLength, defaultInterpolationPointsAlongLine, -1, 1.0,
+        new LineGenerator(-1, defaultInterpolationPointsAlongLine, lineLength, 1.0,
                 System.currentTimeMillis(), isCircular);
     }
 
@@ -68,7 +69,7 @@ public class LineGeneratorTest {
     @Test
     public void testGetInterpolationPointsAlongNoiseSpace() {
         assertEquals(defaultInterpolationPointsAlongNoiseSpace,
-                defaultLineGenerator.getNoiseInterpolationPointsCount());
+                defaultLineGenerator.getNoiseInterpolationPoints());
     }
 
     @Test
@@ -101,10 +102,10 @@ public class LineGeneratorTest {
     @Test
     public void testValuesMultipliedByMaxAmplitude() {
         long randomSeed = System.currentTimeMillis();
-        LineGenerator layer = new LineGenerator(lineLength, 50, 50, 1.0, randomSeed, isCircular);
+        LineGenerator layer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
         Random random = new Random(System.currentTimeMillis());
         double newMaxAmplitude = random.nextDouble() * 100;
-        LineGenerator amplifiedLayer = new LineGenerator(lineLength, 50, 50, newMaxAmplitude, randomSeed, isCircular);
+        LineGenerator amplifiedLayer = new LineGenerator(50, 50, lineLength, newMaxAmplitude, randomSeed, isCircular);
 
         Double[][] lines = layer.getNext(requestedLines).getAsRawData();
         Double[][] amplifiedLines = amplifiedLayer.getNext(requestedLines).getAsRawData();
@@ -123,8 +124,8 @@ public class LineGeneratorTest {
     @Test
     public void testCreateSameGeneratedLines() {
         long randomSeed = System.currentTimeMillis();
-        LineGenerator layer = new LineGenerator(lineLength, 50, 50, 1.0, randomSeed, isCircular);
-        LineGenerator sameLayer = new LineGenerator(lineLength, 50, 50, 1.0, randomSeed, isCircular);
+        LineGenerator layer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
+        LineGenerator sameLayer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
         Double[][] nextSegment1 = layer.getNext(requestedLines).getAsRawData();
         Double[][] nextSegment2 = sameLayer.getNext(requestedLines).getAsRawData();
 
@@ -137,8 +138,9 @@ public class LineGeneratorTest {
     @Test
     public void testEquals() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed, isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        lineLength,
+                        maxAmplitude, randomSeed, isCircular);
         assertEquals(defaultLineGenerator, otherGenerator);
         assertEquals(defaultLineGenerator.hashCode(), otherGenerator.hashCode());
     }
@@ -146,48 +148,54 @@ public class LineGeneratorTest {
     @Test
     public void testNotEqualsNotSameLineLength() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength + 10, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed, isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        lineLength + 10,
+                        maxAmplitude, randomSeed, isCircular);
         assertNotEquals(defaultLineGenerator, otherGenerator);
     }
 
     @Test
     public void testNotEqualsNotSameInterpolationPointsAlongLine() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine + 5,
-                        defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed, isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine + 5,
+                        lineLength,
+                        maxAmplitude, randomSeed, isCircular);
         assertNotEquals(defaultLineGenerator, otherGenerator);
     }
 
     @Test
     public void testNotEqualsNotSameInterpolationPointsAlongNoiseSpace() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace + 8, maxAmplitude, randomSeed, isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace + 8, defaultInterpolationPointsAlongLine,
+                        lineLength,
+                        maxAmplitude, randomSeed, isCircular);
         assertNotEquals(defaultLineGenerator, otherGenerator);
     }
 
     @Test
     public void testNotEqualsNotSameMaxAmplitude() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, maxAmplitude * 2, randomSeed, isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        lineLength,
+                        maxAmplitude * 2, randomSeed, isCircular);
         assertNotEquals(defaultLineGenerator, otherGenerator);
     }
 
     @Test
     public void testNotEqualsNotSameRandomSeed() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed + 1, isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        lineLength,
+                        maxAmplitude, randomSeed + 1, isCircular);
         assertNotEquals(defaultLineGenerator, otherGenerator);
     }
 
     @Test
     public void testNotEqualsNotSameCircularity() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, maxAmplitude, randomSeed, !isCircular);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        lineLength,
+                        maxAmplitude, randomSeed, !isCircular);
         assertNotEquals(defaultLineGenerator, otherGenerator);
     }
 
@@ -204,8 +212,9 @@ public class LineGeneratorTest {
     @Test
     public void testCircularBounds() {
         LineGenerator otherGenerator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongLine,
-                        defaultInterpolationPointsAlongNoiseSpace, 1.0, randomSeed, true);
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        lineLength,
+                        1.0, randomSeed, true);
         Double[] line = otherGenerator.getNext(1).getAsRawData()[0];
         double firstValue = line[0];
         double secondValue = line[1];
@@ -220,8 +229,8 @@ public class LineGeneratorTest {
     @Test
     public void getNextLines() {
         LineGenerator generator =
-                new LineGenerator(lineLength, defaultInterpolationPointsAlongNoiseSpace,
-                        defaultInterpolationPointsAlongLine,
+                new LineGenerator(defaultInterpolationPointsAlongLine, defaultInterpolationPointsAlongNoiseSpace,
+                        lineLength,
                         1.0, randomSeed, true);
         Double[][] lines = generator.getNext(requestedLines).getAsRawData();
         Double[][] appended = new Double[requestedLines][lineLength * 2];
@@ -253,7 +262,7 @@ public class LineGeneratorTest {
     @Ignore
     @Test
     public void testAppendCircularLines() {
-        LineGenerator layer2D = new LineGenerator(lineLength, 100, defaultInterpolationPointsAlongNoiseSpace, 1.0,
+        LineGenerator layer2D = new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, 100, lineLength, 1.0,
                 System.currentTimeMillis(), true);
         Double[][] lines = layer2D.getNext(1).getAsRawData();
         List<Double> values = new ArrayList<>();
@@ -277,7 +286,7 @@ public class LineGeneratorTest {
     @Ignore
     @Test
     public void testMorphingLine() {
-        LineGenerator layer2D = new LineGenerator(lineLength, 100, defaultInterpolationPointsAlongNoiseSpace, 1.0,
+        LineGenerator layer2D = new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, 100, lineLength, 1.0,
                 System.currentTimeMillis(), true);
         Double[][] lines = layer2D.getNext(1).getAsRawData();
         LineChart chart = new LineChart("Morphing line", "length", "values");

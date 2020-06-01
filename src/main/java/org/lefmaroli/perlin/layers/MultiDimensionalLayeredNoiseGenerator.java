@@ -14,7 +14,7 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<ReturnType extends N
     private final boolean isCircular;
 
     protected MultiDimensionalLayeredNoiseGenerator(List<NoiseLayer> layers) {
-        super(layers, new ExecutorServiceScheduler<>(10));
+        super(layers, new ExecutorServiceScheduler(10));
         isCircular = checkCircularity(layers);
     }
 

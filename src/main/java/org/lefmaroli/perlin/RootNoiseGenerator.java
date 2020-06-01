@@ -1,15 +1,30 @@
 package org.lefmaroli.perlin;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
 
     private final Queue<DataType> generated = new LinkedList<>();
+    private final int noiseInterpolationPoints;
 
-    public abstract int getNoiseInterpolationPointsCount();
+    public RootNoiseGenerator(int noiseInterpolationPoints){
+        if (noiseInterpolationPoints < 0) {
+            throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
+        }
+        this.noiseInterpolationPoints = noiseInterpolationPoints;
+    }
+
+    protected void assertValidValues(List<String> names, int...values){
+        for (int i = 0; i < values.length; i++) {
+            if(values[i] < 0){
+                throw new IllegalArgumentException(String.format("%s must be greater than 0", names.get(i)));
+            }
+        }
+    }
+
+    public int getNoiseInterpolationPoints(){
+        return noiseInterpolationPoints;
+    }
 
     protected abstract List<DataType> generateNextSegment();
 
@@ -33,7 +48,7 @@ public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
                 results.add(generated.poll());
             }
             int newCount = count - results.size();
-            int noiseInterpolationPointsCount = getNoiseInterpolationPointsCount();
+            int noiseInterpolationPointsCount = getNoiseInterpolationPoints();
             while (newCount > noiseInterpolationPointsCount) {
                 results.addAll(generateNextSegment());
                 newCount -= noiseInterpolationPointsCount;
@@ -43,5 +58,18 @@ public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
             generated.addAll(lastSegment.subList(newCount, lastSegment.size()));
         }
         return getInContainer(results);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RootNoiseGenerator<?, ?> that = (RootNoiseGenerator<?, ?>) o;
+        return noiseInterpolationPoints == that.noiseInterpolationPoints;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(noiseInterpolationPoints);
     }
 }

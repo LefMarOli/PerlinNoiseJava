@@ -16,11 +16,11 @@ public abstract class LayeredNoiseGenerator<ReturnType extends NoiseData<?, Retu
         implements INoiseGenerator<ReturnType> {
 
     private final double maxAmplitude;
-    private final TaskScheduler<ReturnType> scheduler;
+    private final TaskScheduler scheduler;
     private final List<NoiseLayer> layers;
     private final JitterStrategy jitterStrategy = new ProductionJitterStrategy();
 
-    protected LayeredNoiseGenerator(List<NoiseLayer> layers, TaskScheduler<ReturnType> scheduler) {
+    protected LayeredNoiseGenerator(List<NoiseLayer> layers, TaskScheduler scheduler) {
         if (layers.size() < 1) {
             throw new IllegalArgumentException("Number of layers must at least be 1");
         }

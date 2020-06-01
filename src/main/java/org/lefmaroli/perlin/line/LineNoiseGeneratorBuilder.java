@@ -35,7 +35,7 @@ public class LineNoiseGeneratorBuilder
     @Override
     protected LineNoiseGenerator buildSingleNoiseLayer(List<Integer> interpolationPoints, double layerAmplitude,
                                                        long randomSeed) {
-        return new LineGenerator(lineLength, interpolationPoints.get(0), interpolationPoints.get(1), layerAmplitude,
+        return new LineGenerator(interpolationPoints.get(1), interpolationPoints.get(0), lineLength, layerAmplitude,
                 randomSeed, isCircular());
     }
 
