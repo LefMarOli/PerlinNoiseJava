@@ -19,8 +19,8 @@ public class SliceGeneratorTest {
     private static final int noiseInterpolationPoints = 100;
     private static final int widthInterpolationPoints = 100;
     private static final int heightInterpolationPoints = 100;
-    private static final int sliceWidth = 500;
-    private static final int sliceHeight = 500;
+    private static final int sliceWidth = 700;
+    private static final int sliceHeight = 700;
     private final long randomSeed = System.currentTimeMillis();
     private static final double maxAmplitude = 1.0;
     private static final boolean isCircular = false;
@@ -278,21 +278,18 @@ public class SliceGeneratorTest {
         SliceGenerator generator =
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), false);
-        int count = 1000;
+        int count = 500;
         double[][][] slices = generator.getNext(count).getAsRawData();
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 1);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
-        int index = 0;
-//        while(true);
         while (true) {
-            if (System.currentTimeMillis() - previousTime > 5) {
-                generator.getNext(1);
+            if (System.currentTimeMillis() - previousTime > 1) {
                 previousTime = System.currentTimeMillis();
-                index = (index + 1) % count;
-                image.updateImage(slices[index]);
+                double[][][] newSlices = generator.getNext(1).getAsRawData();
+                image.updateImage(newSlices[0]);
             }else{
-                Thread.sleep(2);
+                Thread.sleep(1);
             }
         }
     }

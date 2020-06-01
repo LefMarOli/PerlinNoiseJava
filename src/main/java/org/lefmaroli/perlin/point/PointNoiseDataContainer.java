@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PointNoiseDataContainer
-        implements NoiseDataContainer<Double[], PointNoiseDataContainer, PointNoiseData> {
+        implements NoiseDataContainer<double[], PointNoiseDataContainer, PointNoiseData> {
 
     private final List<PointNoiseData> data;
 
@@ -27,8 +27,8 @@ public class PointNoiseDataContainer
     }
 
     @Override
-    public Double[] getAsRawData() {
-        Double[] toReturn = new Double[data.size()];
+    public double[] getAsRawData() {
+        double[] toReturn = new double[data.size()];
         for (int i = 0; i < data.size(); i++) {
             toReturn[i] = data.get(i).getAsRawData();
         }

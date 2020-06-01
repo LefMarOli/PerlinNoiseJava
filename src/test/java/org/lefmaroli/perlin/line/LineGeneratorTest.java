@@ -286,7 +286,7 @@ public class LineGeneratorTest {
 
     @Ignore
     @Test
-    public void testMorphingLine() {
+    public void testMorphingLine() throws InterruptedException {
         LineGenerator layer2D = new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, 100, lineLength, 1.0,
                 System.currentTimeMillis(), true);
         double[][] lines = layer2D.getNext(1).getAsRawData();
@@ -308,6 +308,8 @@ public class LineGeneratorTest {
                         dataSeries.updateByIndex(i, lines[0][i]);
                     }
                 }, label));
+            }else{
+                Thread.sleep(2);
             }
         }
     }

@@ -7,22 +7,22 @@ public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
     private final Queue<DataType> generated = new LinkedList<>();
     private final int noiseInterpolationPoints;
 
-    public RootNoiseGenerator(int noiseInterpolationPoints){
+    public RootNoiseGenerator(int noiseInterpolationPoints) {
         if (noiseInterpolationPoints < 0) {
             throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
         }
         this.noiseInterpolationPoints = noiseInterpolationPoints;
     }
 
-    protected void assertValidValues(List<String> names, int...values){
+    protected void assertValidValues(List<String> names, int... values) {
         for (int i = 0; i < values.length; i++) {
-            if(values[i] < 0){
+            if (values[i] < 0) {
                 throw new IllegalArgumentException(String.format("%s must be greater than 0", names.get(i)));
             }
         }
     }
 
-    public int getNoiseInterpolationPoints(){
+    public int getNoiseInterpolationPoints() {
         return noiseInterpolationPoints;
     }
 

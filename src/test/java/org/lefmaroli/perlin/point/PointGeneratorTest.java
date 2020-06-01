@@ -50,8 +50,8 @@ public class PointGeneratorTest {
         double amplitudeFactor = random.nextDouble() * 100;
         PointGenerator amplifiedLayer = new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
 
-        Double[] values = defaultGenerator.getNext(expectedCount).getAsRawData();
-        Double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount).getAsRawData();
+        double[] values = defaultGenerator.getNext(expectedCount).getAsRawData();
+        double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount).getAsRawData();
 
         for (int i = 0; i < values.length; i++) {
             values[i] = values[i] * amplitudeFactor;
@@ -128,7 +128,7 @@ public class PointGeneratorTest {
         assertEquals(interpolationPoints, defaultGenerator.getNoiseInterpolationPoints());
     }
 
-    private static void assertExpectedArrayEqualsActual(Double[] expected, Double[] actual, double delta) {
+    private static void assertExpectedArrayEqualsActual(double[] expected, double[] actual, double delta) {
         assertEquals(expected.length, actual.length, delta);
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i], delta);
