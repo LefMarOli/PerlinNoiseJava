@@ -1,22 +1,20 @@
 package org.lefmaroli.execution;
 
+import org.lefmaroli.configuration.ConfigurationLoader;
+
 import java.util.concurrent.Callable;
 
 public abstract class JitterTask<ResultType> implements Callable<ResultType> {
 
-    private final JitterStrategy jitterStrategy;
-
-    public JitterTask(JitterStrategy jitterStrategy){
-        this.jitterStrategy = jitterStrategy;
-    }
+    private static final JitterStrategy JITTER_STRATEGY = ConfigurationLoader.getJitterStrategy();
 
     protected abstract ResultType process();
 
     @Override
     public ResultType call() {
-        jitterStrategy.jitter();
+        JITTER_STRATEGY.jitter();
         ResultType result = process();
-        jitterStrategy.jitter();
+        JITTER_STRATEGY.jitter();
         return result;
     }
 }

@@ -1,7 +1,5 @@
 package org.lefmaroli.perlin.layers;
 
-import org.lefmaroli.execution.JitterStrategy;
-import org.lefmaroli.execution.ProductionJitterStrategy;
 import org.lefmaroli.execution.TaskScheduler;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.data.NoiseData;
@@ -18,7 +16,6 @@ public abstract class LayeredNoiseGenerator<ReturnType extends NoiseData<?, Retu
     private final double maxAmplitude;
     private final TaskScheduler scheduler;
     private final List<NoiseLayer> layers;
-    private final JitterStrategy jitterStrategy = new ProductionJitterStrategy();
 
     protected LayeredNoiseGenerator(List<NoiseLayer> layers, TaskScheduler scheduler) {
         if (layers.size() < 1) {
@@ -59,7 +56,7 @@ public abstract class LayeredNoiseGenerator<ReturnType extends NoiseData<?, Retu
         ReturnType results = initializeResults(count);
         List<CompletableFuture<ReturnType>> futures = new ArrayList<>(layers.size());
         for (NoiseLayer layer : layers) {
-            LayerProcess<ReturnType, NoiseLayer> layerProcess = new LayerProcess<>(layer, count, jitterStrategy);
+            LayerProcess<ReturnType, NoiseLayer> layerProcess = new LayerProcess<>(layer, count);
             futures.add(scheduler.schedule(layerProcess));
         }
         for (CompletableFuture<ReturnType> future : futures) {
