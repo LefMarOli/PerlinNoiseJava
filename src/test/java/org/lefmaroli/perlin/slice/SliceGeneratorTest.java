@@ -6,10 +6,8 @@ import com.jparams.verifier.tostring.preset.Presets;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -18,15 +16,15 @@ import static org.junit.Assert.*;
 public class SliceGeneratorTest {
 
     private SliceGenerator defaultGenerator;
-    private static final int noiseInterpolationPoints = 10;
-    private static final int widthInterpolationPoints = 10;
-    private static final int heightInterpolationPoints = 10;
-    private static final int sliceWidth = 50;
-    private static final int sliceHeight = 50;
+    private static final int noiseInterpolationPoints = 100;
+    private static final int widthInterpolationPoints = 100;
+    private static final int heightInterpolationPoints = 100;
+    private static final int sliceWidth = 500;
+    private static final int sliceHeight = 500;
     private final long randomSeed = System.currentTimeMillis();
     private static final double maxAmplitude = 1.0;
     private static final boolean isCircular = false;
-    int requestedCount = 50;
+    int requestedCount = 100;
 
     @Before
     public void setup() {
@@ -112,11 +110,10 @@ public class SliceGeneratorTest {
 
     @Test
     public void testValuesBounded() {
-        Double[][][] slices = defaultGenerator.getNext(requestedCount).getAsRawData();
-        for (Double[][] slice : slices) {
-            for (Double[] line : slice) {
-                for (Double value : line) {
-                    assertNotNull(value);
+        double[][][] slices = defaultGenerator.getNext(requestedCount).getAsRawData();
+        for (double[][] slice : slices) {
+            for (double[] line : slice) {
+                for (double value : line) {
                     assertTrue("Value " + value + "not bounded by 0", value > 0.0);
                     assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
                 }
@@ -132,11 +129,11 @@ public class SliceGeneratorTest {
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         sliceWidth, sliceHeight, newMaxAmplitude, randomSeed, isCircular);
 
-        Double[][][] slices = defaultGenerator.getNext(requestedCount).getAsRawData();
-        Double[][][] amplifiedSlices = amplifiedLayer.getNext(requestedCount).getAsRawData();
+        double[][][] slices = defaultGenerator.getNext(requestedCount).getAsRawData();
+        double[][][] amplifiedSlices = amplifiedLayer.getNext(requestedCount).getAsRawData();
 
-        for (Double[][] slice : slices) {
-            for (Double[] lines : slice) {
+        for (double[][] slice : slices) {
+            for (double[] lines : slice) {
                 for (int j = 0; j < lines.length; j++) {
                     lines[j] = lines[j] * newMaxAmplitude;
                 }
@@ -150,7 +147,7 @@ public class SliceGeneratorTest {
         }
     }
 
-    private static void assertExpectedArrayEqualsActual(Double[] expected, Double[] actual, double delta) {
+    private static void assertExpectedArrayEqualsActual(double[] expected, double[] actual, double delta) {
         assertEquals(expected.length, actual.length, delta);
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i], delta);
@@ -162,8 +159,8 @@ public class SliceGeneratorTest {
         SliceGenerator same =
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         sliceWidth, sliceHeight, maxAmplitude, randomSeed, isCircular);
-        Double[][][] nextSegment1 = defaultGenerator.getNext(requestedCount).getAsRawData();
-        Double[][][] nextSegment2 = same.getNext(requestedCount).getAsRawData();
+        double[][][] nextSegment1 = defaultGenerator.getNext(requestedCount).getAsRawData();
+        double[][][] nextSegment2 = same.getNext(requestedCount).getAsRawData();
 
         assertEquals(nextSegment1.length, nextSegment2.length, 0);
         assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
@@ -268,24 +265,35 @@ public class SliceGeneratorTest {
 
     @Ignore
     @Test
+    public void testCircularity(){
+        SliceGenerator generator =
+                new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
+                        sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), true);
+
+    }
+
+    @Ignore
+    @Test
     public void testVisualizeMorphingImage() throws InterruptedException {
         SliceGenerator generator =
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         sliceWidth, sliceHeight, 1.0, System.currentTimeMillis(), false);
-        int count = 100;
-        Double[][][] slices = generator.getNext(count).getAsRawData();
-        SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 5);
+        int count = 1000;
+        double[][][] slices = generator.getNext(count).getAsRawData();
+        SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 1);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
         int index = 0;
 //        while(true);
         while (true) {
-            if (System.currentTimeMillis() - previousTime > 500) {
+            if (System.currentTimeMillis() - previousTime > 5) {
+                generator.getNext(1);
                 previousTime = System.currentTimeMillis();
                 index = (index + 1) % count;
                 image.updateImage(slices[index]);
+            }else{
+                Thread.sleep(2);
             }
-            Thread.sleep(1000);
         }
     }
 }

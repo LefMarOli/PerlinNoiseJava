@@ -20,6 +20,10 @@ public class Vector3D {
         return (this.x * other.x) + (this.y * other.y) + (this.z * other.z);
     }
 
+    public double getVectorProduct(double otherX, double otherY, double otherZ){
+        return (this.x * otherX) + (this.y * otherY) + (this.z * otherZ);
+    }
+
     public Vector3D normalize() {
         double length = getLength();
         if (length > 0.0) {

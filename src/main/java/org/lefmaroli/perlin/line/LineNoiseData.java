@@ -6,18 +6,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class LineNoiseData implements NoiseData<Double[], LineNoiseData> {
+public class LineNoiseData implements NoiseData<double[], LineNoiseData> {
 
-    private final List<Double> values;
+    private final double[] values;
 
-    public LineNoiseData(List<Double> values) {
+    public LineNoiseData(double[] values) {
         this.values = values;
     }
 
     public LineNoiseData(int size) {
-        this.values = new ArrayList<>(size);
+        this.values = new double[size];
         for (int i = 0; i < size; i++) {
-            values.add(0.0);
+            values[i] = 0.0;
         }
     }
 
@@ -26,37 +26,26 @@ public class LineNoiseData implements NoiseData<Double[], LineNoiseData> {
         if (other.getLineLength() != getLineLength()) {
             throw new IllegalArgumentException("Line lengths have to be of equal size");
         } else {
-            int index = 0;
-            Iterator<Double> iterator = other.getIterator();
-            while (iterator.hasNext()) {
-                Double otherValueAtIndex = iterator.next();
-                values.set(index, values.get(index) + otherValueAtIndex);
-                index++;
+            double[] otherValues = other.getAsRawData();
+            for (int i = 0; i < values.length; i++) {
+                values[i] = values[i] + otherValues[i];
             }
         }
     }
 
-    public Iterator<Double> getIterator() {
-        return values.iterator();
-    }
-
     public int getLineLength() {
-        return values.size();
+        return values.length;
     }
 
     @Override
     public void normalizeBy(double maxValue) {
         for (int i = 0; i < getLineLength(); i++) {
-            values.set(i, values.get(i) / maxValue);
+            values[i] = values[i] / maxValue;
         }
     }
 
     @Override
-    public Double[] getAsRawData() {
-        Double[] results = new Double[values.size()];
-        for (int i = 0; i < values.size(); i++) {
-            results[i] = values.get(i);
-        }
-        return results;
+    public double[] getAsRawData() {
+        return values;
     }
 }

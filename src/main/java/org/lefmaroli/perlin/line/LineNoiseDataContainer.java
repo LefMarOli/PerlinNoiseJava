@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LineNoiseDataContainer
-        implements NoiseDataContainer<Double[][], LineNoiseDataContainer, LineNoiseData> {
+        implements NoiseDataContainer<double[][], LineNoiseDataContainer, LineNoiseData> {
 
     private final List<LineNoiseData> data;
 
@@ -27,8 +27,8 @@ public class LineNoiseDataContainer
     }
 
     @Override
-    public Double[][] getAsRawData() {
-        Double[][] results = new Double[data.size()][data.get(0).getLineLength()];
+    public double[][] getAsRawData() {
+        double[][] results = new double[data.size()][data.get(0).getLineLength()];
         for (int i = 0; i < data.size(); i++) {
             results[i] = data.get(i).getAsRawData();
         }

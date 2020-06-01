@@ -52,7 +52,7 @@ public class LineNoiseGeneratorBuilderTest {
     //Fake test to visualize data, doesn't assert anything
     @Ignore
     @Test
-    public void getNextLines() throws NoiseBuilderException {
+    public void getNextLines() throws NoiseBuilderException, InterruptedException {
         IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(128, 0.9);
         IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(128, 0.5);
         LineNoiseGenerator generator = new LineNoiseGeneratorBuilder(lineLength)
@@ -62,7 +62,7 @@ public class LineNoiseGeneratorBuilderTest {
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
                 .build();
         int requestedLines = 800;
-        Double[][] lines = generator.getNext(requestedLines).getAsRawData();
+        double[][] lines = generator.getNext(requestedLines).getAsRawData();
         SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
         image.setVisible();
         long previousTime = System.currentTimeMillis();
@@ -72,6 +72,8 @@ public class LineNoiseGeneratorBuilderTest {
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
                 lines[lines.length - 1] = generator.getNext(1).getAsRawData()[0];
                 image.updateImage(lines);
+            }else{
+                Thread.sleep(2);
             }
         }
     }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SliceNoiseDataContainer
-        implements NoiseDataContainer<Double[][][], SliceNoiseDataContainer, SliceNoiseData> {
+        implements NoiseDataContainer<double[][][], SliceNoiseDataContainer, SliceNoiseData> {
 
     private final List<SliceNoiseData> data;
 
@@ -42,8 +42,8 @@ public class SliceNoiseDataContainer
     }
 
     @Override
-    public Double[][][] getAsRawData() {
-        Double[][][] results = new Double[data.size()][data.get(0).getSliceWidth()][data.get(0).getSliceHeight()];
+    public double[][][] getAsRawData() {
+        double[][][] results = new double[data.size()][data.get(0).getSliceWidth()][data.get(0).getSliceHeight()];
         for (int i = 0; i < data.size(); i++) {
             results[i] = data.get(i).getAsRawData();
         }

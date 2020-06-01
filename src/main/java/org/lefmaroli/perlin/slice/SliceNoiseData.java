@@ -6,7 +6,7 @@ import org.lefmaroli.perlin.line.LineNoiseData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SliceNoiseData implements NoiseData<Double[][], SliceNoiseData> {
+public class SliceNoiseData implements NoiseData<double[][], SliceNoiseData> {
 
     private final List<LineNoiseData> data;
 
@@ -44,8 +44,8 @@ public class SliceNoiseData implements NoiseData<Double[][], SliceNoiseData> {
     }
 
     @Override
-    public Double[][] getAsRawData() {
-        Double[][] results = new Double[getSliceWidth()][getSliceHeight()];
+    public double[][] getAsRawData() {
+        double[][] results = new double[getSliceWidth()][getSliceHeight()];
         for (int i = 0; i < data.size(); i++) {
             results[i] = data.get(i).getAsRawData();
         }

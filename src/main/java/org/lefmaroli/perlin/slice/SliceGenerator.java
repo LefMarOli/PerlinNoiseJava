@@ -161,11 +161,11 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
 
     private LineNoiseData processSliceWidthDomain(double noiseDist, int xIndex, Vector3D[][] newBounds) {
         int x = xIndex % widthInterpolationPoints;
-        double xDist = (double) (x) / (getSliceWidth());
+        double xDist = (double) (x) / (widthInterpolationPoints);
         int lowerBoundXIndex = xIndex / widthInterpolationPoints;
-        List<Double> yData = new ArrayList<>(sliceHeight);
+        double[] yData = new double[sliceHeight];
         for (int yIndex = 0; yIndex < sliceHeight; yIndex++) {
-            yData.add(processSliceHeightDomain(noiseDist, xDist, yIndex, newBounds, lowerBoundXIndex));
+            yData[yIndex] = processSliceHeightDomain(noiseDist, xDist, yIndex, newBounds, lowerBoundXIndex);
         }
         return new LineNoiseData(yData);
     }
@@ -185,14 +185,6 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
 
     private double interpolate(double noiseDist, double xDist, double yDist, Vector3D[][] newBounds,
                                int lowerBoundXIndex, int lowerBoundYIndex) {
-        Vector3D previousTopLeftDist = new Vector3D(xDist, yDist, noiseDist);
-        Vector3D previousTopRightDist = new Vector3D(xDist - 1.0, yDist, noiseDist);
-        Vector3D previousBottomLeftDist = new Vector3D(xDist, yDist - 1.0, noiseDist);
-        Vector3D previousBottomRightDist = new Vector3D(xDist - 1.0, yDist - 1.0, noiseDist);
-        Vector3D nextTopLeftDist = new Vector3D(xDist, yDist, noiseDist - 1.0);
-        Vector3D nextTopRightDist = new Vector3D(xDist - 1.0, yDist, noiseDist - 1.0);
-        Vector3D nextBottomLeftDist = new Vector3D(xDist, yDist - 1.0, noiseDist - 1.0);
-        Vector3D nextBottomRightDist = new Vector3D(xDist - 1.0, yDist - 1.0, noiseDist - 1.0);
 
         Vector3D previousTopLeftBound = previousBounds[lowerBoundXIndex][lowerBoundYIndex];
         Vector3D previousTopRightBound = previousBounds[lowerBoundXIndex][lowerBoundYIndex + 1];
@@ -203,18 +195,20 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
         Vector3D nextBottomLeftBound = newBounds[lowerBoundXIndex + 1][lowerBoundYIndex];
         Vector3D nextBottomRightBound = newBounds[lowerBoundXIndex + 1][lowerBoundYIndex + 1];
 
-        double previousTopLeftImpact = previousTopLeftBound.getVectorProduct(previousTopLeftDist);
-        double previousTopRightImpact = previousTopRightBound.getVectorProduct(previousTopRightDist);
-        double previousBottomLeftImpact = previousBottomLeftBound.getVectorProduct(previousBottomLeftDist);
-        double previousBottomRightImpact = previousBottomRightBound.getVectorProduct(previousBottomRightDist);
-        double nextTopLeftImpact = nextTopLeftBound.getVectorProduct(nextTopLeftDist);
-        double nextTopRightImpact = nextTopRightBound.getVectorProduct(nextTopRightDist);
-        double nextBottomLeftImpact = nextBottomLeftBound.getVectorProduct(nextBottomLeftDist);
-        double nextBottomRightImpact = nextBottomRightBound.getVectorProduct(nextBottomRightDist);
+        double previousTopLeftImpact = previousTopLeftBound.getVectorProduct(xDist, yDist, noiseDist);
+        double previousTopRightImpact = previousTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist);
+        double previousBottomLeftImpact = previousBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist);
+        double previousBottomRightImpact =
+                previousBottomRightBound.getVectorProduct(xDist - 1.0, yDist - 1.0, noiseDist);
+        double nextTopLeftImpact = nextTopLeftBound.getVectorProduct(xDist, yDist, noiseDist - 1.0);
+        double nextTopRightImpact = nextTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist - 1.0);
+        double nextBottomLeftImpact = nextBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist - 1.0);
+        double nextBottomRightImpact = nextBottomRightBound.getVectorProduct(xDist - 1.0, yDist - 1.0, noiseDist - 1.0);
 
-        return Interpolation.linear3DWithFade(previousTopLeftImpact, nextTopLeftImpact, previousBottomLeftImpact,
-                nextBottomLeftImpact, previousTopRightImpact, nextTopRightImpact, previousBottomRightImpact,
-                nextBottomRightImpact, noiseDist, xDist, yDist);
+        return Interpolation
+                .linear3DWithFade(previousTopLeftImpact, nextTopLeftImpact, previousTopRightImpact, nextTopRightImpact,
+                        previousBottomLeftImpact, nextBottomLeftImpact, previousBottomRightImpact,
+                        nextBottomRightImpact, xDist, yDist, noiseDist);
     }
 
     @Override

@@ -119,9 +119,9 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
     private LineNoiseData processNoiseDomain(int noiseIndex, List<Vector2D> newBounds) {
         double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
-        List<Double> lineData = new ArrayList<>(lineLength);
+        double[] lineData = new double[lineLength];
         for (int lineIndex = 0; lineIndex < lineLength; lineIndex++) {
-            lineData.add(processLineDomain(noiseDist, lineIndex, newBounds));
+            lineData[lineIndex] = processLineDomain(noiseDist, lineIndex, newBounds);
         }
         return new LineNoiseData(lineData);
     }
@@ -141,15 +141,10 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
     private double interpolate(Vector2D previousTopBound, Vector2D nextTopBound, Vector2D previousBottomBound,
                                Vector2D nextBottomBound, double noiseDist, double lineDist) {
-        Vector2D previousTopDist = new Vector2D(noiseDist, lineDist);
-        Vector2D nextTopDist = new Vector2D(noiseDist - 1.0, lineDist);
-        Vector2D previousBottomDist = new Vector2D(noiseDist, lineDist - 1.0);
-        Vector2D nextBottomDist = new Vector2D(noiseDist - 1.0, lineDist - 1.0);
-
-        double previousTopBoundImpact = previousTopBound.getVectorProduct(previousTopDist);
-        double nextTopBoundImpact = nextTopBound.getVectorProduct(nextTopDist);
-        double previousBottomBoundImpact = previousBottomBound.getVectorProduct(previousBottomDist);
-        double nextBottomBoundImpact = nextBottomBound.getVectorProduct(nextBottomDist);
+        double previousTopBoundImpact = previousTopBound.getVectorProduct(noiseDist, lineDist);
+        double nextTopBoundImpact = nextTopBound.getVectorProduct(noiseDist - 1.0, lineDist);
+        double previousBottomBoundImpact = previousBottomBound.getVectorProduct(noiseDist, lineDist - 1.0);
+        double nextBottomBoundImpact = nextBottomBound.getVectorProduct(noiseDist - 1.0, lineDist - 1.0);
 
         return Interpolation.linear2DWithFade(previousTopBoundImpact, previousBottomBoundImpact, nextTopBoundImpact,
                 nextBottomBoundImpact, noiseDist, lineDist);

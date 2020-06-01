@@ -54,9 +54,9 @@ public class LineGeneratorTest {
 
     @Test
     public void getNextLinesCorrectSize() {
-        Double[][] lines = defaultLineGenerator.getNext(requestedLines).getAsRawData();
+        double[][] lines = defaultLineGenerator.getNext(requestedLines).getAsRawData();
         assertEquals(requestedLines, lines.length, 0);
-        for (Double[] line : lines) {
+        for (double[] line : lines) {
             assertEquals(lineLength, line.length, 0);
         }
     }
@@ -89,10 +89,9 @@ public class LineGeneratorTest {
 
     @Test
     public void testValuesBounded() {
-        Double[][] lines = defaultLineGenerator.getNext(requestedLines).getAsRawData();
-        for (Double[] line : lines) {
-            for (Double value : line) {
-                assertNotNull(value);
+        double[][] lines = defaultLineGenerator.getNext(requestedLines).getAsRawData();
+        for (double[] line : lines) {
+            for (double value : line) {
                 assertTrue(value > 0.0);
                 assertTrue(value < maxAmplitude);
             }
@@ -107,10 +106,10 @@ public class LineGeneratorTest {
         double newMaxAmplitude = random.nextDouble() * 100;
         LineGenerator amplifiedLayer = new LineGenerator(50, 50, lineLength, newMaxAmplitude, randomSeed, isCircular);
 
-        Double[][] lines = layer.getNext(requestedLines).getAsRawData();
-        Double[][] amplifiedLines = amplifiedLayer.getNext(requestedLines).getAsRawData();
+        double[][] lines = layer.getNext(requestedLines).getAsRawData();
+        double[][] amplifiedLines = amplifiedLayer.getNext(requestedLines).getAsRawData();
 
-        for (Double[] line : lines) {
+        for (double[] line : lines) {
             for (int j = 0; j < line.length; j++) {
                 line[j] = line[j] * newMaxAmplitude;
             }
@@ -126,8 +125,8 @@ public class LineGeneratorTest {
         long randomSeed = System.currentTimeMillis();
         LineGenerator layer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
         LineGenerator sameLayer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
-        Double[][] nextSegment1 = layer.getNext(requestedLines).getAsRawData();
-        Double[][] nextSegment2 = sameLayer.getNext(requestedLines).getAsRawData();
+        double[][] nextSegment1 = layer.getNext(requestedLines).getAsRawData();
+        double[][] nextSegment2 = sameLayer.getNext(requestedLines).getAsRawData();
 
         assertEquals(nextSegment1.length, nextSegment2.length, 0);
         for (int i = 0; i < nextSegment1.length; i++) {
@@ -215,7 +214,7 @@ public class LineGeneratorTest {
                 new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
                         lineLength,
                         1.0, randomSeed, true);
-        Double[] line = otherGenerator.getNext(1).getAsRawData()[0];
+        double[] line = otherGenerator.getNext(1).getAsRawData()[0];
         double firstValue = line[0];
         double secondValue = line[1];
         double mu = secondValue - firstValue;
@@ -227,13 +226,13 @@ public class LineGeneratorTest {
     //Fake test to visualize data, doesn't assert anything
     @Ignore
     @Test
-    public void getNextLines() {
+    public void getNextLines() throws InterruptedException {
         LineGenerator generator =
                 new LineGenerator(defaultInterpolationPointsAlongLine, defaultInterpolationPointsAlongNoiseSpace,
                         lineLength,
                         1.0, randomSeed, true);
-        Double[][] lines = generator.getNext(requestedLines).getAsRawData();
-        Double[][] appended = new Double[requestedLines][lineLength * 2];
+        double[][] lines = generator.getNext(requestedLines).getAsRawData();
+        double[][] appended = new double[requestedLines][lineLength * 2];
         for (int i = 0; i < lineLength; i++) {
             for (int j = 0; j < requestedLines; j++) {
                 appended[j][i] = lines[j][i];
@@ -247,14 +246,16 @@ public class LineGeneratorTest {
             if (System.currentTimeMillis() - previousTime > 5) {
                 previousTime = System.currentTimeMillis();
                 System.arraycopy(appended, 1, appended, 0, appended.length - 1);
-                Double[] newValues = generator.getNext(1).getAsRawData()[0];
-                Double[] appendedNewValues = new Double[lineLength * 2];
+                double[] newValues = generator.getNext(1).getAsRawData()[0];
+                double[] appendedNewValues = new double[lineLength * 2];
                 for (int i = 0; i < newValues.length; i++) {
                     appendedNewValues[i] = newValues[i];
                     appendedNewValues[i + lineLength] = newValues[i];
                 }
                 appended[lines.length - 1] = appendedNewValues;
                 image.updateImage(appended);
+            }else{
+                Thread.sleep(2);
             }
         }
     }
@@ -264,9 +265,9 @@ public class LineGeneratorTest {
     public void testAppendCircularLines() {
         LineGenerator layer2D = new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, 100, lineLength, 1.0,
                 System.currentTimeMillis(), true);
-        Double[][] lines = layer2D.getNext(1).getAsRawData();
+        double[][] lines = layer2D.getNext(1).getAsRawData();
         List<Double> values = new ArrayList<>();
-        Double[] line = lines[0];
+        double[] line = lines[0];
         for (Double aDouble : line) {
             values.add(aDouble);
         }
@@ -288,7 +289,7 @@ public class LineGeneratorTest {
     public void testMorphingLine() {
         LineGenerator layer2D = new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, 100, lineLength, 1.0,
                 System.currentTimeMillis(), true);
-        Double[][] lines = layer2D.getNext(1).getAsRawData();
+        double[][] lines = layer2D.getNext(1).getAsRawData();
         LineChart chart = new LineChart("Morphing line", "length", "values");
         String label = "line";
         chart.addEquidistantDataSeries(lines[0], label);
@@ -311,7 +312,7 @@ public class LineGeneratorTest {
         }
     }
 
-    private static void assertExpectedArrayEqualsActual(Double[] expected, Double[] actual, double delta) {
+    private static void assertExpectedArrayEqualsActual(double[] expected, double[] actual, double delta) {
         assertEquals(expected.length, actual.length, delta);
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i], delta);

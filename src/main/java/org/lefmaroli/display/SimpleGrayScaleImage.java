@@ -21,7 +21,7 @@ public class SimpleGrayScaleImage {
     private final int width;
     private final int length;
 
-    public SimpleGrayScaleImage(Double[][] data, int pixelScale) {
+    public SimpleGrayScaleImage(double[][] data, int pixelScale) {
         assertDataIsRectangular(data);
         this.width = data.length;
         this.length = data[0].length;
@@ -37,7 +37,7 @@ public class SimpleGrayScaleImage {
         this.framedImage.setVisible(true);
     }
 
-    public void updateImage(Double[][] newData) {
+    public void updateImage(double[][] newData) {
         assertNewDataHasSameDimensions(newData);
         Graphics2D g = (Graphics2D) image.getGraphics();
         for (int i = 0; i < width; i++) {
@@ -54,23 +54,23 @@ public class SimpleGrayScaleImage {
         });
     }
 
-    private void assertDataIsRectangular(Double[][] data) {
+    private void assertDataIsRectangular(double[][] data) {
         if (data.length < 1) {
             throw new IllegalArgumentException("Provided data is empty");
         }
         int rowLength = data[0].length;
-        for (Double[] row : data) {
+        for (double[] row : data) {
             if (row.length != rowLength) {
                 throw new IllegalArgumentException("Provided data doesn't have same length across rows");
             }
         }
     }
 
-    private void assertNewDataHasSameDimensions(Double[][] data) {
+    private void assertNewDataHasSameDimensions(double[][] data) {
         if (data.length != width) {
             throw new IllegalArgumentException("Provided data has changed width");
         }
-        for (Double[] row : data) {
+        for (double[] row : data) {
             if (row.length != length) {
                 throw new IllegalArgumentException("Provided data doesn't have same length as original data");
             }

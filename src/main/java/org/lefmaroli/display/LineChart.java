@@ -12,8 +12,10 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class LineChart {
@@ -34,6 +36,14 @@ public class LineChart {
 
     public void addEquidistantDataSeries(Double[] dataSeries, String dataSeriesLabel) {
         addEquidistantDataSeries(Arrays.asList(dataSeries), dataSeriesLabel);
+    }
+
+    public void addEquidistantDataSeries(double[] dataSeries, String dataSeriesLabel) {
+        List<Double> input = new ArrayList<>(dataSeries.length);
+        for (double data : dataSeries) {
+            input.add(data);
+        }
+        addEquidistantDataSeries(input, dataSeriesLabel);
     }
 
     public void addEquidistantDataSeries(Collection<Double> dataSeries, String dataSeriesLabel) {
