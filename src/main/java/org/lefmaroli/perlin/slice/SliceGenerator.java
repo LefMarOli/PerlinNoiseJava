@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNoiseDataContainer, SliceNoiseData>
         implements SliceNoiseGenerator {
-    private static final double MAX_3D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0);
+    private static final double MAX_3D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
 
     private static final Logger LOGGER = LogManager.getLogger(SliceGenerator.class);
 
@@ -113,7 +113,14 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNois
     }
 
     private static double adjustValueRange(double interpolatedValue) {
-        return ((interpolatedValue / MAX_3D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
+//        return interpolatedValue;
+        double adjusted = ((interpolatedValue / MAX_3D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
+        if (adjusted > 1.0) {
+            adjusted = 1.0;
+        }if(adjusted < 0.0){
+            adjusted = 0.0;
+        }
+        return adjusted;
     }
 
     private Vector3D[][] getNewBounds() {

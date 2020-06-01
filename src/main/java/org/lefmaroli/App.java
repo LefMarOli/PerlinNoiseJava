@@ -20,7 +20,7 @@ public class App {
         DoubleGenerator amplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
         PointNoiseGenerator grid1D = new PointNoiseGeneratorBuilder()
                 .withNumberOfLayers(5)
-                .withNoiseInterpolationPointCountGenerator(interpolationPointCountGenerator)
+                .withNoiseInterpolationPointGenerator(interpolationPointCountGenerator)
                 .withAmplitudeGenerator(amplitudeFactorGenerator)
                 .build();
 

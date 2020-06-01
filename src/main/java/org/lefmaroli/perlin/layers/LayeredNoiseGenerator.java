@@ -6,6 +6,7 @@ import org.lefmaroli.perlin.data.NoiseData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -28,6 +29,20 @@ public abstract class LayeredNoiseGenerator<ReturnType extends NoiseData<?, Retu
         }
         this.maxAmplitude = sum;
         this.scheduler = scheduler;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LayeredNoiseGenerator<?, ?> that = (LayeredNoiseGenerator<?, ?>) o;
+        return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
+                Objects.equals(layers, that.layers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(maxAmplitude, layers);
     }
 
     @Override

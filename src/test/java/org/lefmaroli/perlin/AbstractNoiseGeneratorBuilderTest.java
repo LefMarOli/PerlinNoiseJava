@@ -19,13 +19,13 @@ public class AbstractNoiseGeneratorBuilderTest {
         assertNotNull(noisePointBuilder.withRandomSeed(0L));
         assertNotNull(noisePointBuilder.withNumberOfLayers(5));
         assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-        assertNotNull(noisePointBuilder.withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 1.0)));
+        assertNotNull(noisePointBuilder.withNoiseInterpolationPointGenerator(new IntegerGenerator(1, 1.0)));
     }
 
     @Test(expected = NoiseBuilderException.class)
     public void testToFewInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 0.5))
+                .withNoiseInterpolationPointGenerator(new IntegerGenerator(1, 0.5))
                 .withNumberOfLayers(5)
                 .build();
     }
@@ -33,7 +33,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     @Test(expected = NoiseBuilderException.class)
     public void testTooManyInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(1, 5000))
+                .withNoiseInterpolationPointGenerator(new IntegerGenerator(1, 5000))
                 .withNumberOfLayers(15)
                 .build();
     }
@@ -58,7 +58,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     public void testCreateSingleLayerWithNoInterpolationPoints() throws NoiseBuilderException {
         new MockNoiseBuilder()
                 .withNumberOfLayers(1)
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(0, 500))
+                .withNoiseInterpolationPointGenerator(new IntegerGenerator(0, 500))
                 .build();
     }
 

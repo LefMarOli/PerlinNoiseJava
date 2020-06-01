@@ -22,20 +22,6 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<PointNoiseDataC
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LayeredPointGenerator that = (LayeredPointGenerator) o;
-        return Double.compare(that.getMaxAmplitude(), getMaxAmplitude()) == 0 &&
-                getLayers().equals(that.getLayers());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getLayers(), getMaxAmplitude());
-    }
-
-    @Override
     protected PointNoiseDataContainer initializeResults(int count) {
         return new PointNoiseDataContainer(count);
     }

@@ -20,7 +20,7 @@ public class NoisePointNavigatorTest {
         DoubleGenerator defaultAmplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
         PointNoiseGenerator defaultNoisePointGenerator = new PointNoiseGeneratorBuilder()
                 .withNumberOfLayers(5)
-                .withNoiseInterpolationPointCountGenerator(defaultNoiseInterpolationPointCountGenerator)
+                .withNoiseInterpolationPointGenerator(defaultNoiseInterpolationPointCountGenerator)
                 .withAmplitudeGenerator(defaultAmplitudeFactorGenerator)
                 .build();
         defaultNoisePointNavigator = new NoisePointNavigator(defaultNoisePointGenerator);

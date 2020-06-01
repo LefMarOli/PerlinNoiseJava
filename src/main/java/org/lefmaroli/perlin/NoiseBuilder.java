@@ -34,7 +34,7 @@ public abstract class NoiseBuilder<ReturnType extends NoiseData<?, ReturnType>,
         }
     }
 
-    public NoiseBuilderType withNoiseInterpolationPointCountGenerator(
+    public NoiseBuilderType withNoiseInterpolationPointGenerator(
             NumberGenerator<Integer> interpolationPointCountGenerator) {
         setInterpolationPointCountGeneratorForDimension(1, interpolationPointCountGenerator);
         return self();

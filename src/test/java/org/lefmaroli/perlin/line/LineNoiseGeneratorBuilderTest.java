@@ -8,9 +8,6 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.point.PointNoiseGenerator;
-import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
-import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilderTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,7 +54,7 @@ public class LineNoiseGeneratorBuilderTest {
         IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(128, 0.5);
         LineNoiseGenerator generator = new LineNoiseGeneratorBuilder(lineLength)
                 .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
-                .withNoiseInterpolationPointCountGenerator(noiseInterpolationPointCountGenerator)
+                .withNoiseInterpolationPointGenerator(noiseInterpolationPointCountGenerator)
                 .withNumberOfLayers(4)
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
                 .build();
@@ -84,7 +81,7 @@ public class LineNoiseGeneratorBuilderTest {
         LineNoiseGenerator noiseGenerator = new LineNoiseGeneratorBuilder(1000)
                 .withNumberOfLayers(10)
                 .withRandomSeed(0L)
-                .withNoiseInterpolationPointCountGenerator(new IntegerGenerator(50, 2.0))
+                .withNoiseInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
                 .withLineInterpolationPointCountGenerator(new IntegerGenerator(50, 2.0))
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
                 .build();

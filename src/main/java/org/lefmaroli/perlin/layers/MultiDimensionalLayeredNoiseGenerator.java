@@ -6,6 +6,7 @@ import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class MultiDimensionalLayeredNoiseGenerator<ReturnType extends NoiseData<?, ReturnType>,
         NoiseLayer extends INoiseGenerator<ReturnType> & MultiDimensionalNoiseGenerator>
@@ -16,6 +17,20 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<ReturnType extends N
     protected MultiDimensionalLayeredNoiseGenerator(List<NoiseLayer> layers) {
         super(layers, new ExecutorServiceScheduler(10));
         isCircular = checkCircularity(layers);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        MultiDimensionalLayeredNoiseGenerator<?, ?> that = (MultiDimensionalLayeredNoiseGenerator<?, ?>) o;
+        return isCircular == that.isCircular;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), isCircular);
     }
 
     @Override

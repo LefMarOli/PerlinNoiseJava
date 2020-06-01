@@ -26,15 +26,14 @@ public class LayeredLineGenerator
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         LayeredLineGenerator that = (LayeredLineGenerator) o;
-        return lineLength == that.lineLength &&
-                Double.compare(that.getMaxAmplitude(), getMaxAmplitude()) == 0 &&
-                getLayers().equals(that.getLayers());
+        return lineLength == that.lineLength;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineLength, getLayers(), getMaxAmplitude());
+        return Objects.hash(super.hashCode(), lineLength);
     }
 
     @Override
