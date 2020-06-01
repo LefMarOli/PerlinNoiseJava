@@ -3,7 +3,7 @@ package org.lefmaroli.perlin.slice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
-import org.lefmaroli.perlin.RootNoiseGenerator;
+import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
 import org.lefmaroli.perlin.line.LineNoiseData;
 import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.vector.Vector3D;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, SliceNoiseData>
+public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNoiseDataContainer, SliceNoiseData>
         implements SliceNoiseGenerator {
     private static final double MAX_3D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0);
 
@@ -24,44 +24,26 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
     private final int heightInterpolationPoints;
     private final int sliceWidth;
     private final int sliceHeight;
-    private final double maxAmplitude;
-    private final long randomSeed;
     private final RandomGenerator randomGenerator;
     private final int randomBoundsXCount;
     private final int randomBoundsYCount;
-    private final boolean isCircular;
     private Vector3D[][] previousBounds;
 
     SliceGenerator(int noiseInterpolationPoints, int widthInterpolationPoint, int heightInterpolationPoint,
                    int sliceWidth, int sliceHeight, double maxAmplitude, long randomSeed, boolean isCircular) {
-        super(noiseInterpolationPoints);
+        super(noiseInterpolationPoints, maxAmplitude, randomSeed, isCircular);
         assertValidValues(parameterNames, widthInterpolationPoint, heightInterpolationPoint, sliceWidth, sliceHeight);
-        this.isCircular = isCircular;
-        if (isCircular) {
-            this.widthInterpolationPoints =
-                    correctInterpolationPointsForCircularity(widthInterpolationPoint, sliceWidth);
-            this.heightInterpolationPoints =
-                    correctInterpolationPointsForCircularity(heightInterpolationPoint, sliceHeight);
-        } else {
-            this.widthInterpolationPoints = widthInterpolationPoint;
-            this.heightInterpolationPoints = heightInterpolationPoint;
-        }
-        if (this.widthInterpolationPoints != widthInterpolationPoint) {
-            LOGGER.warn("Modified required width interpolation point count from " + widthInterpolationPoint +
-                    " to " + this.widthInterpolationPoints + " to respect circularity.");
-        }
-        if (this.heightInterpolationPoints != heightInterpolationPoint) {
-            LOGGER.warn("Modified required height interpolation point count from " + heightInterpolationPoint +
-                    " to " + this.heightInterpolationPoints + " to respect circularity.");
-        }
+        this.widthInterpolationPoints =
+                correctInterpolationPointsForCircularity(widthInterpolationPoint, sliceWidth, "slice width");
+        this.heightInterpolationPoints =
+                correctInterpolationPointsForCircularity(heightInterpolationPoint, sliceHeight, "slice height");
         this.sliceWidth = sliceWidth;
         this.sliceHeight = sliceHeight;
-        this.maxAmplitude = maxAmplitude;
-        this.randomSeed = randomSeed;
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.randomBoundsXCount = 2 + this.sliceWidth / this.widthInterpolationPoints;
         this.randomBoundsYCount = 2 + this.sliceHeight / this.heightInterpolationPoints;
         this.previousBounds = getNewBounds();
+        LOGGER.debug("Create new " + toString());
     }
 
     public int getWidthInterpolationPoints() {
@@ -81,17 +63,13 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
         return widthInterpolationPoints == that.widthInterpolationPoints &&
                 heightInterpolationPoints == that.heightInterpolationPoints &&
                 sliceWidth == that.sliceWidth &&
-                sliceHeight == that.sliceHeight &&
-                Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                randomSeed == that.randomSeed &&
-                isCircular == that.isCircular;
+                sliceHeight == that.sliceHeight;
     }
 
     @Override
     public int hashCode() {
         return Objects
-                .hash(super.hashCode(), widthInterpolationPoints, heightInterpolationPoints, sliceWidth, sliceHeight,
-                        maxAmplitude, randomSeed, isCircular);
+                .hash(super.hashCode(), widthInterpolationPoints, heightInterpolationPoints, sliceWidth, sliceHeight);
     }
 
     @Override
@@ -102,9 +80,9 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
                 ", heightInterpolationPoints=" + heightInterpolationPoints +
                 ", sliceWidth=" + sliceWidth +
                 ", sliceHeight=" + sliceHeight +
-                ", maxAmplitude=" + maxAmplitude +
+                ", maxAmplitude=" + getMaxAmplitude() +
                 ", randomSeed=" + randomSeed +
-                ", isCircular=" + isCircular +
+                ", isCircular=" + isCircular() +
                 '}';
     }
 
@@ -116,16 +94,6 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
     @Override
     public int getSliceHeight() {
         return sliceHeight;
-    }
-
-    @Override
-    public double getMaxAmplitude() {
-        return maxAmplitude;
-    }
-
-    @Override
-    public boolean isCircular() {
-        return isCircular;
     }
 
     @Override
@@ -155,7 +123,7 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
                 newBounds[i][j] = randomGenerator.getRandomUnitVector3D();
             }
         }
-        if (isCircular) {
+        if (isCircular()) {
             newBounds[randomBoundsXCount - 2] = newBounds[0];
             newBounds[randomBoundsXCount - 1] = newBounds[1];
             for (int i = 0; i < randomBoundsXCount; i++) {
@@ -192,7 +160,7 @@ public class SliceGenerator extends RootNoiseGenerator<SliceNoiseDataContainer, 
         double yDist = (double) (y) / (heightInterpolationPoints);
         int lowerBoundYIndex = yIndex / heightInterpolationPoints;
         double interpolatedValue = interpolate(noiseDist, xDist, yDist, newBounds, lowerBoundXIndex, lowerBoundYIndex);
-        return adjustValueRange(interpolatedValue) * maxAmplitude;
+        return adjustValueRange(interpolatedValue) * getMaxAmplitude();
     }
 
     private double interpolate(double noiseDist, double xDist, double yDist, Vector3D[][] newBounds,

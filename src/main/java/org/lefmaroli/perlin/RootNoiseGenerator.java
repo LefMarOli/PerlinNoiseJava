@@ -1,17 +1,24 @@
 package org.lefmaroli.perlin;
 
+import org.lefmaroli.perlin.data.NoiseData;
+
 import java.util.*;
 
-public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
+public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, DataType>
+        implements INoiseGenerator<ContainerDataType> {
 
     private final Queue<DataType> generated = new LinkedList<>();
     private final int noiseInterpolationPoints;
+    private final double maxAmplitude;
+    protected final long randomSeed;
 
-    public RootNoiseGenerator(int noiseInterpolationPoints) {
+    public RootNoiseGenerator(int noiseInterpolationPoints, double maxAmplitude, long randomSeed) {
         if (noiseInterpolationPoints < 0) {
             throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
         }
         this.noiseInterpolationPoints = noiseInterpolationPoints;
+        this.maxAmplitude = maxAmplitude;
+        this.randomSeed = randomSeed;
     }
 
     protected void assertValidValues(List<String> names, int... values) {
@@ -65,11 +72,18 @@ public abstract class RootNoiseGenerator<ContainerDataType, DataType> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RootNoiseGenerator<?, ?> that = (RootNoiseGenerator<?, ?>) o;
-        return noiseInterpolationPoints == that.noiseInterpolationPoints;
+        return noiseInterpolationPoints == that.noiseInterpolationPoints &&
+                Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
+                randomSeed == that.randomSeed;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(noiseInterpolationPoints);
+        return Objects.hash(noiseInterpolationPoints, maxAmplitude, randomSeed);
+    }
+
+    @Override
+    public double getMaxAmplitude() {
+        return maxAmplitude;
     }
 }

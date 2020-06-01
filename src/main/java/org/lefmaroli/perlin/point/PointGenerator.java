@@ -11,48 +11,23 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
         implements PointNoiseGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
-
-    private final double maxAmplitude;
     private final Random randomGenerator;
-    private final long randomSeed;
     private double previousBound;
 
     public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
-        super(interpolationPoints);
-        this.maxAmplitude = maxAmplitude;
-        this.randomSeed = randomSeed;
+        super(interpolationPoints, maxAmplitude, randomSeed);
         this.randomGenerator = new Random(randomSeed);
         this.previousBound = randomGenerator.nextDouble();
         LOGGER.debug("Created new " + toString());
     }
 
     @Override
-    public double getMaxAmplitude() {
-        return maxAmplitude;
-    }
-
-    @Override
     public String toString() {
         return "PointGenerator{" +
-                "maxAmplitude=" + maxAmplitude +
-                ", noiseInterpolationPoints=" + getNoiseInterpolationPoints() +
+                "noiseInterpolationPoints=" + getNoiseInterpolationPoints() +
+                ", maxAmplitude=" + getMaxAmplitude() +
                 ", randomSeed=" + randomSeed +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PointGenerator that = (PointGenerator) o;
-        return Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                Double.compare(that.getNoiseInterpolationPoints(), getNoiseInterpolationPoints()) == 0 &&
-                randomSeed == that.randomSeed;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(maxAmplitude, getNoiseInterpolationPoints(), randomSeed);
     }
 
     @Override
@@ -63,7 +38,7 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
         while (currentPos < getNoiseInterpolationPoints()) {
             double relativePositionInSegment = currentPos / getNoiseInterpolationPoints();
             double interpolatedValue = Interpolation.linearWithFade(previousBound, newBound, relativePositionInSegment);
-            results.add(new PointNoiseData(interpolatedValue * maxAmplitude));
+            results.add(new PointNoiseData(interpolatedValue * getMaxAmplitude()));
             currentPos++;
         }
         previousBound = newBound;
