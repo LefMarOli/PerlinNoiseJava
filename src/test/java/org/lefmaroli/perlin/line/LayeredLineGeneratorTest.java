@@ -51,7 +51,7 @@ public class LayeredLineGeneratorTest {
 
     @Test
     public void testGetNextCount() {
-        int expectedCount = 75;
+        int expectedCount = 10;
         double[][] nextLines = defaultGenerator.getNext(expectedCount).getAsRawData();
         assertEquals(expectedCount, nextLines.length, 0);
         for (double[] line : nextLines) {
@@ -61,7 +61,7 @@ public class LayeredLineGeneratorTest {
 
     @Test
     public void testGetNextBoundedValues() {
-        double[][] lines = defaultGenerator.getNext(100).getAsRawData();
+        double[][] lines = defaultGenerator.getNext(10).getAsRawData();
         for (double[] line : lines) {
             for (double value : line) {
                 assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);

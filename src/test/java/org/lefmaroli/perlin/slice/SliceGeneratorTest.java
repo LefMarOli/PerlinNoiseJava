@@ -17,15 +17,15 @@ import static org.junit.Assert.*;
 public class SliceGeneratorTest {
 
     private SliceGenerator defaultGenerator;
-    private static final int noiseInterpolationPoints = 4582854;
-    private static final int widthInterpolationPoints = 5787585;
-    private static final int heightInterpolationPoints = 12785780;
-    private static final int sliceWidth = 200;
-    private static final int sliceHeight = 250;
+    private static final int noiseInterpolationPoints = 150;
+    private static final int widthInterpolationPoints = 50;
+    private static final int heightInterpolationPoints = 80;
+    private static final int sliceWidth = 100;
+    private static final int sliceHeight = 150;
     private final long randomSeed = System.currentTimeMillis();
     private static final double maxAmplitude = 1.0;
     private static final boolean isCircular = false;
-    int requestedCount = 100;
+    int requestedCount = 10;
 
     @Before
     public void setup() {
@@ -110,8 +110,16 @@ public class SliceGeneratorTest {
     }
 
     @Test
+    public void testHugeSlice(){
+        SliceGenerator amplifiedLayer =
+                new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
+                        10000, 10000, maxAmplitude, randomSeed, isCircular);
+
+    }
+
+    @Test
     public void testValuesBounded() {
-        double[][][] slices = defaultGenerator.getNext(1000).getAsRawData();
+        double[][][] slices = defaultGenerator.getNext(10).getAsRawData();
 //        double min = Double.MAX_VALUE;
 //        double max = Double.MIN_VALUE;
         for (double[][] slice : slices) {

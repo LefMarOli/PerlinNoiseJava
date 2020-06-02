@@ -27,10 +27,10 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNois
     private final RandomGenerator randomGenerator;
     private final int randomBoundsXCount;
     private final int randomBoundsYCount;
-    private Vector3D[][] previousBounds;
-    private Vector3D[][] currentBounds;
     private final SliceNoiseData[] results;
     private final int noiseSegmentLength;
+    private Vector3D[][] previousBounds;
+    private Vector3D[][] currentBounds;
     private int currentPosInNoiseInterpolation = 0;
 
     SliceGenerator(int noiseInterpolationPoints, int widthInterpolationPoint, int heightInterpolationPoint,
@@ -59,15 +59,6 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNois
 
     public int getHeightInterpolationPoints() {
         return heightInterpolationPoints;
-    }
-
-    private int computeNoiseSegmentLength(int sliceWidth, int sliceHeight){
-        int noiseSegmentLength = Math.min(MB_10_IN_DOUBLES_SIZE / sliceWidth / sliceHeight, getNoiseInterpolationPoints());
-        if(noiseSegmentLength < 1){
-            noiseSegmentLength = 1;
-            LOGGER.warn("Creating slice generator of more than 10MB in size");
-        }
-        return noiseSegmentLength;
     }
 
     @Override
@@ -145,10 +136,23 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNois
         double adjusted = ((interpolatedValue / MAX_3D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
         if (adjusted > 1.0) {
             adjusted = 1.0;
-        }if(adjusted < 0.0){
+        }
+        if (adjusted < 0.0) {
             adjusted = 0.0;
         }
         return adjusted;
+    }
+
+    private int computeNoiseSegmentLength(int sliceWidth, int sliceHeight) {
+        int noiseSegmentLength =
+                Math.min(MB_10_IN_DOUBLES_SIZE / (sliceWidth * sliceHeight), getNoiseInterpolationPoints());
+        if (noiseSegmentLength < 1) {
+            noiseSegmentLength = 1;
+            int estimatedSliceSize = sliceWidth * sliceHeight / MB_10_IN_DOUBLES_SIZE * 10;
+            LOGGER.warn(
+                    "Creating slice generator of more than 10MB in size (Estimated at " + estimatedSliceSize + "MB)");
+        }
+        return noiseSegmentLength;
     }
 
     private Vector3D[][] getNewBounds() {
@@ -197,7 +201,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<SliceNois
         return adjustValueRange(interpolatedValue) * getMaxAmplitude();
     }
 
-    private double interpolate(double noiseDist, double xDist, double yDist, int lowerBoundXIndex, int lowerBoundYIndex) {
+    private double interpolate(double noiseDist, double xDist, double yDist, int lowerBoundXIndex,
+                               int lowerBoundYIndex) {
 
         Vector3D previousTopLeftBound = previousBounds[lowerBoundXIndex][lowerBoundYIndex];
         Vector3D previousTopRightBound = previousBounds[lowerBoundXIndex][lowerBoundYIndex + 1];

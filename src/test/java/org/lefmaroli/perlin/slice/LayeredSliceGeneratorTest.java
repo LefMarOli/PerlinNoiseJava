@@ -16,8 +16,8 @@ import static org.junit.Assert.*;
 public class LayeredSliceGeneratorTest {
 
     private static final double maxAmplitude = 1.75;
-    private static final int defaultSliceWidth = 250;
-    private static final int defaultSliceHeight = 250;
+    private static final int defaultSliceWidth = 150;
+    private static final int defaultSliceHeight = 150;
     private LayeredSliceGenerator defaultGenerator;
     private List<SliceNoiseGenerator> layers;
     private boolean isCircularDefault = false;
@@ -66,7 +66,7 @@ public class LayeredSliceGeneratorTest {
 
     @Test
     public void testGetNextCount() {
-        int expectedCount = 75;
+        int expectedCount = 10;
         double[][][] slices = defaultGenerator.getNext(expectedCount).getAsRawData();
         assertEquals(expectedCount, slices.length, 0);
         for (double[][] slice : slices) {
@@ -79,7 +79,7 @@ public class LayeredSliceGeneratorTest {
 
     @Test
     public void testGetNextBoundedValues() {
-        double[][][] slices = defaultGenerator.getNext(100).getAsRawData();
+        double[][][] slices = defaultGenerator.getNext(10).getAsRawData();
         for (double[][] slice : slices) {
             for (double[] lines : slice) {
                 for (double value : lines) {

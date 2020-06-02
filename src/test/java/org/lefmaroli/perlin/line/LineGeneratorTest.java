@@ -209,6 +209,14 @@ public class LineGeneratorTest {
     }
 
     @Test
+    public void testHugeLine(){
+        LineGenerator otherGenerator =
+                new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
+                        2000000,
+                        1.0, randomSeed, false);
+    }
+
+    @Test
     public void testCircularBounds() {
         LineGenerator otherGenerator =
                 new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,

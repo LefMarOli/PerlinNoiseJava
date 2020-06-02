@@ -78,7 +78,7 @@ public abstract class LayeredNoiseGenerator<ReturnType extends NoiseData<?, Retu
             try {
                 results.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException("Problem executing parallel code", e);
+                throw new RuntimeException("Problem executing parallel layer code", e);
             }
         }
         results.normalizeBy(maxAmplitude);
