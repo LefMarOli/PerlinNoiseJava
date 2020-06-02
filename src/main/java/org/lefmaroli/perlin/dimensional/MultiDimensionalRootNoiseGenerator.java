@@ -10,6 +10,9 @@ import java.util.Objects;
 public abstract class MultiDimensionalRootNoiseGenerator<DataContainerType extends NoiseData, DataType>
         extends RootNoiseGenerator<DataContainerType, DataType> implements MultiDimensionalNoiseGenerator {
 
+    protected static final int MB_10 = 10 * 1024 * 1024;
+    protected static final int MB_10_IN_DOUBLES_SIZE = MB_10 / 8;
+
     private final boolean isCircular;
 
     public MultiDimensionalRootNoiseGenerator(int noiseInterpolationPoints, double maxAmplitude, long randomSeed,

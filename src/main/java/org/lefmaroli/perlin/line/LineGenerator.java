@@ -21,6 +21,10 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     private final RandomGenerator randomGenerator;
     private final int randomBoundsCount;
     private List<Vector2D> previousBounds;
+    private List<Vector2D> currentBounds;
+    private final LineNoiseData[] results;
+    private final int noiseSegmentLength;
+    private int currentPosInNoiseInterpolation = 0;
 
     public LineGenerator(int noiseInterpolationPoints, int lineInterpolationPoints, int lineLength,
                          double maxAmplitude, long randomSeed, boolean isCircular) {
@@ -32,7 +36,19 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.randomBoundsCount = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = generateNewRandomBounds();
+        this.currentBounds = generateNewRandomBounds();
+        this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
+        this.results = new LineNoiseData[noiseSegmentLength];
         LOGGER.debug("Created new " + toString());
+    }
+
+    private int computeNoiseSegmentLength(int lineLength){
+        int noiseSegmentLength = Math.min(MB_10_IN_DOUBLES_SIZE / lineLength, getNoiseInterpolationPoints());
+        if(noiseSegmentLength < 1){
+            noiseSegmentLength = 1;
+            LOGGER.warn("Creating line generator of more than 10MB in size");
+        }
+        return noiseSegmentLength;
     }
 
     @Override
@@ -77,37 +93,50 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     }
 
     @Override
-    protected List<LineNoiseData> generateNextSegment() {
-        List<Vector2D> newBounds = generateNewRandomBounds();
-        List<LineNoiseData> results = new ArrayList<>(getNoiseInterpolationPoints());
-        for (int noiseIndex = 0; noiseIndex < getNoiseInterpolationPoints(); noiseIndex++) {
-            results.add(processNoiseDomain(noiseIndex, newBounds));
+    public int getNoiseSegmentLength() {
+        return noiseSegmentLength;
+    }
+
+    @Override
+    protected LineNoiseData[] generateNextSegment() {
+        for (int i = 0; i < noiseSegmentLength; i++) {
+            currentPosInNoiseInterpolation++;
+            if (currentPosInNoiseInterpolation == getNoiseInterpolationPoints()) {
+                previousBounds = currentBounds;
+                currentBounds = generateNewRandomBounds();
+                currentPosInNoiseInterpolation = 0;
+            }
+            results[i] = processNoiseDomain(currentPosInNoiseInterpolation);
         }
-        previousBounds = newBounds;
         return results;
     }
 
     @Override
-    protected LineNoiseDataContainer getInContainer(List<LineNoiseData> data) {
+    protected LineNoiseDataContainer getInContainer(LineNoiseData[] data) {
         return new LineNoiseDataContainer(data);
     }
 
+    @Override
+    protected LineNoiseData[] getArrayOfSubType(int count) {
+        return new LineNoiseData[count];
+    }
 
-    private LineNoiseData processNoiseDomain(int noiseIndex, List<Vector2D> newBounds) {
+
+    private LineNoiseData processNoiseDomain(int noiseIndex) {
         double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
         double[] lineData = new double[lineLength];
         for (int lineIndex = 0; lineIndex < lineLength; lineIndex++) {
-            lineData[lineIndex] = processLineDomain(noiseDist, lineIndex, newBounds);
+            lineData[lineIndex] = processLineDomain(noiseDist, lineIndex);
         }
         return new LineNoiseData(lineData);
     }
 
-    private double processLineDomain(double noiseDist, int lineIndex, List<Vector2D> newBounds) {
+    private double processLineDomain(double noiseDist, int lineIndex) {
         int lowerBoundIndex = lineIndex / lineInterpolationPoints;
         Vector2D prevTop = previousBounds.get(lowerBoundIndex);
-        Vector2D nextTop = newBounds.get(lowerBoundIndex);
+        Vector2D nextTop = currentBounds.get(lowerBoundIndex);
         Vector2D prevBottom = previousBounds.get(lowerBoundIndex + 1);
-        Vector2D nextBottom = newBounds.get(lowerBoundIndex + 1);
+        Vector2D nextBottom = currentBounds.get(lowerBoundIndex + 1);
         int x = lineIndex % lineInterpolationPoints;
         double lineDist = (double) (x) / (lineInterpolationPoints);
         double interpolatedValue =

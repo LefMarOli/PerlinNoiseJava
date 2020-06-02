@@ -50,8 +50,8 @@ public class LineNoiseGeneratorBuilderTest {
     @Ignore
     @Test
     public void getNextLines() throws NoiseBuilderException, InterruptedException {
-        IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(128, 0.9);
-        IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(128, 0.5);
+        IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(6687855, 0.9);
+        IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(80, 0.5);
         LineNoiseGenerator generator = new LineNoiseGeneratorBuilder(lineLength)
                 .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
                 .withNoiseInterpolationPointGenerator(noiseInterpolationPointCountGenerator)

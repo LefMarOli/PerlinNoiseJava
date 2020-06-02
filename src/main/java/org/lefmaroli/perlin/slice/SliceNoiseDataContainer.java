@@ -2,35 +2,32 @@ package org.lefmaroli.perlin.slice;
 
 import org.lefmaroli.perlin.data.NoiseDataContainer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SliceNoiseDataContainer
         implements NoiseDataContainer<double[][][], SliceNoiseDataContainer, SliceNoiseData> {
 
-    private final List<SliceNoiseData> data;
+    private final SliceNoiseData[] data;
 
-    public SliceNoiseDataContainer(List<SliceNoiseData> data) {
+    public SliceNoiseDataContainer(SliceNoiseData[] data) {
         this.data = data;
     }
 
     public SliceNoiseDataContainer(int count, int sliceWidth, int sliceHeight){
-        this.data = new ArrayList<>(count);
+        this.data = new SliceNoiseData[count];
         for (int i = 0; i < count; i++) {
-            this.data.add(new SliceNoiseData(sliceWidth, sliceHeight));
+            this.data[i] = new SliceNoiseData(sliceWidth, sliceHeight);
         }
     }
 
     @Override
-    public List<SliceNoiseData> getAsList() {
+    public SliceNoiseData[] getAsArray() {
         return data;
     }
 
     @Override
     public void add(SliceNoiseDataContainer other) {
-        List<SliceNoiseData> otherAsList = other.getAsList();
-        for (int i = 0; i < data.size(); i++) {
-            data.get(i).add(otherAsList.get(i));
+        SliceNoiseData[] otherAsList = other.getAsArray();
+        for (int i = 0; i < data.length; i++) {
+            data[i].add(otherAsList[i]);
         }
     }
 
@@ -43,9 +40,9 @@ public class SliceNoiseDataContainer
 
     @Override
     public double[][][] getAsRawData() {
-        double[][][] results = new double[data.size()][data.get(0).getSliceWidth()][data.get(0).getSliceHeight()];
-        for (int i = 0; i < data.size(); i++) {
-            results[i] = data.get(i).getAsRawData();
+        double[][][] results = new double[data.length][data[0].getSliceWidth()][data[0].getSliceHeight()];
+        for (int i = 0; i < data.length; i++) {
+            results[i] = data[i].getAsRawData();
         }
         return results;
     }

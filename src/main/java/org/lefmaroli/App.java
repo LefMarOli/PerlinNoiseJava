@@ -16,7 +16,7 @@ import java.awt.*;
 public class App {
     public static void main(String[] args) throws NoiseBuilderException {
 
-        IntegerGenerator interpolationPointCountGenerator = new IntegerGenerator(2048, 0.5);
+        IntegerGenerator interpolationPointCountGenerator = new IntegerGenerator(4896572, 0.25);
         DoubleGenerator amplitudeFactorGenerator = new DoubleGenerator(1.0, 1.0 / 1.8);
         PointNoiseGenerator grid1D = new PointNoiseGeneratorBuilder()
                 .withNumberOfLayers(5)
@@ -38,6 +38,7 @@ public class App {
                 long current = System.currentTimeMillis();
                 if ((current - start) > 2) {
                     start = System.currentTimeMillis();
+                    noisePointNavigator.getNextValue();
                     EventQueue.invokeLater(() -> {
                         lineChart.updateDataSeries(dataSeries -> {
                             int itemCount = dataSeries.getItemCount();

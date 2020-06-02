@@ -3,7 +3,6 @@ package org.lefmaroli.perlin.slice;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
-import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,9 +17,9 @@ import static org.junit.Assert.*;
 public class SliceGeneratorTest {
 
     private SliceGenerator defaultGenerator;
-    private static final int noiseInterpolationPoints = 50;
-    private static final int widthInterpolationPoints = 10;
-    private static final int heightInterpolationPoints = 120;
+    private static final int noiseInterpolationPoints = 4582854;
+    private static final int widthInterpolationPoints = 5787585;
+    private static final int heightInterpolationPoints = 12785780;
     private static final int sliceWidth = 200;
     private static final int sliceHeight = 250;
     private final long randomSeed = System.currentTimeMillis();
@@ -67,8 +66,8 @@ public class SliceGeneratorTest {
 
     @Test
     public void getNextSlicesCorrectSize() {
-        List<SliceNoiseData> noiseData = defaultGenerator.getNext(requestedCount).getAsList();
-        assertEquals(requestedCount, noiseData.size(), 0);
+        SliceNoiseData[] noiseData = defaultGenerator.getNext(requestedCount).getAsArray();
+        assertEquals(requestedCount, noiseData.length, 0);
         for (SliceNoiseData slice : noiseData) {
             assertEquals(sliceWidth, slice.getSliceWidth(), 0);
             assertEquals(sliceHeight, slice.getSliceHeight(), 0);
@@ -113,24 +112,24 @@ public class SliceGeneratorTest {
     @Test
     public void testValuesBounded() {
         double[][][] slices = defaultGenerator.getNext(1000).getAsRawData();
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
+//        double min = Double.MAX_VALUE;
+//        double max = Double.MIN_VALUE;
         for (double[][] slice : slices) {
             for (double[] line : slice) {
                 for (double value : line) {
                     assertTrue("Value " + value + "not bounded by 0", value > 0.0);
                     assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
-                    if (value > max) {
-                        max = value;
-                    }
-                    if (value < min) {
-                        min = value;
-                    }
+//                    if (value > max) {
+//                        max = value;
+//                    }
+//                    if (value < min) {
+//                        min = value;
+//                    }
                 }
             }
         }
-        LogManager.getLogger(this.getClass()).info("Min: " + min);
-        LogManager.getLogger(this.getClass()).info("Max: " + max);
+//        LogManager.getLogger(this.getClass()).info("Min: " + min);
+//        LogManager.getLogger(this.getClass()).info("Max: " + max);
     }
 
     @Test
@@ -271,7 +270,7 @@ public class SliceGeneratorTest {
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
                 .withIgnoredFields("randomGenerator", "generated", "randomBoundsXCount", "randomBoundsYCount",
-                        "previousBounds")
+                        "previousBounds", "currentBounds", "results", "noiseSegmentLength", "currentPosInNoiseInterpolation")
                 .verify();
     }
 
@@ -287,7 +286,7 @@ public class SliceGeneratorTest {
         for (int i = 0; i < firstLine.length; i++) {
             double mu = secondLine[i] - firstLine[i];
             double otherMu = firstLine[i] - lastLine[i];
-            assertEquals(mu, otherMu, 0.001);
+            assertEquals(mu, otherMu, 1.0 / widthInterpolationPoints);
         }
 
         double[] firstColumn = new double[generator.getSliceWidth()];
@@ -301,7 +300,7 @@ public class SliceGeneratorTest {
         for (int i = 0; i < firstColumn.length; i++) {
             double mu = secondColumn[i] - firstColumn[i];
             double otherMu = firstColumn[i] - lastColumn[i];
-            assertEquals(mu, otherMu, 0.001);
+            assertEquals(mu, otherMu, 1.0 / heightInterpolationPoints);
         }
     }
 

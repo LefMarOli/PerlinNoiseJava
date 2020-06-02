@@ -8,8 +8,6 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.line.LineNoiseGenerator;
-import org.lefmaroli.perlin.line.LineNoiseGeneratorBuilder;
 import org.lefmaroli.perlin.line.LineNoiseGeneratorBuilderTest;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +18,7 @@ public class SliceNoiseGeneratorBuilderTest {
     Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
 
-    private int sliceWidth = 800;
+    private int sliceWidth = 400;
     private int sliceHeight = 400;
 
     @Test
@@ -86,7 +84,7 @@ public class SliceNoiseGeneratorBuilderTest {
         SliceNoiseGenerator noiseGenerator = new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
                 .withNumberOfLayers(10)
                 .withRandomSeed(0L)
-                .withNoiseInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
+                .withNoiseInterpolationPointGenerator(new IntegerGenerator(1000, 0.5))
                 .withWidthInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
                 .withHeightInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
                 .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))

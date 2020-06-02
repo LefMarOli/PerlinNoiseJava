@@ -2,44 +2,43 @@ package org.lefmaroli.perlin.point;
 
 import org.lefmaroli.perlin.data.NoiseDataContainer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PointNoiseDataContainer
         implements NoiseDataContainer<double[], PointNoiseDataContainer, PointNoiseData> {
 
-    private final List<PointNoiseData> data;
+    private final PointNoiseData[] data;
 
-    PointNoiseDataContainer(List<PointNoiseData> data) {
+    PointNoiseDataContainer(PointNoiseData[] data) {
         this.data = data;
     }
 
     PointNoiseDataContainer(int size) {
-        this.data = new ArrayList<>(size);
+        this.data = new PointNoiseData[size];
         for (int i = 0; i < size; i++) {
-            this.data.add(new PointNoiseData());
+            this.data[i] = new PointNoiseData();
         }
     }
 
     @Override
-    public List<PointNoiseData> getAsList() {
+    public PointNoiseData[] getAsArray() {
         return data;
     }
 
     @Override
     public double[] getAsRawData() {
-        double[] toReturn = new double[data.size()];
-        for (int i = 0; i < data.size(); i++) {
-            toReturn[i] = data.get(i).getAsRawData();
+        double[] toReturn = new double[data.length];
+        for (int i = 0; i < data.length; i++) {
+            toReturn[i] = data[i].getAsRawData();
         }
         return toReturn;
     }
 
     @Override
     public void add(PointNoiseDataContainer other) {
-        List<PointNoiseData> otherAsList = other.getAsList();
-        for (int i = 0; i < data.size(); i++) {
-            data.get(i).add(otherAsList.get(i));
+        PointNoiseData[] otherAsArray = other.getAsArray();
+        for (int i = 0; i < data.length; i++) {
+            data[i].add(otherAsArray[i]);
         }
     }
 

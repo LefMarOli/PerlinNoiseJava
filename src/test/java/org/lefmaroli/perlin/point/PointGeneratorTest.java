@@ -6,7 +6,6 @@ import com.jparams.verifier.tostring.preset.Presets;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -30,13 +29,13 @@ public class PointGeneratorTest {
 
     @Test
     public void testGetNextSegmentCount() {
-        List<PointNoiseData> nextSegment = defaultGenerator.getNext(expectedCount).getAsList();
-        assertEquals(expectedCount, nextSegment.size(), 0);
+        PointNoiseData[] nextSegment = defaultGenerator.getNext(expectedCount).getAsArray();
+        assertEquals(expectedCount, nextSegment.length, 0);
     }
 
     @Test
     public void testValuesBounded() {
-        List<PointNoiseData> nextSegment = defaultGenerator.getNext(expectedCount).getAsList();
+        PointNoiseData[] nextSegment = defaultGenerator.getNext(expectedCount).getAsArray();
         for (PointNoiseData pointNoiseData : nextSegment) {
             assertNotNull(pointNoiseData);
             assertTrue(pointNoiseData.getAsRawData() < 1.0);
@@ -62,9 +61,9 @@ public class PointGeneratorTest {
     @Test
     public void testCreateSamePoints() {
         PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
-        List<PointNoiseData> nextSegment1 = defaultGenerator.getNext(expectedCount).getAsList();
-        List<PointNoiseData> nextSegment2 = sameLayer.getNext(expectedCount).getAsList();
-        assertEquals(nextSegment1, nextSegment2);
+        PointNoiseData[] nextSegment1 = defaultGenerator.getNext(expectedCount).getAsArray();
+        PointNoiseData[] nextSegment2 = sameLayer.getNext(expectedCount).getAsArray();
+        assertArrayEquals(nextSegment1, nextSegment2);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -119,7 +118,8 @@ public class PointGeneratorTest {
         ToStringVerifier.forClass(PointGenerator.class)
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
-                .withIgnoredFields("randomGenerator", "previousBound", "generated", "segmentLength")
+                .withIgnoredFields("randomGenerator", "previousBound", "currentBound", "currentPosInInterpolation",
+                        "generated", "noiseSegmentLength", "results")
                 .verify();
     }
 

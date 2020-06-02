@@ -3,10 +3,7 @@ package org.lefmaroli.perlin.point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -65,7 +62,7 @@ public class NoisePointNavigator {
 
     private void generateNewData(int count, int currentIndexPosition) {
         if (generated.size() < currentIndexPosition + count) {
-            generated.addAll(noiseGenerator.getNext(count).getAsList());
+            generated.addAll(Arrays.asList(noiseGenerator.getNext(count).getAsArray()));
         }
     }
 

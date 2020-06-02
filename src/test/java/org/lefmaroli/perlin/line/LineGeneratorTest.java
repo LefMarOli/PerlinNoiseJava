@@ -204,7 +204,7 @@ public class LineGeneratorTest {
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
                 .withIgnoredFields("lineSegmentLength", "noiseSegmentLength", "randomGenerator", "generated",
-                        "randomBoundsCount", "previousBounds")
+                        "randomBoundsCount", "previousBounds", "currentBounds", "results", "currentPosInNoiseInterpolation")
                 .verify();
     }
 
@@ -220,7 +220,7 @@ public class LineGeneratorTest {
         double mu = secondValue - firstValue;
         double lastValue = line[otherGenerator.getLineLength() - 1];
         double otherMu = firstValue - lastValue;
-        assertEquals(mu, otherMu, 0.001);
+        assertEquals(mu, otherMu, 1.0 / defaultInterpolationPointsAlongLine);
     }
 
     //Fake test to visualize data, doesn't assert anything

@@ -17,7 +17,6 @@ public abstract class NoiseBuilder<ReturnType extends NoiseData<?, ReturnType>,
         NoiseType extends INoiseGenerator<ReturnType>,
         NoiseBuilderType extends NoiseBuilder<ReturnType, NoiseType, NoiseBuilderType>> {
     private static final Logger LOGGER = LogManager.getLogger(NoiseBuilder.class);
-    private static final int INTERPOLATION_POINTS_UPPER_LIMIT = 50000;
     private static final NumberGenerator<Integer>
             DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR = new IntegerGenerator(64, 0.5);
     private final int dimensions;
@@ -103,8 +102,6 @@ public abstract class NoiseBuilder<ReturnType extends NoiseData<?, ReturnType>,
     private static void assertInterpolationPointsCount(int interpolationPoints) throws InterpolationPointException {
         if (interpolationPoints < 1) {
             throw new NoInterpolationPointException();
-        } else if (interpolationPoints > INTERPOLATION_POINTS_UPPER_LIMIT) {
-            throw new TooManyInterpolationPointsException(interpolationPoints, INTERPOLATION_POINTS_UPPER_LIMIT);
         }
     }
 
