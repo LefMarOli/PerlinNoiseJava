@@ -1,25 +1,24 @@
 package org.lefmaroli.execution;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class ExecutorServiceSchedulerTest {
 
-    @Test
-    public void testExecutorServiceSchedulerWithTaskException() throws InterruptedException {
-        Callable<Double> callableThatThrows = () -> {
-            throw new Exception("Testing exception handling");
+  @Test
+  public void testExecutorServiceSchedulerWithTaskException() throws InterruptedException {
+    Callable<Double> callableThatThrows =
+        () -> {
+          throw new Exception("Testing exception handling");
         };
-        ExecutorServiceScheduler scheduler = new ExecutorServiceScheduler(10);
-        CompletableFuture<Double> future = scheduler.schedule(callableThatThrows);
-        while (!future.isCompletedExceptionally()) {
-            Thread.sleep(2);
-        }
-        assertTrue(future.isCompletedExceptionally());
+    ExecutorServiceScheduler scheduler = new ExecutorServiceScheduler(10);
+    CompletableFuture<Double> future = scheduler.schedule(callableThatThrows);
+    while (!future.isCompletedExceptionally()) {
+      Thread.sleep(2);
     }
-
+    assertTrue(future.isCompletedExceptionally());
+  }
 }
