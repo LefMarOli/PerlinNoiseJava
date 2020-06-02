@@ -6,7 +6,10 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
 import org.lefmaroli.perlin.data.NoiseData;
-import org.lefmaroli.perlin.exceptions.*;
+import org.lefmaroli.perlin.exceptions.InterpolationPointException;
+import org.lefmaroli.perlin.exceptions.NoInterpolationPointException;
+import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
+import org.lefmaroli.perlin.exceptions.NoiseLayerException;
 
 import java.util.ArrayList;
 import java.util.List;

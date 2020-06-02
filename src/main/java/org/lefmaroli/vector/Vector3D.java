@@ -20,7 +20,7 @@ public class Vector3D {
         return getVectorProduct(other.x, other.y, other.z);
     }
 
-    public double getVectorProduct(double otherX, double otherY, double otherZ){
+    public double getVectorProduct(double otherX, double otherY, double otherZ) {
         return (this.x * otherX) + (this.y * otherY) + (this.z * otherZ);
     }
 

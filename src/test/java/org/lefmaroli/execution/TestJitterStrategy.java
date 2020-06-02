@@ -2,13 +2,13 @@ package org.lefmaroli.execution;
 
 import java.util.Random;
 
-public class TestJitterStrategy implements JitterStrategy{
+public class TestJitterStrategy implements JitterStrategy {
 
     private final Random random = new Random();
 
     @Override
     public void jitter() {
-        switch(random.nextInt(4)){
+        switch (random.nextInt(4)) {
             case 0:
                 return;
             case 1:

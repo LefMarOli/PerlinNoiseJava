@@ -21,11 +21,11 @@ public class SliceNoiseData implements NoiseData<double[][], SliceNoiseData> {
         }
     }
 
-    public int getSliceWidth(){
+    public int getSliceWidth() {
         return data.size();
     }
 
-    public int getSliceHeight(){
+    public int getSliceHeight() {
         return data.get(0).getLineLength();
     }
 

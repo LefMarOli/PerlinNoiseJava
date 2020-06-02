@@ -26,20 +26,6 @@ public abstract class MultiDimensionalRootNoiseGenerator<DataContainerType exten
         return isCircular;
     }
 
-    protected int correctInterpolationPointsForCircularity(int interpolationPoints, int dimensionLength,
-                                                           String dimensionName) {
-        if (isCircular) {
-            int newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(interpolationPoints, dimensionLength);
-            LogManager.getLogger(this.getClass())
-                    .warn("Modified required interpolation point count for " + dimensionName +
-                            " from " + interpolationPoints + " to " + newInterpolationPoints +
-                            " to respect circularity.");
-            return newInterpolationPoints;
-        } else {
-            return interpolationPoints;
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,5 +38,19 @@ public abstract class MultiDimensionalRootNoiseGenerator<DataContainerType exten
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), isCircular);
+    }
+
+    protected int correctInterpolationPointsForCircularity(int interpolationPoints, int dimensionLength,
+                                                           String dimensionName) {
+        if (isCircular) {
+            int newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(interpolationPoints, dimensionLength);
+            LogManager.getLogger(this.getClass())
+                    .warn("Modified required interpolation point count for " + dimensionName +
+                            " from " + interpolationPoints + " to " + newInterpolationPoints +
+                            " to respect circularity.");
+            return newInterpolationPoints;
+        } else {
+            return interpolationPoints;
+        }
     }
 }

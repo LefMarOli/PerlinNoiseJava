@@ -19,10 +19,10 @@ public class Vector2D {
     }
 
     public double getVectorProduct(Vector2D other) {
-        return (this.x * other.x) + (this.y * other.y);
+        return getVectorProduct(other.x, other.y);
     }
 
-    public double getVectorProduct(double otherX, double otherY){
+    public double getVectorProduct(double otherX, double otherY) {
         return (this.x * otherX) + (this.y * otherY);
     }
 

@@ -4,7 +4,6 @@ import org.lefmaroli.execution.ExecutorServiceScheduler;
 import org.lefmaroli.perlin.layers.LayeredNoiseGenerator;
 
 import java.util.List;
-import java.util.Objects;
 
 public class LayeredPointGenerator extends LayeredNoiseGenerator<PointNoiseDataContainer, PointNoiseGenerator>
         implements PointNoiseGenerator {

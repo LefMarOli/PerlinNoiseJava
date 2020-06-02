@@ -16,7 +16,7 @@ public class ExecutorServiceSchedulerTest {
         };
         ExecutorServiceScheduler scheduler = new ExecutorServiceScheduler(10);
         CompletableFuture<Double> future = scheduler.schedule(callableThatThrows);
-        while(!future.isCompletedExceptionally()){
+        while (!future.isCompletedExceptionally()) {
             Thread.sleep(2);
         }
         assertTrue(future.isCompletedExceptionally());

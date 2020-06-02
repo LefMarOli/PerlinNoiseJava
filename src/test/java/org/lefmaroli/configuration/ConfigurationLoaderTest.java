@@ -7,13 +7,13 @@ public class ConfigurationLoaderTest {
     private static String ENV;
 
     @BeforeClass
-    public static void init(){
+    public static void init() {
         ENV = ConfigurationLoader.getEnv();
         ConfigurationLoader.clear();
     }
 
     @AfterClass
-    public static void cleanUp(){
+    public static void cleanUp() {
         System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, ENV);
     }
 

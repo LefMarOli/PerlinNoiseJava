@@ -8,8 +8,6 @@ public abstract class JitterTask<ResultType> implements Callable<ResultType> {
 
     private static final JitterStrategy JITTER_STRATEGY = ConfigurationLoader.getJitterStrategy();
 
-    protected abstract ResultType process();
-
     @Override
     public ResultType call() {
         JITTER_STRATEGY.jitter();
@@ -17,4 +15,6 @@ public abstract class JitterTask<ResultType> implements Callable<ResultType> {
         JITTER_STRATEGY.jitter();
         return result;
     }
+
+    protected abstract ResultType process();
 }

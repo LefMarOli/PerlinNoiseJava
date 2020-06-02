@@ -11,5 +11,6 @@ public interface SliceNoiseGenerator extends INoiseGenerator<SliceNoiseDataConta
     }
 
     int getSliceWidth();
+
     int getSliceHeight();
 }

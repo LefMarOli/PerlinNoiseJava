@@ -20,10 +20,10 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     private final int lineLength;
     private final RandomGenerator randomGenerator;
     private final int randomBoundsCount;
-    private List<Vector2D> previousBounds;
-    private List<Vector2D> currentBounds;
     private final LineNoiseData[] results;
     private final int noiseSegmentLength;
+    private List<Vector2D> previousBounds;
+    private List<Vector2D> currentBounds;
     private int currentPosInNoiseInterpolation = 0;
 
     public LineGenerator(int noiseInterpolationPoints, int lineInterpolationPoints, int lineLength,
@@ -32,7 +32,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         assertValidValues(parameterNames, lineInterpolationPoints, lineLength);
         this.lineLength = lineLength;
         this.lineInterpolationPoints =
-                    correctInterpolationPointsForCircularity(lineInterpolationPoints, lineLength, "line length");
+                correctInterpolationPointsForCircularity(lineInterpolationPoints, lineLength, "line length");
         this.randomGenerator = new RandomGenerator(randomSeed);
         this.randomBoundsCount = 2 + lineLength / lineInterpolationPoints;
         this.previousBounds = generateNewRandomBounds();
@@ -40,15 +40,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
         this.results = new LineNoiseData[noiseSegmentLength];
         LOGGER.debug("Created new " + toString());
-    }
-
-    private int computeNoiseSegmentLength(int lineLength){
-        int noiseSegmentLength = Math.min(MB_10_IN_DOUBLES_SIZE / lineLength, getNoiseInterpolationPoints());
-        if(noiseSegmentLength < 1){
-            noiseSegmentLength = 1;
-            LOGGER.warn("Creating line generator of more than 10MB in size");
-        }
-        return noiseSegmentLength;
     }
 
     @Override
@@ -88,10 +79,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         return lineInterpolationPoints;
     }
 
-    private static double adjustValueRange(double interpolatedValue) {
-        return ((interpolatedValue / MAX_2D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
-    }
-
     @Override
     public int getNoiseSegmentLength() {
         return noiseSegmentLength;
@@ -121,6 +108,29 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         return new LineNoiseData[count];
     }
 
+    private static double adjustValueRange(double interpolatedValue) {
+        return ((interpolatedValue / MAX_2D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
+    }
+
+    private static double interpolate(Vector2D previousTopBound, Vector2D nextTopBound, Vector2D previousBottomBound,
+                                      Vector2D nextBottomBound, double noiseDist, double lineDist) {
+        double previousTopBoundImpact = previousTopBound.getVectorProduct(noiseDist, lineDist);
+        double nextTopBoundImpact = nextTopBound.getVectorProduct(noiseDist - 1.0, lineDist);
+        double previousBottomBoundImpact = previousBottomBound.getVectorProduct(noiseDist, lineDist - 1.0);
+        double nextBottomBoundImpact = nextBottomBound.getVectorProduct(noiseDist - 1.0, lineDist - 1.0);
+
+        return Interpolation.linear2DWithFade(previousTopBoundImpact, previousBottomBoundImpact, nextTopBoundImpact,
+                nextBottomBoundImpact, noiseDist, lineDist);
+    }
+
+    private int computeNoiseSegmentLength(int lineLength) {
+        int noiseSegmentLength = Math.min(MB_10_IN_DOUBLES_SIZE / lineLength, getNoiseInterpolationPoints());
+        if (noiseSegmentLength < 1) {
+            noiseSegmentLength = 1;
+            LOGGER.warn("Creating line generator of more than 10MB in size");
+        }
+        return noiseSegmentLength;
+    }
 
     private LineNoiseData processNoiseDomain(int noiseIndex) {
         double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
@@ -142,17 +152,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         double interpolatedValue =
                 interpolate(prevTop, nextTop, prevBottom, nextBottom, noiseDist, lineDist);
         return adjustValueRange(interpolatedValue) * getMaxAmplitude();
-    }
-
-    private static double interpolate(Vector2D previousTopBound, Vector2D nextTopBound, Vector2D previousBottomBound,
-                                      Vector2D nextBottomBound, double noiseDist, double lineDist) {
-        double previousTopBoundImpact = previousTopBound.getVectorProduct(noiseDist, lineDist);
-        double nextTopBoundImpact = nextTopBound.getVectorProduct(noiseDist - 1.0, lineDist);
-        double previousBottomBoundImpact = previousBottomBound.getVectorProduct(noiseDist, lineDist - 1.0);
-        double nextBottomBoundImpact = nextBottomBound.getVectorProduct(noiseDist - 1.0, lineDist - 1.0);
-
-        return Interpolation.linear2DWithFade(previousTopBoundImpact, previousBottomBoundImpact, nextTopBoundImpact,
-                nextBottomBoundImpact, noiseDist, lineDist);
     }
 
     private List<Vector2D> generateNewRandomBounds() {

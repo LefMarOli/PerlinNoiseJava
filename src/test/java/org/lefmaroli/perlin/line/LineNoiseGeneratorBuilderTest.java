@@ -69,7 +69,7 @@ public class LineNoiseGeneratorBuilderTest {
                 System.arraycopy(lines, 1, lines, 0, lines.length - 1);
                 lines[lines.length - 1] = generator.getNext(1).getAsRawData()[0];
                 image.updateImage(lines);
-            }else{
+            } else {
                 Thread.sleep(2);
             }
         }

@@ -3,7 +3,6 @@ package org.lefmaroli.perlin.slice;
 import org.lefmaroli.factorgenerator.NumberGenerator;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.line.LineNoiseGeneratorBuilder;
 
 import java.util.List;
 
@@ -21,11 +20,6 @@ public class SliceNoiseGeneratorBuilder
     }
 
     @Override
-    protected SliceNoiseGeneratorBuilder self() {
-        return this;
-    }
-
-    @Override
     public SliceNoiseGenerator build() throws NoiseBuilderException {
         return (SliceNoiseGenerator) super.build();
     }
@@ -37,6 +31,11 @@ public class SliceNoiseGeneratorBuilder
 
     public SliceNoiseGeneratorBuilder withHeightInterpolationPointGenerator(NumberGenerator<Integer> numberGenerator) {
         setInterpolationPointCountGeneratorForDimension(3, numberGenerator);
+        return this;
+    }
+
+    @Override
+    protected SliceNoiseGeneratorBuilder self() {
         return this;
     }
 

@@ -2,10 +2,6 @@ package org.lefmaroli.perlin.line;
 
 import org.lefmaroli.perlin.data.NoiseData;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 public class LineNoiseData implements NoiseData<double[], LineNoiseData> {
 
     private final double[] values;

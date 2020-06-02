@@ -9,7 +9,6 @@ import java.util.Random;
 
 public class RandomGenerator {
 
-    private final Random basicRandGenerator;
     private final static List<Vector2D> UNIT_VECTORS_TEMPLATES_2D = new ArrayList<>(360);
     private final static List<Vector3D> UNIT_VECTORS_TEMPLATES_3D = new ArrayList<>(10000);
 
@@ -19,6 +18,29 @@ public class RandomGenerator {
             double radian = angle * Math.PI / 180.0;
             UNIT_VECTORS_TEMPLATES_2D.add(new Vector2D(Math.cos(radian), Math.sin(radian)));
         }
+    }
+
+    private final Random basicRandGenerator;
+
+    RandomGenerator() {
+        this(System.currentTimeMillis());
+    }
+
+    public RandomGenerator(long seed) {
+        this.basicRandGenerator = new Random(seed);
+    }
+
+    public Vector2D getRandomUnitVector2D() {
+        int angle = basicRandGenerator.nextInt(UNIT_VECTORS_TEMPLATES_2D.size());
+        return UNIT_VECTORS_TEMPLATES_2D.get(angle);
+    }
+
+    public Vector3D getRandomUnitVector3D() {
+        if (UNIT_VECTORS_TEMPLATES_3D.isEmpty()) {
+            generate3DSamples(basicRandGenerator);
+        }
+        int rand = basicRandGenerator.nextInt(UNIT_VECTORS_TEMPLATES_3D.size());
+        return UNIT_VECTORS_TEMPLATES_3D.get(rand);
     }
 
     private static void generate3DSamples(Random randomGenerator) {
@@ -37,26 +59,5 @@ public class RandomGenerator {
             }
             UNIT_VECTORS_TEMPLATES_3D.add(vector3D.normalize());
         }
-    }
-
-    RandomGenerator() {
-        this(System.currentTimeMillis());
-    }
-
-    public RandomGenerator(long seed) {
-        this.basicRandGenerator = new Random(seed);
-    }
-
-    public Vector2D getRandomUnitVector2D() {
-        int angle = basicRandGenerator.nextInt(UNIT_VECTORS_TEMPLATES_2D.size());
-        return UNIT_VECTORS_TEMPLATES_2D.get(angle);
-    }
-
-    public Vector3D getRandomUnitVector3D() {
-        if(UNIT_VECTORS_TEMPLATES_3D.isEmpty()){
-            generate3DSamples(basicRandGenerator);
-        }
-        int rand = basicRandGenerator.nextInt(UNIT_VECTORS_TEMPLATES_3D.size());
-        return UNIT_VECTORS_TEMPLATES_3D.get(rand);
     }
 }

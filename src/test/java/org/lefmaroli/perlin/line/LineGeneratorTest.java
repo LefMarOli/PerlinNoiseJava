@@ -204,12 +204,13 @@ public class LineGeneratorTest {
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
                 .withIgnoredFields("lineSegmentLength", "noiseSegmentLength", "randomGenerator", "generated",
-                        "randomBoundsCount", "previousBounds", "currentBounds", "results", "currentPosInNoiseInterpolation")
+                        "randomBoundsCount", "previousBounds", "currentBounds", "results",
+                        "currentPosInNoiseInterpolation")
                 .verify();
     }
 
     @Test
-    public void testHugeLine(){
+    public void testHugeLine() {
         LineGenerator otherGenerator =
                 new LineGenerator(defaultInterpolationPointsAlongNoiseSpace, defaultInterpolationPointsAlongLine,
                         2000000,
@@ -262,7 +263,7 @@ public class LineGeneratorTest {
                 }
                 appended[lines.length - 1] = appendedNewValues;
                 image.updateImage(appended);
-            }else{
+            } else {
                 Thread.sleep(2);
             }
         }
@@ -316,7 +317,7 @@ public class LineGeneratorTest {
                         dataSeries.updateByIndex(i, lines[0][i]);
                     }
                 }, label));
-            }else{
+            } else {
                 Thread.sleep(2);
             }
         }

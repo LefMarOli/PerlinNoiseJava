@@ -9,23 +9,22 @@ import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 
-import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.*;
 
 public class SliceGeneratorTest {
 
-    private SliceGenerator defaultGenerator;
     private static final int noiseInterpolationPoints = 150;
     private static final int widthInterpolationPoints = 50;
     private static final int heightInterpolationPoints = 80;
     private static final int sliceWidth = 100;
     private static final int sliceHeight = 150;
-    private final long randomSeed = System.currentTimeMillis();
     private static final double maxAmplitude = 1.0;
     private static final boolean isCircular = false;
+    private final long randomSeed = System.currentTimeMillis();
     int requestedCount = 10;
+    private SliceGenerator defaultGenerator;
 
     @Before
     public void setup() {
@@ -110,7 +109,7 @@ public class SliceGeneratorTest {
     }
 
     @Test
-    public void testHugeSlice(){
+    public void testHugeSlice() {
         SliceGenerator amplifiedLayer =
                 new SliceGenerator(noiseInterpolationPoints, widthInterpolationPoints, heightInterpolationPoints,
                         10000, 10000, maxAmplitude, randomSeed, isCircular);
@@ -163,13 +162,6 @@ public class SliceGeneratorTest {
             for (int j = 0; j < slices[0].length; j++) {
                 assertExpectedArrayEqualsActual(slices[i][j], amplifiedSlices[i][j], 1e-18);
             }
-        }
-    }
-
-    private static void assertExpectedArrayEqualsActual(double[] expected, double[] actual, double delta) {
-        assertEquals(expected.length, actual.length, delta);
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i], delta);
         }
     }
 
@@ -278,7 +270,8 @@ public class SliceGeneratorTest {
                 .withClassName(NameStyle.SIMPLE_NAME)
                 .withPreset(Presets.INTELLI_J)
                 .withIgnoredFields("randomGenerator", "generated", "randomBoundsXCount", "randomBoundsYCount",
-                        "previousBounds", "currentBounds", "results", "noiseSegmentLength", "currentPosInNoiseInterpolation")
+                        "previousBounds", "currentBounds", "results", "noiseSegmentLength",
+                        "currentPosInNoiseInterpolation")
                 .verify();
     }
 
@@ -388,6 +381,13 @@ public class SliceGeneratorTest {
             } else {
                 Thread.sleep(1);
             }
+        }
+    }
+
+    private static void assertExpectedArrayEqualsActual(double[] expected, double[] actual, double delta) {
+        assertEquals(expected.length, actual.length, delta);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], actual[i], delta);
         }
     }
 }

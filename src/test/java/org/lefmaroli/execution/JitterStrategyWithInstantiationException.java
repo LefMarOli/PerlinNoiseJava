@@ -1,8 +1,8 @@
 package org.lefmaroli.execution;
 
-public class JitterStrategyWithInstantiationException implements JitterStrategy{
+public class JitterStrategyWithInstantiationException implements JitterStrategy {
 
-    JitterStrategyWithInstantiationException(){
+    JitterStrategyWithInstantiationException() {
         throw new RuntimeException("For testing");
     }
 

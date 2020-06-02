@@ -12,12 +12,12 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
 
     private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
     private static final int MAX_NUMBER_INTERPOLATION_POINTS = 500;
-    private int currentPosInInterpolation = 0;
     private final int noiseSegmentLength;
     private final Random randomGenerator;
+    private final PointNoiseData[] results;
+    private int currentPosInInterpolation = 0;
     private double previousBound;
     private double currentBound;
-    private final PointNoiseData[] results;
 
     public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
         super(interpolationPoints, maxAmplitude, randomSeed);
@@ -47,7 +47,7 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
     protected PointNoiseData[] generateNextSegment() {
         for (int i = 0; i < noiseSegmentLength; i++) {
             currentPosInInterpolation++;
-            if(currentPosInInterpolation == getNoiseInterpolationPoints()){
+            if (currentPosInInterpolation == getNoiseInterpolationPoints()) {
                 previousBound = currentBound;
                 currentBound = randomGenerator.nextDouble();
                 currentPosInInterpolation = 0;

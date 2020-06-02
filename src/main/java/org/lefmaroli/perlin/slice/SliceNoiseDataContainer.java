@@ -11,7 +11,7 @@ public class SliceNoiseDataContainer
         this.data = data;
     }
 
-    public SliceNoiseDataContainer(int count, int sliceWidth, int sliceHeight){
+    public SliceNoiseDataContainer(int count, int sliceWidth, int sliceHeight) {
         this.data = new SliceNoiseData[count];
         for (int i = 0; i < count; i++) {
             this.data[i] = new SliceNoiseData(sliceWidth, sliceHeight);

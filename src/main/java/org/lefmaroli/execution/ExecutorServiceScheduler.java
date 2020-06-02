@@ -6,10 +6,11 @@ public class ExecutorServiceScheduler implements TaskScheduler {
 
     private final ExecutorService executorService;
 
-    public ExecutorServiceScheduler(int size){
+    public ExecutorServiceScheduler(int size) {
         this.executorService = Executors.newFixedThreadPool(size);
     }
-    public ExecutorServiceScheduler(ExecutorService executorService){
+
+    public ExecutorServiceScheduler(ExecutorService executorService) {
         this.executorService = executorService;
     }
 

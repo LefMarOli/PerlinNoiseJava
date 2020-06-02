@@ -16,55 +16,12 @@ public class ConfigurationLoader {
     private static final Properties appProperties = new Properties();
     private static final Logger LOGGER = LogManager.getLogger(ConfigurationLoader.class);
 
-    private static void retrieveEnvironmentTarget() {
-        if (!isEnvironmentTargetSet()) {
-            String environmentTarget = System.getenv(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
-            if (environmentTarget == null) {
-                environmentTarget = System.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
-                if(environmentTarget == null){
-                    environmentTarget = ConfigurationProperties.DEFAULT_ENVIRONMENT_TARGET;
-                }
-            }
-            appProperties.clear();
-            appProperties.put(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, environmentTarget);
-            loadConfigurations();
-        }
-    }
-
-    private static boolean isEnvironmentTargetSet() {
-        return appProperties.containsKey(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
-    }
-
-    public static String getEnv(){
+    public static String getEnv() {
         retrieveEnvironmentTarget();
         return appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
     }
 
-    private static void loadConfigurations() {
-        String location = "classpath:" +
-                appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY) +
-                ".properties";
-        Resource[] resources;
-        try {
-            resources = new PathMatchingResourcePatternResolver().getResources(location);
-        } catch (IOException e) {
-            throw new ConfigurationException("Trouble reading properties file matching pattern " + location, e);
-        }
-        if (resources.length == 0) {
-            throw new ConfigurationException("Unable to find properties file matching pattern " + location);
-        }
-        for (Resource resource : resources) {
-            LOGGER.debug("Loading properties from resource: " + resource.getFilename());
-            try {
-                appProperties.load(resource.getInputStream());
-            } catch (IOException e) {
-                throw new ConfigurationException("Could not load properties from resource " + resource.getFilename(),
-                        e);
-            }
-        }
-    }
-
-    public static void clear(){
+    public static void clear() {
         appProperties.clear();
     }
 
@@ -100,6 +57,49 @@ public class ConfigurationLoader {
             }
         }
         return (JitterStrategy) appProperties.get(ConfigurationProperties.JITTER_STRATEGY_PROPERTY);
+    }
+
+    private static void retrieveEnvironmentTarget() {
+        if (!isEnvironmentTargetSet()) {
+            String environmentTarget = System.getenv(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+            if (environmentTarget == null) {
+                environmentTarget = System.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+                if (environmentTarget == null) {
+                    environmentTarget = ConfigurationProperties.DEFAULT_ENVIRONMENT_TARGET;
+                }
+            }
+            appProperties.clear();
+            appProperties.put(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, environmentTarget);
+            loadConfigurations();
+        }
+    }
+
+    private static boolean isEnvironmentTargetSet() {
+        return appProperties.containsKey(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+    }
+
+    private static void loadConfigurations() {
+        String location = "classpath:" +
+                appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY) +
+                ".properties";
+        Resource[] resources;
+        try {
+            resources = new PathMatchingResourcePatternResolver().getResources(location);
+        } catch (IOException e) {
+            throw new ConfigurationException("Trouble reading properties file matching pattern " + location, e);
+        }
+        if (resources.length == 0) {
+            throw new ConfigurationException("Unable to find properties file matching pattern " + location);
+        }
+        for (Resource resource : resources) {
+            LOGGER.debug("Loading properties from resource: " + resource.getFilename());
+            try {
+                appProperties.load(resource.getInputStream());
+            } catch (IOException e) {
+                throw new ConfigurationException("Could not load properties from resource " + resource.getFilename(),
+                        e);
+            }
+        }
     }
 
 }

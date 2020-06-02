@@ -2,8 +2,6 @@ package org.lefmaroli.perlin.point;
 
 import org.lefmaroli.perlin.data.NoiseDataContainer;
 
-import java.util.List;
-
 public class PointNoiseDataContainer
         implements NoiseDataContainer<double[], PointNoiseDataContainer, PointNoiseData> {
 

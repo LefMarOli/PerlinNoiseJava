@@ -1,8 +1,8 @@
 package org.lefmaroli.execution;
 
-public class JitterStrategyWithNoDefaultConstructor implements JitterStrategy{
+public class JitterStrategyWithNoDefaultConstructor implements JitterStrategy {
 
-    JitterStrategyWithNoDefaultConstructor(int variable){
+    JitterStrategyWithNoDefaultConstructor(int variable) {
 
     }
 

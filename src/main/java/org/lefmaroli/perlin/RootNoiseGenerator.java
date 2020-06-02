@@ -7,10 +7,10 @@ import java.util.*;
 public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, DataType>
         implements INoiseGenerator<ContainerDataType> {
 
+    protected final long randomSeed;
     private final Queue<DataType> generated = new LinkedList<>();
     private final int noiseInterpolationPoints;
     private final double maxAmplitude;
-    protected final long randomSeed;
 
     public RootNoiseGenerator(int noiseInterpolationPoints, double maxAmplitude, long randomSeed) {
         if (noiseInterpolationPoints < 0) {
@@ -21,6 +21,39 @@ public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, Da
         this.randomSeed = randomSeed;
     }
 
+    public int getNoiseInterpolationPoints() {
+        return noiseInterpolationPoints;
+    }
+
+    public ContainerDataType getNext(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("Count must be greater than 0");
+        }
+        return computeAtLeast(count);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RootNoiseGenerator<?, ?> that = (RootNoiseGenerator<?, ?>) o;
+        return noiseInterpolationPoints == that.noiseInterpolationPoints &&
+                Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
+                randomSeed == that.randomSeed;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(noiseInterpolationPoints, maxAmplitude, randomSeed);
+    }
+
+    @Override
+    public double getMaxAmplitude() {
+        return maxAmplitude;
+    }
+
+    public abstract int getNoiseSegmentLength();
+
     protected void assertValidValues(List<String> names, int... values) {
         for (int i = 0; i < values.length; i++) {
             if (values[i] < 0) {
@@ -29,24 +62,11 @@ public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, Da
         }
     }
 
-    public int getNoiseInterpolationPoints() {
-        return noiseInterpolationPoints;
-    }
-
-    public abstract int getNoiseSegmentLength();
-
     protected abstract DataType[] generateNextSegment();
 
     protected abstract ContainerDataType getInContainer(DataType[] data);
 
     protected abstract DataType[] getArrayOfSubType(int count);
-
-    public ContainerDataType getNext(int count) {
-        if (count < 1) {
-            throw new IllegalArgumentException("Count must be greater than 0");
-        }
-        return computeAtLeast(count);
-    }
 
     private ContainerDataType computeAtLeast(int count) {
         DataType[] results = getArrayOfSubType(count);
@@ -72,25 +92,5 @@ public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, Da
             generated.addAll(Arrays.asList(lastSegment).subList(remainingCount, noiseSegmentLength));
         }
         return getInContainer(results);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RootNoiseGenerator<?, ?> that = (RootNoiseGenerator<?, ?>) o;
-        return noiseInterpolationPoints == that.noiseInterpolationPoints &&
-                Double.compare(that.maxAmplitude, maxAmplitude) == 0 &&
-                randomSeed == that.randomSeed;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(noiseInterpolationPoints, maxAmplitude, randomSeed);
-    }
-
-    @Override
-    public double getMaxAmplitude() {
-        return maxAmplitude;
     }
 }
