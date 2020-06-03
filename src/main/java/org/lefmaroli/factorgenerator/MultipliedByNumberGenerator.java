@@ -1,7 +1,6 @@
 package org.lefmaroli.factorgenerator;
 
-public abstract class MultipliedByNumberGenerator<N extends Number>
-    implements NumberGenerator<N> {
+public abstract class MultipliedByNumberGenerator<N extends Number> implements NumberGenerator<N> {
 
   protected final double factor;
   protected final N initialValue;

@@ -4,9 +4,7 @@ import org.lefmaroli.execution.JitterTask;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.data.NoiseData;
 
-public class LayerProcess<
-        N extends NoiseData, L extends INoiseGenerator<N>>
-    extends JitterTask<N> {
+public class LayerProcess<N extends NoiseData, L extends INoiseGenerator<N>> extends JitterTask<N> {
 
   private final L layer;
   private final int count;

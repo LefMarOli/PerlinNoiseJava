@@ -46,7 +46,8 @@ public abstract class MultiDimensionalRootNoiseGenerator<C extends NoiseData, D>
           RoundUtils.roundNToClosestFactorOfM(interpolationPoints, dimensionLength);
       LogManager.getLogger(this.getClass())
           .warn(
-              "Modified required interpolation point count for {} from {} to {} to respect circularity.",
+              "Modified required interpolation point count for {} from {} to {} to respect"
+                  + " circularity.",
               dimensionName,
               interpolationPoints,
               newInterpolationPoints);
