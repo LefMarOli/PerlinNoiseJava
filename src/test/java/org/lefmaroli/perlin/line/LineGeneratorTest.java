@@ -376,7 +376,8 @@ public class LineGeneratorTest {
     chart.setYAxisRange(0.0, 1.0);
 
     long previousTime = System.currentTimeMillis();
-    while (true) ;
+    while (true)
+      ;
   }
 
   @Ignore
