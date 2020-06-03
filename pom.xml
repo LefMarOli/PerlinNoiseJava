@@ -47,11 +47,6 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cobertura-maven-plugin</artifactId>
-            <version>2.7</version>
-          </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -64,23 +59,8 @@
         </configuration>
         <groupId>org.apache.maven.plugins</groupId>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
     </plugins>
   </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-    </plugins>
-  </reporting>
 
   <dependencies>
     <dependency>
@@ -124,7 +104,7 @@
   <modelVersion>4.0.0</modelVersion>
   <!-- FIXME change it to the project's website -->
   <name>PerlinNoiseJava</name>
-<!--  <url>http://www.example.com</url>-->
+  <!--  <url>http://www.example.com</url>-->
 
   <properties>
     <maven.compiler.source>14</maven.compiler.source>
