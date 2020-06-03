@@ -2,7 +2,7 @@ package org.lefmaroli.interpolation;
 
 public class Interpolation {
 
-  private Interpolation(){}
+  private Interpolation() {}
 
   private static final String SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT =
       "%s should be bounded between [0.0, 1.0]";
@@ -29,10 +29,12 @@ public class Interpolation {
   public static double linear2D(
       double x1y1, double x1y2, double x2y1, double x2y2, double muX, double muY) {
     if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
     }
     if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
     }
     return linear2DUnchecked(x1y1, x1y2, x2y1, x2y2, muX, muY);
   }
@@ -40,10 +42,12 @@ public class Interpolation {
   public static double linear2DWithFade(
       double x1y1, double x1y2, double x2y1, double x2y2, double muX, double muY) {
     if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
     }
     if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
     }
     return linear2DWithFadeUnchecked(x1y1, x1y2, x2y1, x2y2, muX, muY);
   }
@@ -61,13 +65,16 @@ public class Interpolation {
       double muY,
       double muZ) {
     if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
     }
     if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
     }
     if (muZ < 0.0 || muZ > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuZ"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuZ"));
     }
     return linear3DUnchecked(
         x1y1z1, x1y1z2, x1y2z1, x1y2z2, x2y1z1, x2y1z2, x2y2z1, x2y2z2, muX, muY, muZ);
@@ -86,13 +93,16 @@ public class Interpolation {
       double muY,
       double muZ) {
     if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
     }
     if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
     }
     if (muZ < 0.0 || muZ > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuZ"));
+      throw new IllegalArgumentException(
+          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuZ"));
     }
     return linear3DWithFadeUnchecked(
         x1y1z1, x1y1z2, x1y2z1, x1y2z2, x2y1z1, x2y1z2, x2y2z1, x2y2z2, muX, muY, muZ);
