@@ -7,11 +7,10 @@ import java.util.Objects;
 import java.util.Queue;
 import org.lefmaroli.perlin.data.NoiseData;
 
-public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, DataType>
-    implements INoiseGenerator<ContainerDataType> {
+public abstract class RootNoiseGenerator<C extends NoiseData, D> implements INoiseGenerator<C> {
 
   protected final long randomSeed;
-  private final Queue<DataType> generated = new LinkedList<>();
+  private final Queue<D> generated = new LinkedList<>();
   private final int noiseInterpolationPoints;
   private final double maxAmplitude;
 
@@ -28,7 +27,7 @@ public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, Da
     return noiseInterpolationPoints;
   }
 
-  public ContainerDataType getNext(int count) {
+  public C getNext(int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
@@ -66,14 +65,14 @@ public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, Da
     }
   }
 
-  protected abstract DataType[] generateNextSegment();
+  protected abstract D[] generateNextSegment();
 
-  protected abstract ContainerDataType getInContainer(DataType[] data);
+  protected abstract C getInContainer(D[] data);
 
-  protected abstract DataType[] getArrayOfSubType(int count);
+  protected abstract D[] getArrayOfSubType(int count);
 
-  private ContainerDataType computeAtLeast(int count) {
-    DataType[] results = getArrayOfSubType(count);
+  private C computeAtLeast(int count) {
+    D[] results = getArrayOfSubType(count);
     if (count < generated.size()) {
       for (int i = 0; i < count; i++) {
         results[i] = generated.poll();
@@ -86,12 +85,12 @@ public abstract class RootNoiseGenerator<ContainerDataType extends NoiseData, Da
       int remainingCount = count - currentIndex;
       int noiseSegmentLength = getNoiseSegmentLength();
       while (remainingCount > noiseSegmentLength) {
-        DataType[] nextSegment = generateNextSegment();
+        D[] nextSegment = generateNextSegment();
         System.arraycopy(nextSegment, 0, results, currentIndex, noiseSegmentLength);
         currentIndex += noiseSegmentLength;
         remainingCount -= noiseSegmentLength;
       }
-      DataType[] lastSegment = generateNextSegment();
+      D[] lastSegment = generateNextSegment();
       System.arraycopy(lastSegment, 0, results, currentIndex, remainingCount);
       generated.addAll(Arrays.asList(lastSegment).subList(remainingCount, noiseSegmentLength));
     }

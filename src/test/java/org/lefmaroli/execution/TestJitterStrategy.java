@@ -13,7 +13,7 @@ public class TestJitterStrategy implements JitterStrategy {
         return;
       case 1:
         try {
-          Thread.sleep(5);
+          Thread.sleep(random.nextInt(25));
         } catch (InterruptedException e) {
           e.printStackTrace();
         }

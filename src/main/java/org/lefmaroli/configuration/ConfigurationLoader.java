@@ -20,6 +20,8 @@ public class ConfigurationLoader {
     return appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
   }
 
+  private ConfigurationLoader() {}
+
   public static void clear() {
     appProperties.clear();
   }
@@ -102,7 +104,7 @@ public class ConfigurationLoader {
           "Unable to find properties file matching pattern " + location);
     }
     for (Resource resource : resources) {
-      LOGGER.debug("Loading properties from resource: " + resource.getFilename());
+      LOGGER.debug("Loading properties from resource: {}", resource.getFilename());
       try {
         appProperties.load(resource.getInputStream());
       } catch (IOException e) {

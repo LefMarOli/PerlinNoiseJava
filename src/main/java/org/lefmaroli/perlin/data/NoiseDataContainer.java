@@ -1,9 +1,6 @@
 package org.lefmaroli.perlin.data;
 
-public interface NoiseDataContainer<
-        RawDataType,
-        NoiseDataType extends NoiseData<?, NoiseDataType>,
-        UnderlyingDataType extends NoiseData<?, UnderlyingDataType>>
-    extends NoiseData<RawDataType, NoiseDataType> {
-  UnderlyingDataType[] getAsArray();
+public interface NoiseDataContainer<R, D extends NoiseData<?, D>, U extends NoiseData<?, U>>
+    extends NoiseData<R, D> {
+  U[] getAsArray();
 }

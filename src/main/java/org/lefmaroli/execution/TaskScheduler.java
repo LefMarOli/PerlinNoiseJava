@@ -4,5 +4,5 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 public interface TaskScheduler {
-  <ReturnType> CompletableFuture<ReturnType> schedule(Callable<ReturnType> task);
+  <R> CompletableFuture<R> schedule(Callable<R> task);
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
@@ -16,10 +14,7 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.exceptions.NoiseLayerException;
 
 public abstract class NoiseBuilder<
-    ReturnType extends NoiseData<?, ReturnType>,
-    NoiseType extends INoiseGenerator<ReturnType>,
-    NoiseBuilderType extends NoiseBuilder<ReturnType, NoiseType, NoiseBuilderType>> {
-  private static final Logger LOGGER = LogManager.getLogger(NoiseBuilder.class);
+    N extends NoiseData<?, N>, L extends INoiseGenerator<N>, B extends NoiseBuilder<N, L, B>> {
   private static final NumberGenerator<Integer> DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR =
       new IntegerGenerator(64, 0.5);
   private final int dimensions;
@@ -51,23 +46,23 @@ public abstract class NoiseBuilder<
     }
   }
 
-  public NoiseBuilderType withNoiseInterpolationPointGenerator(
+  public B withNoiseInterpolationPointGenerator(
       NumberGenerator<Integer> interpolationPointCountGenerator) {
     setInterpolationPointCountGeneratorForDimension(1, interpolationPointCountGenerator);
     return self();
   }
 
-  public NoiseBuilderType withAmplitudeGenerator(NumberGenerator<Double> amplitudeGenerator) {
+  public B withAmplitudeGenerator(NumberGenerator<Double> amplitudeGenerator) {
     this.amplitudeGenerator = amplitudeGenerator;
     return self();
   }
 
-  public NoiseBuilderType withRandomSeed(long randomSeed) {
+  public B withRandomSeed(long randomSeed) {
     this.randomSeed = randomSeed;
     return self();
   }
 
-  public NoiseBuilderType withNumberOfLayers(int numberOfLayers) {
+  public B withNumberOfLayers(int numberOfLayers) {
     if (numberOfLayers < 1) {
       throw new IllegalArgumentException("Number of layers must be at least 1");
     }
@@ -75,7 +70,7 @@ public abstract class NoiseBuilder<
     return self();
   }
 
-  public INoiseGenerator<ReturnType> build() throws NoiseBuilderException {
+  public INoiseGenerator<N> build() throws NoiseBuilderException {
     resetNumberGenerators();
     if (numberOfLayers == 1) {
       try {
@@ -104,14 +99,13 @@ public abstract class NoiseBuilder<
     }
   }
 
-  protected abstract NoiseBuilderType self();
+  protected abstract B self();
 
-  protected abstract NoiseType buildSingleNoiseLayer(
+  protected abstract L buildSingleNoiseLayer(
       List<Integer> interpolationPoints, double layerAmplitude, long randomSeed)
       throws NoiseBuilderException;
 
-  protected abstract NoiseType buildMultipleNoiseLayer(List<NoiseType> layers)
-      throws NoiseBuilderException;
+  protected abstract L buildMultipleNoiseLayer(List<L> layers) throws NoiseBuilderException;
 
   private void resetNumberGenerators() {
     amplitudeGenerator.reset();
@@ -121,13 +115,13 @@ public abstract class NoiseBuilder<
     }
   }
 
-  private List<NoiseType> generateNoiseLayers() throws NoiseBuilderException {
+  private List<L> generateNoiseLayers() throws NoiseBuilderException {
     Random randomGenerator = new Random(randomSeed);
-    List<NoiseType> layers = new ArrayList<>(numberOfLayers);
+    List<L> layers = new ArrayList<>(numberOfLayers);
     for (int i = 0; i < numberOfLayers; i++) {
-      long randomSeed = randomGenerator.nextLong();
+      long layerRandomSeed = randomGenerator.nextLong();
       try {
-        layers.add(generateNoiseLayer(i, randomSeed));
+        layers.add(generateNoiseLayer(i, layerRandomSeed));
       } catch (NoiseLayerException e) {
         throw new NoiseBuilderException(e);
       }
@@ -135,7 +129,7 @@ public abstract class NoiseBuilder<
     return layers;
   }
 
-  private NoiseType generateNoiseLayer(int layerNumber, long randomSeed)
+  private L generateNoiseLayer(int layerNumber, long randomSeed)
       throws NoiseLayerException, NoiseBuilderException {
     List<Integer> interpolationPoints = getInterpolationPointsForLayer(layerNumber);
     return buildSingleNoiseLayer(interpolationPoints, amplitudeGenerator.getNext(), randomSeed);

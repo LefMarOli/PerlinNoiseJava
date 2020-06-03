@@ -64,7 +64,7 @@ public class SliceGenerator
     this.previousBounds = getNewBounds();
     this.currentBounds = getNewBounds();
     results = new SliceNoiseData[getNoiseSegmentLength()];
-    LOGGER.debug("Create new " + toString());
+    LOGGER.debug("Create new {}", this);
   }
 
   private static double adjustValueRange(double interpolatedValue) {
@@ -170,17 +170,16 @@ public class SliceGenerator
   }
 
   private int computeNoiseSegmentLength(int sliceWidth, int sliceHeight) {
-    int noiseSegmentLength =
+    int computedNoiseSegmentLength =
         Math.min(MB_10_IN_DOUBLES_SIZE / (sliceWidth * sliceHeight), getNoiseInterpolationPoints());
-    if (noiseSegmentLength < 1) {
-      noiseSegmentLength = 1;
+    if (computedNoiseSegmentLength < 1) {
+      computedNoiseSegmentLength = 1;
       int estimatedSliceSize = sliceWidth * sliceHeight / MB_10_IN_DOUBLES_SIZE * 10;
       LOGGER.warn(
-          "Creating slice generator of more than 10MB in size (Estimated at "
-              + estimatedSliceSize
-              + "MB)");
+          "Creating slice generator of more than 10MB in size (Estimated at {}MB",
+          estimatedSliceSize);
     }
-    return noiseSegmentLength;
+    return computedNoiseSegmentLength;
   }
 
   private Vector3D[][] getNewBounds() {
@@ -202,12 +201,12 @@ public class SliceGenerator
   }
 
   private SliceNoiseData processNoiseDomain(int noiseIndex) {
-    List<LineNoiseData> results = new ArrayList<>(sliceWidth);
+    List<LineNoiseData> sliceResults = new ArrayList<>(sliceWidth);
     double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
     for (int xIndex = 0; xIndex < sliceWidth; xIndex++) {
-      results.add(processSliceWidthDomain(noiseDist, xIndex));
+      sliceResults.add(processSliceWidthDomain(noiseDist, xIndex));
     }
-    return new SliceNoiseData(results);
+    return new SliceNoiseData(sliceResults);
   }
 
   private LineNoiseData processSliceWidthDomain(double noiseDist, int xIndex) {

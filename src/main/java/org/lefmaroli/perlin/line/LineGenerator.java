@@ -45,7 +45,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     this.currentBounds = generateNewRandomBounds();
     this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
     this.results = new LineNoiseData[noiseSegmentLength];
-    LOGGER.debug("Created new " + toString());
+    LOGGER.debug("Created new {}", this);
   }
 
   private static double adjustValueRange(double interpolatedValue) {
@@ -147,13 +147,13 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   private int computeNoiseSegmentLength(int lineLength) {
-    int noiseSegmentLength =
+    int computedNoiseSegmentLength =
         Math.min(MB_10_IN_DOUBLES_SIZE / lineLength, getNoiseInterpolationPoints());
-    if (noiseSegmentLength < 1) {
-      noiseSegmentLength = 1;
+    if (computedNoiseSegmentLength < 1) {
+      computedNoiseSegmentLength = 1;
       LOGGER.warn("Creating line generator of more than 10MB in size");
     }
-    return noiseSegmentLength;
+    return computedNoiseSegmentLength;
   }
 
   private LineNoiseData processNoiseDomain(int noiseIndex) {

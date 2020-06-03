@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.point;
 
+import java.util.Objects;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +26,23 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
     this.currentBound = randomGenerator.nextDouble();
     this.noiseSegmentLength = Math.min(interpolationPoints, MAX_NUMBER_INTERPOLATION_POINTS);
     results = new PointNoiseData[noiseSegmentLength];
-    LOGGER.debug("Created new " + toString());
+    LOGGER.debug("Created new {}", this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode());
   }
 
   @Override

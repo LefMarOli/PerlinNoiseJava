@@ -5,11 +5,10 @@ import org.lefmaroli.perlin.NoiseBuilder;
 import org.lefmaroli.perlin.data.NoiseData;
 
 public abstract class MultiDimensionalNoiseBuilder<
-        ReturnType extends NoiseData<?, ReturnType>,
-        NoiseType extends INoiseGenerator<ReturnType>,
-        MultiDimensionalNoiseBuilderType extends
-            MultiDimensionalNoiseBuilder<ReturnType, NoiseType, MultiDimensionalNoiseBuilderType>>
-    extends NoiseBuilder<ReturnType, NoiseType, MultiDimensionalNoiseBuilderType> {
+        N extends NoiseData<?, N>,
+        L extends INoiseGenerator<N>,
+        B extends MultiDimensionalNoiseBuilder<N, L, B>>
+    extends NoiseBuilder<N, L, B> {
 
   private boolean isCircular = false;
 
@@ -17,7 +16,7 @@ public abstract class MultiDimensionalNoiseBuilder<
     super(dimensions);
   }
 
-  public MultiDimensionalNoiseBuilderType withCircularBounds() {
+  public B withCircularBounds() {
     isCircular = true;
     return self();
   }

@@ -3,17 +3,17 @@ package org.lefmaroli.execution;
 import java.util.concurrent.Callable;
 import org.lefmaroli.configuration.ConfigurationLoader;
 
-public abstract class JitterTask<ResultType> implements Callable<ResultType> {
+public abstract class JitterTask<R> implements Callable<R> {
 
   private static final JitterStrategy JITTER_STRATEGY = ConfigurationLoader.getJitterStrategy();
 
   @Override
-  public ResultType call() {
+  public R call() {
     JITTER_STRATEGY.jitter();
-    ResultType result = process();
+    R result = process();
     JITTER_STRATEGY.jitter();
     return result;
   }
 
-  protected abstract ResultType process();
+  protected abstract R process();
 }

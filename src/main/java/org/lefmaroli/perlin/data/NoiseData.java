@@ -1,10 +1,10 @@
 package org.lefmaroli.perlin.data;
 
-public interface NoiseData<RawDataType, DataType extends NoiseData> {
+public interface NoiseData<R, D extends NoiseData> {
 
-  void add(DataType other);
+  void add(D other);
 
   void normalizeBy(double maxValue);
 
-  RawDataType getAsRawData();
+  R getAsRawData();
 }

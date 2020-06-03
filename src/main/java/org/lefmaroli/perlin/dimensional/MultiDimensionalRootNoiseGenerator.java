@@ -6,10 +6,8 @@ import org.lefmaroli.perlin.RootNoiseGenerator;
 import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.rounding.RoundUtils;
 
-public abstract class MultiDimensionalRootNoiseGenerator<
-        DataContainerType extends NoiseData, DataType>
-    extends RootNoiseGenerator<DataContainerType, DataType>
-    implements MultiDimensionalNoiseGenerator {
+public abstract class MultiDimensionalRootNoiseGenerator<C extends NoiseData, D>
+    extends RootNoiseGenerator<C, D> implements MultiDimensionalNoiseGenerator {
 
   protected static final int MB_10 = 10 * 1024 * 1024;
   protected static final int MB_10_IN_DOUBLES_SIZE = MB_10 / 8;
@@ -48,13 +46,10 @@ public abstract class MultiDimensionalRootNoiseGenerator<
           RoundUtils.roundNToClosestFactorOfM(interpolationPoints, dimensionLength);
       LogManager.getLogger(this.getClass())
           .warn(
-              "Modified required interpolation point count for "
-                  + dimensionName
-                  + " from "
-                  + interpolationPoints
-                  + " to "
-                  + newInterpolationPoints
-                  + " to respect circularity.");
+              "Modified required interpolation point count for {} from {} to {} to respect circularity.",
+              dimensionName,
+              interpolationPoints,
+              newInterpolationPoints);
       return newInterpolationPoints;
     } else {
       return interpolationPoints;

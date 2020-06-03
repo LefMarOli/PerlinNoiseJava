@@ -5,19 +5,19 @@ import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.data.NoiseData;
 
 public class LayerProcess<
-        ResultType extends NoiseData, LayerType extends INoiseGenerator<ResultType>>
-    extends JitterTask<ResultType> {
+        N extends NoiseData, L extends INoiseGenerator<N>>
+    extends JitterTask<N> {
 
-  private final LayerType layer;
+  private final L layer;
   private final int count;
 
-  public LayerProcess(LayerType layer, int count) {
+  public LayerProcess(L layer, int count) {
     this.layer = layer;
     this.count = count;
   }
 
   @Override
-  protected ResultType process() {
+  protected N process() {
     return layer.getNext(count);
   }
 }

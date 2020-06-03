@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.exceptions;
 
 public class NoiseLayerException extends Exception {
 
-  private static final String messageFormat =
+  private static final String MESSAGE_FORMAT =
       "Skipping generation of %s layers from a total of %s layers, no more interpolation possible."
           + " Current layer: %s, please check provided distanceFactorGenerator";
 
@@ -12,7 +12,7 @@ public class NoiseLayerException extends Exception {
 
   private static String constructMessage(int numberOfLayers, int currentLayer) {
     int remainingLayers = numberOfLayers - currentLayer;
-    return String.format(messageFormat, remainingLayers, numberOfLayers, currentLayer);
+    return String.format(MESSAGE_FORMAT, remainingLayers, numberOfLayers, currentLayer);
   }
 
   public static class Builder {

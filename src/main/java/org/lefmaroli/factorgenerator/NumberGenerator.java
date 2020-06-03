@@ -1,8 +1,8 @@
 package org.lefmaroli.factorgenerator;
 
-public interface NumberGenerator<NumberType extends Number> extends ReusableGenerator {
+public interface NumberGenerator<N extends Number> extends ReusableGenerator {
 
-  NumberType getNext();
+  N getNext();
 
-  NumberGenerator<NumberType> getCopy();
+  NumberGenerator<N> getCopy();
 }

@@ -19,7 +19,7 @@ public class ExecutorServiceScheduler implements TaskScheduler {
   }
 
   @Override
-  public <ReturnType> CompletableFuture<ReturnType> schedule(Callable<ReturnType> task) {
+  public <R> CompletableFuture<R> schedule(Callable<R> task) {
     return CompletableFuture.supplyAsync(
         () -> {
           try {

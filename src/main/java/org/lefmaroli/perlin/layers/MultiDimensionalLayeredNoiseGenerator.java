@@ -8,14 +8,12 @@ import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
 
 public abstract class MultiDimensionalLayeredNoiseGenerator<
-        ReturnType extends NoiseData<?, ReturnType>,
-        NoiseLayer extends INoiseGenerator<ReturnType> & MultiDimensionalNoiseGenerator>
-    extends LayeredNoiseGenerator<ReturnType, NoiseLayer>
-    implements MultiDimensionalNoiseGenerator {
+        N extends NoiseData<?, N>, L extends INoiseGenerator<N> & MultiDimensionalNoiseGenerator>
+    extends LayeredNoiseGenerator<N, L> implements MultiDimensionalNoiseGenerator {
 
   private final boolean isCircular;
 
-  protected MultiDimensionalLayeredNoiseGenerator(List<NoiseLayer> layers) {
+  protected MultiDimensionalLayeredNoiseGenerator(List<L> layers) {
     super(layers, new ExecutorServiceScheduler(10));
     isCircular = checkCircularity(layers);
   }
@@ -40,15 +38,15 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<
     return isCircular;
   }
 
-  private boolean checkCircularity(List<NoiseLayer> layers) {
-    boolean isCircular = layers.get(0).isCircular();
+  private boolean checkCircularity(List<L> layers) {
+    boolean isFirstLayerCircular = layers.get(0).isCircular();
+    boolean cumulativeCircularity = isFirstLayerCircular;
     for (MultiDimensionalNoiseGenerator layer : layers) {
-      if (layer.isCircular() != isCircular) {
-        // Cannot guarantee circularity, force to false;
-        isCircular = false;
+      if (layer.isCircular() != isFirstLayerCircular) {
+        cumulativeCircularity = false;
         break;
       }
     }
-    return isCircular;
+    return cumulativeCircularity;
   }
 }

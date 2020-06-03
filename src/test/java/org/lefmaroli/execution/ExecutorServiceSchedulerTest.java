@@ -1,5 +1,6 @@
 package org.lefmaroli.execution;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Callable;
@@ -16,9 +17,7 @@ public class ExecutorServiceSchedulerTest {
         };
     ExecutorServiceScheduler scheduler = new ExecutorServiceScheduler(10);
     CompletableFuture<Double> future = scheduler.schedule(callableThatThrows);
-    while (!future.isCompletedExceptionally()) {
-      Thread.sleep(2);
-    }
+    await().until(future::isCompletedExceptionally);
     assertTrue(future.isCompletedExceptionally());
   }
 }

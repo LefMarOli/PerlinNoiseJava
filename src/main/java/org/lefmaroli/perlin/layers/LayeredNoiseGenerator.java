@@ -9,21 +9,20 @@ import org.lefmaroli.execution.TaskScheduler;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.data.NoiseData;
 
-public abstract class LayeredNoiseGenerator<
-        ReturnType extends NoiseData<?, ReturnType>, NoiseLayer extends INoiseGenerator<ReturnType>>
-    implements INoiseGenerator<ReturnType> {
+public abstract class LayeredNoiseGenerator<N extends NoiseData<?, N>, L extends INoiseGenerator<N>>
+    implements INoiseGenerator<N> {
 
   private final double maxAmplitude;
   private final TaskScheduler scheduler;
-  private final List<NoiseLayer> layers;
+  private final List<L> layers;
 
-  protected LayeredNoiseGenerator(List<NoiseLayer> layers, TaskScheduler scheduler) {
-    if (layers.size() < 1) {
+  protected LayeredNoiseGenerator(List<L> layers, TaskScheduler scheduler) {
+    if (layers.isEmpty()) {
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }
     this.layers = layers;
     double sum = 0.0;
-    for (NoiseLayer layer : layers) {
+    for (L layer : layers) {
       sum += layer.getMaxAmplitude();
     }
     this.maxAmplitude = sum;
@@ -45,7 +44,7 @@ public abstract class LayeredNoiseGenerator<
   }
 
   @Override
-  public ReturnType getNext(int count) {
+  public N getNext(int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Parameter count must be greater than 0");
     }
@@ -60,24 +59,26 @@ public abstract class LayeredNoiseGenerator<
     return layers.size();
   }
 
-  protected List<NoiseLayer> getLayers() {
+  protected List<L> getLayers() {
     return layers;
   }
 
-  protected abstract ReturnType initializeResults(int count);
+  protected abstract N initializeResults(int count);
 
-  private ReturnType generateResults(int count) {
-    ReturnType results = initializeResults(count);
-    List<CompletableFuture<ReturnType>> futures = new ArrayList<>(layers.size());
-    for (NoiseLayer layer : layers) {
-      LayerProcess<ReturnType, NoiseLayer> layerProcess = new LayerProcess<>(layer, count);
+  private N generateResults(int count) {
+    N results = initializeResults(count);
+    List<CompletableFuture<N>> futures = new ArrayList<>(layers.size());
+    for (L layer : layers) {
+      LayerProcess<N, L> layerProcess = new LayerProcess<>(layer, count);
       futures.add(scheduler.schedule(layerProcess));
     }
-    for (CompletableFuture<ReturnType> future : futures) {
+    for (CompletableFuture<N> future : futures) {
       try {
         results.add(future.get());
-      } catch (InterruptedException | ExecutionException e) {
-        throw new RuntimeException("Problem executing parallel layer code", e);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException e) {
+        throw new LayerProcessException(e);
       }
     }
     results.normalizeBy(maxAmplitude);

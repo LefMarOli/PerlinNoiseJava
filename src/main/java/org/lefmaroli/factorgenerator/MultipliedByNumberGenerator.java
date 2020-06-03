@@ -1,26 +1,26 @@
 package org.lefmaroli.factorgenerator;
 
-public abstract class MultipliedByNumberGenerator<NumberType extends Number>
-    implements NumberGenerator<NumberType> {
+public abstract class MultipliedByNumberGenerator<N extends Number>
+    implements NumberGenerator<N> {
 
   protected final double factor;
-  protected final NumberType initialValue;
-  private NumberType previousValue;
+  protected final N initialValue;
+  private N previousValue;
   private boolean firstCall = true;
 
-  public MultipliedByNumberGenerator(NumberType initialValue, double factor) {
+  public MultipliedByNumberGenerator(N initialValue, double factor) {
     this.initialValue = initialValue;
     this.factor = factor;
   }
 
   @Override
-  public NumberType getNext() {
+  public N getNext() {
     if (firstCall) {
       firstCall = false;
       previousValue = initialValue;
       return initialValue;
     } else {
-      NumberType newValue = getXMultipliedByY(previousValue, factor);
+      N newValue = getXMultipliedByY(previousValue, factor);
       previousValue = newValue;
       return newValue;
     }
@@ -31,5 +31,5 @@ public abstract class MultipliedByNumberGenerator<NumberType extends Number>
     firstCall = true;
   }
 
-  protected abstract NumberType getXMultipliedByY(NumberType x, double y);
+  protected abstract N getXMultipliedByY(N x, double y);
 }
