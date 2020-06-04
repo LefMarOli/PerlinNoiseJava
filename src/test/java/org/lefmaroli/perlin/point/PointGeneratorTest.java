@@ -21,7 +21,7 @@ public class PointGeneratorTest {
   private PointGenerator defaultGenerator;
 
   private static void assertExpectedArrayEqualsActual(
-      double[] expected, double[] actual, double delta) {
+      Double[] expected, Double[] actual, double delta) {
     assertEquals(expected.length, actual.length, delta);
     for (int i = 0; i < expected.length; i++) {
       assertEquals(expected[i], actual[i], delta);
@@ -40,17 +40,17 @@ public class PointGeneratorTest {
 
   @Test
   public void testGetNextSegmentCount() {
-    PointNoiseData[] nextSegment = defaultGenerator.getNext(expectedCount).getAsArray();
+    Double[] nextSegment = defaultGenerator.getNext(expectedCount);
     assertEquals(expectedCount, nextSegment.length, 0);
   }
 
   @Test
   public void testValuesBounded() {
-    PointNoiseData[] nextSegment = defaultGenerator.getNext(expectedCount).getAsArray();
-    for (PointNoiseData pointNoiseData : nextSegment) {
+    Double[] nextSegment = defaultGenerator.getNext(expectedCount);
+    for (Double pointNoiseData : nextSegment) {
       assertNotNull(pointNoiseData);
-      assertTrue(pointNoiseData.getAsRawData() < 1.0);
-      assertTrue(pointNoiseData.getAsRawData() > 0.0);
+      assertTrue(pointNoiseData < 1.0);
+      assertTrue(pointNoiseData > 0.0);
     }
   }
 
@@ -61,8 +61,8 @@ public class PointGeneratorTest {
     PointGenerator amplifiedLayer =
         new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
 
-    double[] values = defaultGenerator.getNext(expectedCount).getAsRawData();
-    double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount).getAsRawData();
+    Double[] values = defaultGenerator.getNext(expectedCount);
+    Double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount);
 
     for (int i = 0; i < values.length; i++) {
       values[i] = values[i] * amplitudeFactor;
@@ -73,8 +73,8 @@ public class PointGeneratorTest {
   @Test
   public void testCreateSamePoints() {
     PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
-    PointNoiseData[] nextSegment1 = defaultGenerator.getNext(expectedCount).getAsArray();
-    PointNoiseData[] nextSegment2 = sameLayer.getNext(expectedCount).getAsArray();
+    Double[] nextSegment1 = defaultGenerator.getNext(expectedCount);
+    Double[] nextSegment2 = sameLayer.getNext(expectedCount);
     assertArrayEquals(nextSegment1, nextSegment2);
   }
 

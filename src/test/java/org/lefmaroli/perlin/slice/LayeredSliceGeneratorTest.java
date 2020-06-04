@@ -105,7 +105,7 @@ public class LayeredSliceGeneratorTest {
   @Test
   public void testGetNextCount() {
     int expectedCount = 10;
-    double[][][] slices = defaultGenerator.getNext(expectedCount).getAsRawData();
+    double[][][] slices = defaultGenerator.getNext(expectedCount);
     assertEquals(expectedCount, slices.length, 0);
     for (double[][] slice : slices) {
       assertEquals(defaultSliceWidth, slice.length, 0);
@@ -117,7 +117,7 @@ public class LayeredSliceGeneratorTest {
 
   @Test
   public void testGetNextBoundedValues() {
-    double[][][] slices = defaultGenerator.getNext(10).getAsRawData();
+    double[][][] slices = defaultGenerator.getNext(10);
     for (double[][] slice : slices) {
       for (double[] lines : slice) {
         for (double value : lines) {
@@ -244,14 +244,14 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     SliceNoiseGenerator generator = new LayeredSliceGenerator(newLayers);
     int count = 1;
-    double[][][] slices = generator.getNext(count).getAsRawData();
+    double[][][] slices = generator.getNext(count);
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 1);
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        double[][][] newSlices = generator.getNext(1).getAsRawData();
+        double[][][] newSlices = generator.getNext(1);
         image.updateImage(newSlices[0]);
       } else {
         Thread.sleep(1);

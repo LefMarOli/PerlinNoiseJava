@@ -20,7 +20,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private final int lineLength;
   private final RandomGenerator randomGenerator;
   private final int randomBoundsCount;
-  private final LineNoiseData[] results;
+  private final double[] lineData;
   private final int noiseSegmentLength;
   private List<Vector2D> previousBounds;
   private List<Vector2D> currentBounds;
@@ -44,7 +44,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     this.previousBounds = generateNewRandomBounds();
     this.currentBounds = generateNewRandomBounds();
     this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
-    this.results = new LineNoiseData[noiseSegmentLength];
+    this.lineData = new double[lineLength];
     LOGGER.debug("Created new {}", this);
   }
 
@@ -123,7 +123,8 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   @Override
-  protected LineNoiseData[] generateNextSegment() {
+  protected double[][] generateNextSegment() {
+    double[][] results = new double[noiseSegmentLength][lineLength];
     for (int i = 0; i < noiseSegmentLength; i++) {
       currentPosInNoiseInterpolation++;
       if (currentPosInNoiseInterpolation == getNoiseInterpolationPoints()) {
@@ -131,19 +132,15 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         currentBounds = generateNewRandomBounds();
         currentPosInNoiseInterpolation = 0;
       }
-      results[i] = processNoiseDomain(currentPosInNoiseInterpolation);
+      double[] line = processNoiseDomain(currentPosInNoiseInterpolation);
+      System.arraycopy(line, 0, results[i], 0, line.length);
     }
     return results;
   }
 
   @Override
-  protected LineNoiseDataContainer getInContainer(LineNoiseData[] data) {
-    return new LineNoiseDataContainer(data);
-  }
-
-  @Override
-  protected LineNoiseData[] getArrayOfSubType(int count) {
-    return new LineNoiseData[count];
+  protected double[][] getArrayOfSubType(int count) {
+    return new double[count][lineLength];
   }
 
   private int computeNoiseSegmentLength(int lineLength) {
@@ -156,13 +153,12 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     return computedNoiseSegmentLength;
   }
 
-  private LineNoiseData processNoiseDomain(int noiseIndex) {
+  private double[] processNoiseDomain(int noiseIndex) {
     double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
-    double[] lineData = new double[lineLength];
     for (int lineIndex = 0; lineIndex < lineLength; lineIndex++) {
       lineData[lineIndex] = processLineDomain(noiseDist, lineIndex);
     }
-    return new LineNoiseData(lineData);
+    return lineData;
   }
 
   private double processLineDomain(double noiseDist, int lineIndex) {

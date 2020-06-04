@@ -5,12 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
-import org.lefmaroli.perlin.data.NoiseData;
 
-public abstract class RootNoiseGenerator<C extends NoiseData, D> implements INoiseGenerator<C> {
+public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   protected final long randomSeed;
-  private final Queue<D> generated = new LinkedList<>();
+  private final Queue<C> generated = new LinkedList<>();
   private final int noiseInterpolationPoints;
   private final double maxAmplitude;
 
@@ -27,7 +26,7 @@ public abstract class RootNoiseGenerator<C extends NoiseData, D> implements INoi
     return noiseInterpolationPoints;
   }
 
-  public C getNext(int count) {
+  public C[] getNext(int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Count must be greater than 0");
     }
@@ -38,7 +37,7 @@ public abstract class RootNoiseGenerator<C extends NoiseData, D> implements INoi
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    RootNoiseGenerator<?, ?> that = (RootNoiseGenerator<?, ?>) o;
+    RootNoiseGenerator<?> that = (RootNoiseGenerator<?>) o;
     return noiseInterpolationPoints == that.noiseInterpolationPoints
         && Double.compare(that.maxAmplitude, maxAmplitude) == 0
         && randomSeed == that.randomSeed;
@@ -65,14 +64,12 @@ public abstract class RootNoiseGenerator<C extends NoiseData, D> implements INoi
     }
   }
 
-  protected abstract D[] generateNextSegment();
+  protected abstract C[] generateNextSegment();
 
-  protected abstract C getInContainer(D[] data);
+  protected abstract C[] getArrayOfSubType(int count);
 
-  protected abstract D[] getArrayOfSubType(int count);
-
-  private C computeAtLeast(int count) {
-    D[] results = getArrayOfSubType(count);
+  private C[] computeAtLeast(int count) {
+    C[] results = getArrayOfSubType(count);
     if (count < generated.size()) {
       for (int i = 0; i < count; i++) {
         results[i] = generated.poll();
@@ -85,15 +82,17 @@ public abstract class RootNoiseGenerator<C extends NoiseData, D> implements INoi
       int remainingCount = count - currentIndex;
       int noiseSegmentLength = getNoiseSegmentLength();
       while (remainingCount > noiseSegmentLength) {
-        D[] nextSegment = generateNextSegment();
+        C[] nextSegment = generateNextSegment();
         System.arraycopy(nextSegment, 0, results, currentIndex, noiseSegmentLength);
         currentIndex += noiseSegmentLength;
         remainingCount -= noiseSegmentLength;
       }
-      D[] lastSegment = generateNextSegment();
+      C[] lastSegment = generateNextSegment();
       System.arraycopy(lastSegment, 0, results, currentIndex, remainingCount);
-      generated.addAll(Arrays.asList(lastSegment).subList(remainingCount, noiseSegmentLength));
+      C[] lastPortion = getArrayOfSubType(noiseSegmentLength - remainingCount);
+      System.arraycopy(lastSegment, remainingCount, lastPortion, 0 , noiseSegmentLength - remainingCount);
+      generated.addAll(Arrays.asList(lastPortion));
     }
-    return getInContainer(results);
+    return results;
   }
 }

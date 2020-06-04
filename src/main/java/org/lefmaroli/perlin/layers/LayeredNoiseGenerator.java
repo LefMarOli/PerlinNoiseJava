@@ -7,9 +7,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.lefmaroli.execution.TaskScheduler;
 import org.lefmaroli.perlin.INoiseGenerator;
-import org.lefmaroli.perlin.data.NoiseData;
 
-public abstract class LayeredNoiseGenerator<N extends NoiseData<?, N>, L extends INoiseGenerator<N>>
+public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     implements INoiseGenerator<N> {
 
   private final double maxAmplitude;
@@ -44,7 +43,7 @@ public abstract class LayeredNoiseGenerator<N extends NoiseData<?, N>, L extends
   }
 
   @Override
-  public N getNext(int count) {
+  public N[] getNext(int count) {
     if (count < 1) {
       throw new IllegalArgumentException("Parameter count must be greater than 0");
     }
@@ -63,25 +62,28 @@ public abstract class LayeredNoiseGenerator<N extends NoiseData<?, N>, L extends
     return layers;
   }
 
-  protected abstract N initializeResults(int count);
+  protected abstract N[] initializeResults(int count);
 
-  private N generateResults(int count) {
-    N results = initializeResults(count);
-    List<CompletableFuture<N>> futures = new ArrayList<>(layers.size());
+  protected abstract N[] addTogether(N[] results, N[] newLayer);
+
+  protected abstract N[] normalizeBy(N[] data, double maxAmplitude);
+
+  private N[] generateResults(int count) {
+    N[] results = initializeResults(count);
+    List<CompletableFuture<N[]>> futures = new ArrayList<>(layers.size());
     for (L layer : layers) {
       LayerProcess<N, L> layerProcess = new LayerProcess<>(layer, count);
       futures.add(scheduler.schedule(layerProcess));
     }
-    for (CompletableFuture<N> future : futures) {
+    for (CompletableFuture<N[]> future : futures) {
       try {
-        results.add(future.get());
+        addTogether(results, future.get());
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
         throw new LayerProcessException(e);
       }
     }
-    results.normalizeBy(maxAmplitude);
-    return results;
+    return normalizeBy(results, maxAmplitude);
   }
 }

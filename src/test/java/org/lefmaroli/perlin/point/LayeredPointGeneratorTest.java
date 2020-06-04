@@ -40,16 +40,16 @@ public class LayeredPointGeneratorTest {
   @Test
   public void testGetNextCount() {
     int expectedCount = 75;
-    PointNoiseData[] nextSegment = defaultGenerator.getNext(expectedCount).getAsArray();
+    Double[] nextSegment = defaultGenerator.getNext(expectedCount);
     assertEquals(expectedCount, nextSegment.length, 0);
   }
 
   @Test
   public void testGetNextBoundedValues() {
-    PointNoiseData[] nextSegment = defaultGenerator.getNext(10000).getAsArray();
-    for (PointNoiseData pointNoiseData : nextSegment) {
-      assertTrue(pointNoiseData.getAsRawData() <= 1.0);
-      assertTrue(pointNoiseData.getAsRawData() >= 0.0);
+    Double[] nextSegment = defaultGenerator.getNext(10000);
+    for (Double pointNoiseData : nextSegment) {
+      assertTrue(pointNoiseData <= 1.0);
+      assertTrue(pointNoiseData >= 0.0);
     }
   }
 

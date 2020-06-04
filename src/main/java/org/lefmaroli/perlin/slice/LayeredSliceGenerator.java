@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
 
 public class LayeredSliceGenerator
-    extends MultiDimensionalLayeredNoiseGenerator<SliceNoiseDataContainer, SliceNoiseGenerator>
+    extends MultiDimensionalLayeredNoiseGenerator<double[][], SliceNoiseGenerator>
     implements SliceNoiseGenerator {
 
   private final int sliceWidth;
@@ -59,8 +59,32 @@ public class LayeredSliceGenerator
   }
 
   @Override
-  protected SliceNoiseDataContainer initializeResults(int count) {
-    return new SliceNoiseDataContainer(count, getSliceWidth(), getSliceHeight());
+  protected double[][][] initializeResults(int count) {
+    return new double[count][getSliceWidth()][getSliceHeight()];
+  }
+
+  @Override
+  protected double[][][] addTogether(double[][][] results, double[][][] newLayer) {
+    for (int i = 0; i < results.length; i++) {
+      for (int j = 0; j < results[0].length; j++) {
+        for (int k = 0; k < results[0][0].length; k++) {
+          results[i][j][k] = results[i][j][k] + newLayer[i][j][k];
+        }
+      }
+    }
+    return results;
+  }
+
+  @Override
+  protected double[][][] normalizeBy(double[][][] data, double maxAmplitude) {
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; j < data[0].length; j++) {
+        for (int k = 0; k < data[0][0].length; k++) {
+          data[i][j][k] = data[i][j][k] / maxAmplitude;
+        }
+      }
+    }
+    return data;
   }
 
   private void assertAllLayersHaveSameSize(List<SliceNoiseGenerator> layers) {

@@ -3,11 +3,10 @@ package org.lefmaroli.perlin.dimensional;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.lefmaroli.perlin.RootNoiseGenerator;
-import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.rounding.RoundUtils;
 
-public abstract class MultiDimensionalRootNoiseGenerator<C extends NoiseData, D>
-    extends RootNoiseGenerator<C, D> implements MultiDimensionalNoiseGenerator {
+public abstract class MultiDimensionalRootNoiseGenerator<C>
+    extends RootNoiseGenerator<C> implements MultiDimensionalNoiseGenerator {
 
   protected static final int MB_10 = 10 * 1024 * 1024;
   protected static final int MB_10_IN_DOUBLES_SIZE = MB_10 / 8;
@@ -30,7 +29,7 @@ public abstract class MultiDimensionalRootNoiseGenerator<C extends NoiseData, D>
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-    MultiDimensionalRootNoiseGenerator<?, ?> that = (MultiDimensionalRootNoiseGenerator<?, ?>) o;
+    MultiDimensionalRootNoiseGenerator<?> that = (MultiDimensionalRootNoiseGenerator<?>) o;
     return isCircular == that.isCircular;
   }
 

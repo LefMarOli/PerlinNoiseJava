@@ -8,7 +8,7 @@ import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
 
 public abstract class MultiDimensionalLayeredNoiseGenerator<
-        N extends NoiseData<?, N>, L extends INoiseGenerator<N> & MultiDimensionalNoiseGenerator>
+        N, L extends INoiseGenerator<N> & MultiDimensionalNoiseGenerator>
     extends LayeredNoiseGenerator<N, L> implements MultiDimensionalNoiseGenerator {
 
   private final boolean isCircular;

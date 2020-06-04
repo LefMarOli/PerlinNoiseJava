@@ -5,7 +5,7 @@ import org.lefmaroli.perlin.NoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class PointNoiseGeneratorBuilder
-    extends NoiseBuilder<PointNoiseDataContainer, PointNoiseGenerator, PointNoiseGeneratorBuilder> {
+    extends NoiseBuilder<Double, PointNoiseGenerator, PointNoiseGeneratorBuilder> {
 
   public PointNoiseGeneratorBuilder() {
     super(1);

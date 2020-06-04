@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
 
 public class LayeredLineGenerator
-    extends MultiDimensionalLayeredNoiseGenerator<LineNoiseDataContainer, LineNoiseGenerator>
+    extends MultiDimensionalLayeredNoiseGenerator<double[], LineNoiseGenerator>
     implements LineNoiseGenerator {
 
   private final int lineLength;
@@ -50,8 +50,28 @@ public class LayeredLineGenerator
   }
 
   @Override
-  protected LineNoiseDataContainer initializeResults(int count) {
-    return new LineNoiseDataContainer(count, lineLength);
+  protected double[][] initializeResults(int count) {
+    return new double[count][lineLength];
+  }
+
+  @Override
+  protected double[][] addTogether(double[][] results, double[][] newLayer) {
+    for (int i = 0; i < results.length; i++) {
+      for (int j = 0; j < results[0].length; j++) {
+        results[i][j] = results[i][j] + newLayer[i][j];
+      }
+    }
+    return results;
+  }
+
+  @Override
+  protected double[][] normalizeBy(double[][] data, double maxAmplitude) {
+    for (int i = 0; i < data.length; i++) {
+      for (int j = 0; j < data[0].length; j++) {
+        data[i][j] = data[i][j] / maxAmplitude;
+      }
+    }
+    return data;
   }
 
   private void assertAllLayersHaveSameLineLength(List<LineNoiseGenerator> layers) {

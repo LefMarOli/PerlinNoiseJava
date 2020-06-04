@@ -64,14 +64,14 @@ public class SliceNoiseGeneratorBuilderTest {
             .withNumberOfLayers(4)
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
             .build();
-    double[][] slice = generator.getNext(1).getAsRawData()[0];
+    double[][] slice = generator.getNext(1)[0];
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        slice = generator.getNext(1).getAsRawData()[0];
+        slice = generator.getNext(1)[0];
         image.updateImage(slice);
       } else {
         Thread.sleep(2);

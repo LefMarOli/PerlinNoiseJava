@@ -7,7 +7,7 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class SliceNoiseGeneratorBuilder
     extends MultiDimensionalNoiseBuilder<
-        SliceNoiseDataContainer, SliceNoiseGenerator, SliceNoiseGeneratorBuilder> {
+        double[][], SliceNoiseGenerator, SliceNoiseGeneratorBuilder> {
 
   private final int sliceWidth;
   private final int sliceHeight;

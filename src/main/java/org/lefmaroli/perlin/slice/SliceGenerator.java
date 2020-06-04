@@ -1,18 +1,15 @@
 package org.lefmaroli.perlin.slice;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
-import org.lefmaroli.perlin.line.LineNoiseData;
 import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.vector.Vector3D;
 
-public class SliceGenerator
-    extends MultiDimensionalRootNoiseGenerator<SliceNoiseDataContainer, SliceNoiseData>
+public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][]>
     implements SliceNoiseGenerator {
   private static final double MAX_3D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
 
@@ -31,7 +28,7 @@ public class SliceGenerator
   private final RandomGenerator randomGenerator;
   private final int randomBoundsXCount;
   private final int randomBoundsYCount;
-  private final SliceNoiseData[] results;
+  private final double[] line;
   private final int noiseSegmentLength;
   private Vector3D[][] previousBounds;
   private Vector3D[][] currentBounds;
@@ -63,7 +60,7 @@ public class SliceGenerator
     this.noiseSegmentLength = computeNoiseSegmentLength(sliceWidth, sliceHeight);
     this.previousBounds = getNewBounds();
     this.currentBounds = getNewBounds();
-    results = new SliceNoiseData[getNoiseSegmentLength()];
+    line = new double[sliceHeight];
     LOGGER.debug("Create new {}", this);
   }
 
@@ -146,7 +143,8 @@ public class SliceGenerator
   }
 
   @Override
-  protected SliceNoiseData[] generateNextSegment() {
+  protected double[][][] generateNextSegment() {
+    double[][][] results = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
     for (int i = 0; i < noiseSegmentLength; i++) {
       currentPosInNoiseInterpolation++;
       if (currentPosInNoiseInterpolation == getNoiseInterpolationPoints()) {
@@ -154,19 +152,15 @@ public class SliceGenerator
         currentBounds = getNewBounds();
         currentPosInNoiseInterpolation = 0;
       }
-      results[i] = processNoiseDomain(currentPosInNoiseInterpolation);
+      System.arraycopy(
+          processNoiseDomain(currentPosInNoiseInterpolation), 0, results[i], 0, sliceWidth);
     }
     return results;
   }
 
   @Override
-  protected SliceNoiseDataContainer getInContainer(SliceNoiseData[] data) {
-    return new SliceNoiseDataContainer(data);
-  }
-
-  @Override
-  protected SliceNoiseData[] getArrayOfSubType(int count) {
-    return new SliceNoiseData[count];
+  protected double[][][] getArrayOfSubType(int count) {
+    return new double[count][sliceWidth][sliceHeight];
   }
 
   private int computeNoiseSegmentLength(int sliceWidth, int sliceHeight) {
@@ -200,24 +194,24 @@ public class SliceGenerator
     return newBounds;
   }
 
-  private SliceNoiseData processNoiseDomain(int noiseIndex) {
-    List<LineNoiseData> sliceResults = new ArrayList<>(sliceWidth);
+  private double[][] processNoiseDomain(int noiseIndex) {
+    double[][] slice = new double[sliceWidth][sliceHeight];
     double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
     for (int xIndex = 0; xIndex < sliceWidth; xIndex++) {
-      sliceResults.add(processSliceWidthDomain(noiseDist, xIndex));
+      System.arraycopy(
+          processSliceWidthDomain(noiseDist, xIndex), 0, slice[xIndex], 0, sliceHeight);
     }
-    return new SliceNoiseData(sliceResults);
+    return slice;
   }
 
-  private LineNoiseData processSliceWidthDomain(double noiseDist, int xIndex) {
+  private double[] processSliceWidthDomain(double noiseDist, int xIndex) {
     int x = xIndex % widthInterpolationPoints;
     double xDist = (double) (x) / (widthInterpolationPoints);
     int lowerBoundXIndex = xIndex / widthInterpolationPoints;
-    double[] yData = new double[sliceHeight];
     for (int yIndex = 0; yIndex < sliceHeight; yIndex++) {
-      yData[yIndex] = processSliceHeightDomain(noiseDist, xDist, yIndex, lowerBoundXIndex);
+      line[yIndex] = processSliceHeightDomain(noiseDist, xDist, yIndex, lowerBoundXIndex);
     }
-    return new LineNoiseData(yData);
+    return line;
   }
 
   private double processSliceHeightDomain(

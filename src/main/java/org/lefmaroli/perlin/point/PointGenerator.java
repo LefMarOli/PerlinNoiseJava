@@ -7,14 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.RootNoiseGenerator;
 
-public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, PointNoiseData>
+public class PointGenerator extends RootNoiseGenerator<Double>
     implements PointNoiseGenerator {
 
   private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
   private static final int MAX_NUMBER_INTERPOLATION_POINTS = 500;
   private final int noiseSegmentLength;
   private final Random randomGenerator;
-  private final PointNoiseData[] results;
+  private final Double[] results;
   private int currentPosInInterpolation = 0;
   private double previousBound;
   private double currentBound;
@@ -25,7 +25,7 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
     this.previousBound = randomGenerator.nextDouble();
     this.currentBound = randomGenerator.nextDouble();
     this.noiseSegmentLength = Math.min(interpolationPoints, MAX_NUMBER_INTERPOLATION_POINTS);
-    results = new PointNoiseData[noiseSegmentLength];
+    results = new Double[noiseSegmentLength];
     LOGGER.debug("Created new {}", this);
   }
 
@@ -63,7 +63,7 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
   }
 
   @Override
-  protected PointNoiseData[] generateNextSegment() {
+  protected Double[] generateNextSegment() {
     for (int i = 0; i < noiseSegmentLength; i++) {
       currentPosInInterpolation++;
       if (currentPosInInterpolation == getNoiseInterpolationPoints()) {
@@ -75,18 +75,13 @@ public class PointGenerator extends RootNoiseGenerator<PointNoiseDataContainer, 
           currentPosInInterpolation / (double) getNoiseInterpolationPoints();
       double interpolatedValue =
           Interpolation.linearWithFade(previousBound, currentBound, relativePositionInSegment);
-      results[i] = new PointNoiseData(interpolatedValue * getMaxAmplitude());
+      results[i] = interpolatedValue * getMaxAmplitude();
     }
     return results;
   }
 
   @Override
-  protected PointNoiseData[] getArrayOfSubType(int count) {
-    return new PointNoiseData[count];
-  }
-
-  @Override
-  protected PointNoiseDataContainer getInContainer(PointNoiseData[] data) {
-    return new PointNoiseDataContainer(data);
+  protected Double[] getArrayOfSubType(int count) {
+    return new Double[count];
   }
 }

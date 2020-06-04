@@ -102,8 +102,8 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    public MockNoiseData getNext(int count) {
-      return new MockNoiseData();
+    public MockNoiseData[] getNext(int count) {
+      return new MockNoiseData[0];
     }
 
     @Override

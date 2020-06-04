@@ -4,7 +4,7 @@ import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
 
 public interface SliceNoiseGenerator
-    extends INoiseGenerator<SliceNoiseDataContainer>, MultiDimensionalNoiseGenerator {
+    extends INoiseGenerator<double[][]>, MultiDimensionalNoiseGenerator {
 
   @Override
   default int getDimensions() {

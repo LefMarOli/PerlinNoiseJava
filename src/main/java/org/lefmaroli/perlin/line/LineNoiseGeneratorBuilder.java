@@ -7,7 +7,7 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class LineNoiseGeneratorBuilder
     extends MultiDimensionalNoiseBuilder<
-        LineNoiseDataContainer, LineNoiseGenerator, LineNoiseGeneratorBuilder> {
+        double[], LineNoiseGenerator, LineNoiseGeneratorBuilder> {
 
   private final int lineLength;
 

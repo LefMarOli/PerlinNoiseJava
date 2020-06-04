@@ -7,14 +7,13 @@ import java.util.stream.Collectors;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
-import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.exceptions.InterpolationPointException;
 import org.lefmaroli.perlin.exceptions.NoInterpolationPointException;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.exceptions.NoiseLayerException;
 
 public abstract class NoiseBuilder<
-    N extends NoiseData<?, N>, L extends INoiseGenerator<N>, B extends NoiseBuilder<N, L, B>> {
+    N, L extends INoiseGenerator<N>, B extends NoiseBuilder<N, L, B>> {
   private static final NumberGenerator<Integer> DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR =
       new IntegerGenerator(64, 0.5);
   private final int dimensions;
