@@ -7,8 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.RootNoiseGenerator;
 
-public class PointGenerator extends RootNoiseGenerator<Double>
-    implements PointNoiseGenerator {
+public class PointGenerator extends RootNoiseGenerator<Double> implements PointNoiseGenerator {
 
   private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
   private static final int MAX_NUMBER_INTERPOLATION_POINTS = 500;

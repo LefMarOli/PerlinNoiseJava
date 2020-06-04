@@ -476,7 +476,8 @@ public class SliceGeneratorTest {
     chart.addEquidistantDataSeries(ySlice, label);
     chart.setVisible();
     chart.setYAxisRange(0.0, 1.0);
-    while (true) ;
+    while (true)
+      ;
   }
 
   @Ignore

@@ -386,7 +386,7 @@ public class LineGeneratorTest {
   @Ignore("Fake test to visualize data, doesn't assert anything")
   @Test
   public void testMorphingLine() throws InterruptedException {
-    //Tranform into testable test like circualr bounds
+    // Tranform into testable test like circualr bounds
     LineGenerator layer2D =
         new LineGenerator(
             defaultInterpolationPointsAlongNoiseSpace,

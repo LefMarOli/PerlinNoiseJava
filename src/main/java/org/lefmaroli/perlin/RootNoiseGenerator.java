@@ -90,7 +90,8 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
       C[] lastSegment = generateNextSegment();
       System.arraycopy(lastSegment, 0, results, currentIndex, remainingCount);
       C[] lastPortion = getArrayOfSubType(noiseSegmentLength - remainingCount);
-      System.arraycopy(lastSegment, remainingCount, lastPortion, 0 , noiseSegmentLength - remainingCount);
+      System.arraycopy(
+          lastSegment, remainingCount, lastPortion, 0, noiseSegmentLength - remainingCount);
       generated.addAll(Arrays.asList(lastPortion));
     }
     return results;

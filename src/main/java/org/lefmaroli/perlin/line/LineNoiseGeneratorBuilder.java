@@ -6,8 +6,7 @@ import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class LineNoiseGeneratorBuilder
-    extends MultiDimensionalNoiseBuilder<
-        double[], LineNoiseGenerator, LineNoiseGeneratorBuilder> {
+    extends MultiDimensionalNoiseBuilder<double[], LineNoiseGenerator, LineNoiseGeneratorBuilder> {
 
   private final int lineLength;
 

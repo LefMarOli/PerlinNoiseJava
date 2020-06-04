@@ -5,8 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.lefmaroli.perlin.RootNoiseGenerator;
 import org.lefmaroli.rounding.RoundUtils;
 
-public abstract class MultiDimensionalRootNoiseGenerator<C>
-    extends RootNoiseGenerator<C> implements MultiDimensionalNoiseGenerator {
+public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGenerator<C>
+    implements MultiDimensionalNoiseGenerator {
 
   protected static final int MB_10 = 10 * 1024 * 1024;
   protected static final int MB_10_IN_DOUBLES_SIZE = MB_10 / 8;
