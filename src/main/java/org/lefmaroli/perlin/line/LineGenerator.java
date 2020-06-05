@@ -25,6 +25,8 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private List<Vector2D> previousBounds;
   private List<Vector2D> currentBounds;
   private int currentPosInNoiseInterpolation = 0;
+  private double[][] corners = new double[2][2];
+  private double[] distances = new double[2];
 
   public LineGenerator(
       int noiseInterpolationPoints,
@@ -52,27 +54,20 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     return ((interpolatedValue / MAX_2D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
   }
 
-  private static double interpolate(
+  private double interpolate(
       Vector2D previousTopBound,
       Vector2D nextTopBound,
       Vector2D previousBottomBound,
       Vector2D nextBottomBound,
       double noiseDist,
       double lineDist) {
-    double previousTopBoundImpact = previousTopBound.getVectorProduct(noiseDist, lineDist);
-    double nextTopBoundImpact = nextTopBound.getVectorProduct(noiseDist - 1.0, lineDist);
-    double previousBottomBoundImpact =
-        previousBottomBound.getVectorProduct(noiseDist, lineDist - 1.0);
-    double nextBottomBoundImpact =
-        nextBottomBound.getVectorProduct(noiseDist - 1.0, lineDist - 1.0);
-
-    return Interpolation.linear2DWithFade(
-        previousTopBoundImpact,
-        previousBottomBoundImpact,
-        nextTopBoundImpact,
-        nextBottomBoundImpact,
-        noiseDist,
-        lineDist);
+    corners[0][0] = previousTopBound.getVectorProduct(noiseDist, lineDist);
+    corners[1][0] = nextTopBound.getVectorProduct(noiseDist - 1.0, lineDist);
+    corners[0][1] = previousBottomBound.getVectorProduct(noiseDist, lineDist - 1.0);
+    corners[1][1] = nextBottomBound.getVectorProduct(noiseDist - 1.0, lineDist - 1.0);
+    distances[0] = noiseDist;
+    distances[1] = lineDist;
+    return Interpolation.linear2DWithFade(corners, distances);
   }
 
   @Override

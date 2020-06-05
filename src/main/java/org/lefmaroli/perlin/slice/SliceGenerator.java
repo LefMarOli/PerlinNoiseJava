@@ -32,6 +32,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private final int noiseSegmentLength;
   private Vector3D[][] previousBounds;
   private Vector3D[][] currentBounds;
+  private double[][][] corners = new double[2][2][2];
+  private double[] distances = new double[3];
   private int currentPosInNoiseInterpolation = 0;
 
   SliceGenerator(
@@ -236,32 +238,19 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     Vector3D nextBottomLeftBound = currentBounds[lowerBoundXIndex + 1][lowerBoundYIndex];
     Vector3D nextBottomRightBound = currentBounds[lowerBoundXIndex + 1][lowerBoundYIndex + 1];
 
-    double previousTopLeftImpact = previousTopLeftBound.getVectorProduct(xDist, yDist, noiseDist);
-    double previousTopRightImpact =
-        previousTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist);
-    double previousBottomLeftImpact =
-        previousBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist);
-    double previousBottomRightImpact =
+    corners[0][0][0] = previousTopLeftBound.getVectorProduct(xDist, yDist, noiseDist);
+    corners[0][1][0] = previousTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist);
+    corners[1][0][0] = previousBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist);
+    corners[1][1][0] =
         previousBottomRightBound.getVectorProduct(xDist - 1.0, yDist - 1.0, noiseDist);
-    double nextTopLeftImpact = nextTopLeftBound.getVectorProduct(xDist, yDist, noiseDist - 1.0);
-    double nextTopRightImpact =
-        nextTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist - 1.0);
-    double nextBottomLeftImpact =
-        nextBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist - 1.0);
-    double nextBottomRightImpact =
+    corners[0][0][1] = nextTopLeftBound.getVectorProduct(xDist, yDist, noiseDist - 1.0);
+    corners[0][1][1] = nextTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist - 1.0);
+    corners[1][0][1] = nextBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist - 1.0);
+    corners[1][1][1] =
         nextBottomRightBound.getVectorProduct(xDist - 1.0, yDist - 1.0, noiseDist - 1.0);
-
-    return Interpolation.linear3DWithFade(
-        previousTopLeftImpact,
-        nextTopLeftImpact,
-        previousTopRightImpact,
-        nextTopRightImpact,
-        previousBottomLeftImpact,
-        nextBottomLeftImpact,
-        previousBottomRightImpact,
-        nextBottomRightImpact,
-        xDist,
-        yDist,
-        noiseDist);
+    distances[0] = xDist;
+    distances[1] = yDist;
+    distances[2] = noiseDist;
+    return Interpolation.linear3DWithFade(corners, distances);
   }
 }
