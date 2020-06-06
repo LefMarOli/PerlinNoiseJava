@@ -274,7 +274,9 @@ public class LineGeneratorTest {
             "currentBounds",
             "results",
             "lineData",
-            "currentPosInNoiseInterpolation")
+            "currentPosInNoiseInterpolation",
+            "corners",
+            "distances")
         .verify();
   }
 

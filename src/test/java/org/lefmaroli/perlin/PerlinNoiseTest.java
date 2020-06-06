@@ -6,12 +6,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 
 public class PerlinNoiseTest {
 
+  @Ignore
   @Test
   public void test1D() {
 
@@ -30,6 +32,7 @@ public class PerlinNoiseTest {
     while (true) ;
   }
 
+  @Ignore
   @Test
   public void test1D_2() {
 
@@ -48,6 +51,7 @@ public class PerlinNoiseTest {
     while (true) ;
   }
 
+  @Ignore
   @Test
   public void test2D() throws InterruptedException {
 
@@ -110,6 +114,7 @@ public class PerlinNoiseTest {
     }
   }
 
+  @Ignore
   @Test
   public void getNextLines() {
 
@@ -146,6 +151,7 @@ public class PerlinNoiseTest {
     }
   }
 
+  @Ignore
   @Test
   public void getNextSlice() throws InterruptedException {
 

@@ -406,7 +406,9 @@ public class SliceGeneratorTest {
             "results",
             "line",
             "noiseSegmentLength",
-            "currentPosInNoiseInterpolation")
+            "currentPosInNoiseInterpolation",
+            "corners",
+            "distances")
         .verify();
   }
 
