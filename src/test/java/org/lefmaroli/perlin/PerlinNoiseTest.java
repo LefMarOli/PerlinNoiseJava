@@ -151,7 +151,7 @@ public class PerlinNoiseTest {
 
     final int size = 500;
     double[][] values = new double[size][size];
-    double stepSize = 0.2;
+    double stepSize = 0.01;
     double stepSizeY = 0.01;
     double stepSizeZ = 0.05;
     for (int i = 0; i < size; i++) {
@@ -173,8 +173,8 @@ public class PerlinNoiseTest {
             }
           }
           image.updateImage(values);
-        },50
-        ,50
+        },30
+        ,30
         ,
         TimeUnit.MILLISECONDS);
 

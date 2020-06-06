@@ -34,17 +34,48 @@ public class Interpolation {
   }
 
   public static double linear2D(double[][] planeCorners, double[] distances) {
-    checkCorners(planeCorners, 2);
+    checkCorners(planeCorners);
     checkDistances(distances, 2);
     return linear2DUnchecked(planeCorners, distances);
   }
 
-  private static <T> void checkCorners(T[] corners, int numberOfDimensions) {
+  private static void checkCorners(double[] corners) {
+    int dimensions = 1;
     if (!isArrayDimension2(corners)) {
       throw new CornersArrayLengthException(
-          getCornerNameForDimension(numberOfDimensions),
-          numberOfDimensions,
-          getDimensionsOrderForDimension(numberOfDimensions));
+          getCornerNameForDimension(dimensions),
+          dimensions,
+          getDimensionsOrderForDimension(dimensions));
+    }
+  }
+
+  private static void checkCorners(double[][] corners) {
+    int dimensions = 2;
+    if (!isArrayDimension2(corners)) {
+      throw new CornersArrayLengthException(
+          getCornerNameForDimension(dimensions),
+          dimensions,
+          getDimensionsOrderForDimension(dimensions));
+    }
+  }
+
+  private static void checkCorners(double[][][] corners) {
+    int dimensions = 3;
+    if (!isArrayDimension2(corners)) {
+      throw new CornersArrayLengthException(
+          getCornerNameForDimension(dimensions),
+          dimensions,
+          getDimensionsOrderForDimension(dimensions));
+    }
+  }
+
+  private static void checkCorners(double[][][][] corners) {
+    int dimensions = 4;
+    if (!isArrayDimension2(corners)) {
+      throw new CornersArrayLengthException(
+          getCornerNameForDimension(dimensions),
+          dimensions,
+          getDimensionsOrderForDimension(dimensions));
     }
   }
 
@@ -61,35 +92,43 @@ public class Interpolation {
       throw new DistancesArrayLengthException(
           numberOfDimensions, getDimensionsOrderForDimension(numberOfDimensions));
     }
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < numberOfDimensions; i++) {
       if (distances[i] < 0.0 || distances[i] > 1.0) {
         throw new DistanceNotBoundedException(i);
       }
     }
   }
 
-  private static <T> boolean isArrayDimension2(T[] array) {
-      try{
-        return array.length == 2 && isArrayDimension2((T[]) array[0]);
-      }catch (ClassCastException e){
-        return true;
-      }
+  private static boolean isArrayDimension2(double[] array) {
+    return array.length == 2;
+  }
+
+  private static boolean isArrayDimension2(double[][] array) {
+    return array.length == 2 && isArrayDimension2(array[0]);
+  }
+
+  private static boolean isArrayDimension2(double[][][] array) {
+    return array.length == 2 && isArrayDimension2(array[0]);
+  }
+
+  private static boolean isArrayDimension2(double[][][][] array) {
+    return array.length == 2 && isArrayDimension2(array[0]);
   }
 
   public static double linear2DWithFade(double[][] planeCorners, double[] distances) {
-    checkCorners(planeCorners, 2);
+    checkCorners(planeCorners);
     checkDistances(distances, 2);
     return linear2DWithFadeUnchecked(planeCorners, distances);
   }
 
   public static double linear3D(double[][][] cubeCorners, double[] distances) {
-    checkCorners(cubeCorners, 3);
+    checkCorners(cubeCorners);
     checkDistances(distances, 3);
     return linear3DUnchecked(cubeCorners, distances);
   }
 
   public static double linear3DWithFade(double[][][] cubeCorners, double[] distances) {
-    checkCorners(cubeCorners, 3);
+    checkCorners(cubeCorners);
     checkDistances(distances, 3);
     return linear3DWithFadeUnchecked(cubeCorners, distances);
   }
@@ -153,13 +192,13 @@ public class Interpolation {
   }
 
   public static double linear4D(double[][][][] hypercubeCorners, double[] distances) {
-    checkCorners(hypercubeCorners, 4);
+    checkCorners(hypercubeCorners);
     checkDistances(distances, 4);
     return linear4DUnchecked(hypercubeCorners, distances);
   }
 
   public static double linear4DWithFade(double[][][][] hypercubeCorners, double[] distances) {
-    checkCorners(hypercubeCorners, 4);
+    checkCorners(hypercubeCorners);
     checkDistances(distances, 4);
     return linear4DWithFadeUnchecked(hypercubeCorners, distances);
   }
