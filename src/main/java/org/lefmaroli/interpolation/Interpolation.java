@@ -39,16 +39,6 @@ public class Interpolation {
     return linear2DUnchecked(planeCorners, distances);
   }
 
-  private static void checkCorners(double[] corners) {
-    int dimensions = 1;
-    if (!isArrayDimension2(corners)) {
-      throw new CornersArrayLengthException(
-          getCornerNameForDimension(dimensions),
-          dimensions,
-          getDimensionsOrderForDimension(dimensions));
-    }
-  }
-
   private static void checkCorners(double[][] corners) {
     int dimensions = 2;
     if (!isArrayDimension2(corners)) {
