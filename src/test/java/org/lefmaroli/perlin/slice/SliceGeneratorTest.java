@@ -128,7 +128,7 @@ public class SliceGeneratorTest {
 
   @Test
   public void testGetNoiseInterpolationPoints() {
-    assertEquals(noiseInterpolationPoints, defaultGenerator.getNoiseInterpolationPoints());
+    assertEquals(1.0 / noiseInterpolationPoints, defaultGenerator.getStepSize(), 1E-9);
   }
 
   @Test
@@ -408,7 +408,8 @@ public class SliceGeneratorTest {
             "noiseSegmentLength",
             "currentPosInNoiseInterpolation",
             "corners",
-            "distances")
+            "distances",
+            "stepSize")
         .verify();
   }
 

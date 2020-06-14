@@ -131,18 +131,16 @@ public class PointGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "randomGenerator",
-            "previousBound",
-            "currentBound",
-            "currentPosInInterpolation",
+            "currentPosition",
             "generated",
             "noiseSegmentLength",
-            "results")
+            "results",
+            "stepSize")
         .verify();
   }
 
   @Test
   public void getInterpolationPointsCount() {
-    assertEquals(interpolationPoints, defaultGenerator.getNoiseInterpolationPoints());
+    assertEquals(1.0 / interpolationPoints, defaultGenerator.getStepSize(), 1E-9);
   }
 }

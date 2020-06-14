@@ -274,9 +274,10 @@ public class LineGeneratorTest {
             "currentBounds",
             "results",
             "lineData",
-            "currentPosInNoiseInterpolation",
+            "currentPosition",
             "corners",
-            "distances")
+            "distances",
+            "stepSize")
         .verify();
   }
 
@@ -319,8 +320,8 @@ public class LineGeneratorTest {
   public void getNextLines() throws InterruptedException {
     LineGenerator generator =
         new LineGenerator(
-            defaultInterpolationPointsAlongLine,
             defaultInterpolationPointsAlongNoiseSpace,
+            500,
             lineLength,
             1.0,
             randomSeed,

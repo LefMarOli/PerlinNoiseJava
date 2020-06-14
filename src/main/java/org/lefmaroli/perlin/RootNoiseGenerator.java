@@ -10,6 +10,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   protected final long randomSeed;
   private final Queue<C> generated = new LinkedList<>();
+  private final double stepSize;
   private final int noiseInterpolationPoints;
   private final double maxAmplitude;
 
@@ -18,11 +19,17 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
       throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
     }
     this.noiseInterpolationPoints = noiseInterpolationPoints;
+    this.stepSize = 1.0 / noiseInterpolationPoints;
     this.maxAmplitude = maxAmplitude;
     this.randomSeed = randomSeed;
+    PerlinNoise.initializeBoundsWithSeed(randomSeed);
   }
 
-  public int getNoiseInterpolationPoints() {
+  public double getStepSize() {
+    return stepSize;
+  }
+
+  public int getNoiseInterpolationPoints(){
     return noiseInterpolationPoints;
   }
 
@@ -35,17 +42,21 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     RootNoiseGenerator<?> that = (RootNoiseGenerator<?>) o;
-    return noiseInterpolationPoints == that.noiseInterpolationPoints
-        && Double.compare(that.maxAmplitude, maxAmplitude) == 0
-        && randomSeed == that.randomSeed;
+    return randomSeed == that.randomSeed &&
+        Double.compare(that.stepSize, stepSize) == 0 &&
+        Double.compare(that.maxAmplitude, maxAmplitude) == 0;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(noiseInterpolationPoints, maxAmplitude, randomSeed);
+    return Objects.hash(randomSeed, stepSize, maxAmplitude);
   }
 
   @Override
