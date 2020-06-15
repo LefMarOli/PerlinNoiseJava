@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.vector.Vector4D;
@@ -12,8 +13,8 @@ public class PerlinNoise {
   private static final Vector4D[][][][] BOUNDS_4D =
       new Vector4D[NUMBER_OF_BOUNDS_4D][NUMBER_OF_BOUNDS_4D][NUMBER_OF_BOUNDS_4D]
           [NUMBER_OF_BOUNDS_4D];
-  private static final double[][][][] CORNERS = new double[2][2][2][2];
-  private static final double[] DISTANCES = new double[4];
+  private static final CornerMatrix CORNER_MATRIX = CornerMatrix.getForDimension(4);
+  private static final double[] DISTANCES_4D = new double[4];
   private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
 
   private PerlinNoise() {}
@@ -62,10 +63,10 @@ public class PerlinNoise {
     double distY = y - intPartY;
     double distZ = z - intPartZ;
     double distT = t - intPartT;
-    DISTANCES[0] = distX;
-    DISTANCES[1] = distY;
-    DISTANCES[2] = distZ;
-    DISTANCES[3] = distT;
+    DISTANCES_4D[0] = distX;
+    DISTANCES_4D[1] = distY;
+    DISTANCES_4D[2] = distZ;
+    DISTANCES_4D[3] = distT;
 
     for (int xIndex = 0; xIndex < 2; xIndex++) {
       int xBoundIndex = getIndexBound(intPartX + xIndex);
@@ -75,14 +76,15 @@ public class PerlinNoise {
           int zBoundIndex = getIndexBound(intPartZ + zIndex);
           for (int tIndex = 0; tIndex < 2; tIndex++) {
             int tBoundIndex = getIndexBound(intPartT + tIndex);
-            CORNERS[xIndex][yIndex][zIndex][tIndex] =
-                BOUNDS_4D[xBoundIndex][yBoundIndex][zBoundIndex][tBoundIndex].getVectorProduct(
+            double vectorProduct = BOUNDS_4D[xBoundIndex][yBoundIndex][zBoundIndex][tBoundIndex]
+                .getVectorProduct(
                     distX - xIndex, distY - yIndex, distZ - zIndex, distT - tIndex);
+            CORNER_MATRIX.setValueAtIndices(vectorProduct, xIndex, yIndex, zIndex, tIndex);
           }
         }
       }
     }
-    double interpolated = Interpolation.linear4DWithFade(CORNERS, DISTANCES);
+    double interpolated = Interpolation.linearWithFade(CORNER_MATRIX, DISTANCES_4D);
     double adjusted = adjustInRange(interpolated);
     if (adjusted > 1.0) {
       adjusted = 1.0;

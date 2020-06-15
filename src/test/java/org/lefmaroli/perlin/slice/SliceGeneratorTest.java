@@ -409,7 +409,9 @@ public class SliceGeneratorTest {
             "currentPosInNoiseInterpolation",
             "corners",
             "distances",
-            "stepSize")
+            "stepSize",
+            "circularWidthResolution",
+            "circularHeightResolution")
         .verify();
   }
 

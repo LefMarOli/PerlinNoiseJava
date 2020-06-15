@@ -15,6 +15,36 @@ public class Interpolation {
 
   private Interpolation() {}
 
+  public static double linear(CornerMatrix cornerMatrix, double[] distances){
+    checkDistances(distances, cornerMatrix.getDimension());
+    return linearUnchecked(cornerMatrix, distances);
+  }
+
+  private static double linearUnchecked(CornerMatrix cornerMatrix, double[] distances){
+    if(cornerMatrix.getDimension() == 1){
+      return linearUnchecked(cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
+    }else{
+      double firstInterpolation = linearUnchecked(cornerMatrix.getSubMatrix(0), distances);
+      double secondInterpolation = linearUnchecked(cornerMatrix.getSubMatrix(1), distances);
+      return linearUnchecked(firstInterpolation, secondInterpolation, distances[distances.length - cornerMatrix.getDimension()]);
+    }
+  }
+
+  public static double linearWithFade(CornerMatrix cornerMatrix, double[] distances){
+    checkDistances(distances, cornerMatrix.getDimension());
+    return linearWithFadeUnchecked(cornerMatrix, distances);
+  }
+
+  private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances){
+    if(cornerMatrix.getDimension() == 1){
+      return linearWithFadeUnchecked(cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
+    }else{
+      double firstInterpolation = linearWithFadeUnchecked(cornerMatrix.getSubMatrix(0), distances);
+      double secondInterpolation = linearWithFadeUnchecked(cornerMatrix.getSubMatrix(1), distances);
+      return linearWithFadeUnchecked(firstInterpolation, secondInterpolation, distances[distances.length - cornerMatrix.getDimension()]);
+    }
+  }
+
   public static double linear(double y1, double y2, double mu) {
     if (mu < 0.0 || mu > 1.0) {
       throw new DistanceNotBoundedException(Dimension.X.index);
@@ -33,46 +63,6 @@ public class Interpolation {
     return fadeUnchecked(value);
   }
 
-  public static double linear2D(double[][] planeCorners, double[] distances) {
-    checkCorners(planeCorners);
-    checkDistances(distances, 2);
-    return linear2DUnchecked(planeCorners, distances);
-  }
-
-  private static void checkCorners(double[][] corners) {
-    int dimensions = 2;
-    if (!isArrayDimension2(corners)) {
-      throw new CornersArrayLengthException(
-          getCornerNameForDimension(dimensions),
-          dimensions,
-          getDimensionsOrderForDimension(dimensions));
-    }
-  }
-
-  private static void checkCorners(double[][][] corners) {
-    int dimensions = 3;
-    if (!isArrayDimension2(corners)) {
-      throw new CornersArrayLengthException(
-          getCornerNameForDimension(dimensions),
-          dimensions,
-          getDimensionsOrderForDimension(dimensions));
-    }
-  }
-
-  private static void checkCorners(double[][][][] corners) {
-    int dimensions = 4;
-    if (!isArrayDimension2(corners)) {
-      throw new CornersArrayLengthException(
-          getCornerNameForDimension(dimensions),
-          dimensions,
-          getDimensionsOrderForDimension(dimensions));
-    }
-  }
-
-  private static String getCornerNameForDimension(int dimension) {
-    return FORMAT_MAP.get(dimension).getKey();
-  }
-
   private static String getDimensionsOrderForDimension(int dimension) {
     return FORMAT_MAP.get(dimension).getValue();
   }
@@ -87,40 +77,6 @@ public class Interpolation {
         throw new DistanceNotBoundedException(i);
       }
     }
-  }
-
-  private static boolean isArrayDimension2(double[] array) {
-    return array.length == 2;
-  }
-
-  private static boolean isArrayDimension2(double[][] array) {
-    return array.length == 2 && isArrayDimension2(array[0]);
-  }
-
-  private static boolean isArrayDimension2(double[][][] array) {
-    return array.length == 2 && isArrayDimension2(array[0]);
-  }
-
-  private static boolean isArrayDimension2(double[][][][] array) {
-    return array.length == 2 && isArrayDimension2(array[0]);
-  }
-
-  public static double linear2DWithFade(double[][] planeCorners, double[] distances) {
-    checkCorners(planeCorners);
-    checkDistances(distances, 2);
-    return linear2DWithFadeUnchecked(planeCorners, distances);
-  }
-
-  public static double linear3D(double[][][] cubeCorners, double[] distances) {
-    checkCorners(cubeCorners);
-    checkDistances(distances, 3);
-    return linear3DUnchecked(cubeCorners, distances);
-  }
-
-  public static double linear3DWithFade(double[][][] cubeCorners, double[] distances) {
-    checkCorners(cubeCorners);
-    checkDistances(distances, 3);
-    return linear3DWithFadeUnchecked(cubeCorners, distances);
   }
 
   private static double linearUnchecked(double[] lineCorners, double distance) {
@@ -143,70 +99,6 @@ public class Interpolation {
     double valueCubed = value * value * value;
     // 6t^5 - 15t^4 + 10t^3
     return 6 * valueCubed * value * value - 15 * valueCubed * value + 10 * valueCubed;
-  }
-
-  private static double linear2DUnchecked(double[][] planeCorners, double[] distances) {
-    int lastDimensionIndex = distances.length - 1;
-    int previousDimensionIndex = lastDimensionIndex - 1;
-    double firstInterpolation = linearUnchecked(planeCorners[0], distances[lastDimensionIndex]);
-    double secondInterpolation = linearUnchecked(planeCorners[1], distances[lastDimensionIndex]);
-    return linearUnchecked(
-        firstInterpolation, secondInterpolation, distances[previousDimensionIndex]);
-  }
-
-  private static double linear2DWithFadeUnchecked(double[][] planeCorners, double[] distances) {
-    int lastDimensionIndex = distances.length - 1;
-    int previousDimensionIndex = lastDimensionIndex - 1;
-    double firstInterpolation =
-        linearWithFadeUnchecked(planeCorners[0], distances[lastDimensionIndex]);
-    double secondInterpolation =
-        linearWithFadeUnchecked(planeCorners[1], distances[lastDimensionIndex]);
-    return linearWithFadeUnchecked(
-        firstInterpolation, secondInterpolation, distances[previousDimensionIndex]);
-  }
-
-  private static double linear3DUnchecked(double[][][] cubeCorners, double[] distances) {
-    int secondToLastDimensionIndex = distances.length - 3;
-    double firstInterpolation = linear2DUnchecked(cubeCorners[0], distances);
-    double secondInterpolation = linear2DUnchecked(cubeCorners[1], distances);
-    return linearUnchecked(
-        firstInterpolation, secondInterpolation, distances[secondToLastDimensionIndex]);
-  }
-
-  private static double linear3DWithFadeUnchecked(double[][][] cubeCorners, double[] distances) {
-    int secondToLastDimensionIndex = distances.length - 3;
-    double firstInterpolation = linear2DWithFadeUnchecked(cubeCorners[0], distances);
-    double secondInterpolation = linear2DWithFadeUnchecked(cubeCorners[1], distances);
-    return linearWithFadeUnchecked(
-        firstInterpolation, secondInterpolation, distances[secondToLastDimensionIndex]);
-  }
-
-  public static double linear4D(double[][][][] hypercubeCorners, double[] distances) {
-    checkCorners(hypercubeCorners);
-    checkDistances(distances, 4);
-    return linear4DUnchecked(hypercubeCorners, distances);
-  }
-
-  public static double linear4DWithFade(double[][][][] hypercubeCorners, double[] distances) {
-    checkCorners(hypercubeCorners);
-    checkDistances(distances, 4);
-    return linear4DWithFadeUnchecked(hypercubeCorners, distances);
-  }
-
-  private static double linear4DWithFadeUnchecked(
-      double[][][][] hypercubeCorners, double[] distances) {
-    int thirdToLastIndex = distances.length - 4;
-    double firstInterpolation = linear3DWithFadeUnchecked(hypercubeCorners[0], distances);
-    double secondInterpolation = linear3DWithFadeUnchecked(hypercubeCorners[1], distances);
-    return linearWithFadeUnchecked(
-        firstInterpolation, secondInterpolation, distances[thirdToLastIndex]);
-  }
-
-  private static double linear4DUnchecked(double[][][][] hypercubeCorners, double[] distances) {
-    int thirdToLastIndex = distances.length - 4;
-    double firstInterpolation = linear3DUnchecked(hypercubeCorners[0], distances);
-    double secondInterpolation = linear3DUnchecked(hypercubeCorners[1], distances);
-    return linearUnchecked(firstInterpolation, secondInterpolation, distances[thirdToLastIndex]);
   }
 
   enum Dimension {

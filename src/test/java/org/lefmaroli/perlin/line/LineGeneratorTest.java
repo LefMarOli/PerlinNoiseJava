@@ -277,7 +277,8 @@ public class LineGeneratorTest {
             "currentPosition",
             "corners",
             "distances",
-            "stepSize")
+            "stepSize",
+            "circularResolution")
         .verify();
   }
 

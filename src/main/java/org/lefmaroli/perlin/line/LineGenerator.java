@@ -17,6 +17,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private final double[] lineData;
   private final int noiseSegmentLength;
   private int currentPosition = 0;
+  private final double circularResolution;
 
   public LineGenerator(
       int noiseInterpolationPoints,
@@ -33,6 +34,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
             lineInterpolationPoints, lineLength, "line length");
     this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
     this.lineData = new double[lineLength];
+    this.circularResolution = this.lineInterpolationPoints / (double) this.lineLength;
     LOGGER.debug("Created new {}", this);
   }
 
@@ -121,12 +123,10 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     double lineStepSize = 1.0 / lineInterpolationPoints;
     double lineDist = lineIndex * lineStepSize;
     if (isCircular()) {
-      int numberOfSegments = lineLength / lineInterpolationPoints;
-      double resolution = 1.0 / numberOfSegments;
       double angle = lineIndex / (double) lineLength * 2 * Math.PI;
-      double xCoord = (Math.cos(angle) * resolution) + resolution;
-      double yCoord = (Math.sin(angle) * resolution) + resolution;
-      return PerlinNoise.perlin(noiseDist, xCoord, yCoord) * getMaxAmplitude();
+      double xCoordinate = (Math.cos(angle) * circularResolution) + circularResolution;
+      double yCoordinate = (Math.sin(angle) * circularResolution) + circularResolution;
+      return PerlinNoise.perlin(noiseDist, xCoordinate, yCoordinate) * getMaxAmplitude();
     } else {
       return PerlinNoise.perlin(noiseDist, lineDist) * getMaxAmplitude();
     }
