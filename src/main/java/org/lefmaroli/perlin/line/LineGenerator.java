@@ -137,6 +137,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     } else {
       perlinData[1] = lineIndex / (double) lineInterpolationPoints;
     }
-    return perlin.perlin(perlinData) * getMaxAmplitude();
+    return perlin.getFor(perlinData) * getMaxAmplitude();
   }
 }

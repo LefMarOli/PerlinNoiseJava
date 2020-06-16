@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.LineChart;
@@ -27,7 +26,7 @@ public class PerlinNoiseVisualizeTests {
     double[] values = new double[size];
     double stepSize = 0.05;
     for (int i = 0; i < values.length; i++) {
-      values[i] = perlin.perlin(i * stepSize);
+      values[i] = perlin.getFor(i * stepSize);
     }
 
     LineChart chart = new LineChart("Test", "length", "values");
@@ -46,7 +45,7 @@ public class PerlinNoiseVisualizeTests {
     double[] values = new double[size];
     double stepSize = 0.05;
     for (int i = 0; i < values.length; i++) {
-      values[i] = perlin.perlin(i * stepSize, 0);
+      values[i] = perlin.getFor(i * stepSize, 0);
     }
 
     LineChart chart = new LineChart("Test", "length", "values");
@@ -66,7 +65,7 @@ public class PerlinNoiseVisualizeTests {
     double stepSizeX = 0.01;
     double stepSizeY = 0.055;
     for (int i = 0; i < size; i++) {
-        values[i] = perlinNoise.perlin(0 * stepSizeX, i * stepSizeY);
+        values[i] = perlinNoise.getFor(0 * stepSizeX, i * stepSizeY);
     }
     int currentXIndex = 0;
 
@@ -94,7 +93,7 @@ public class PerlinNoiseVisualizeTests {
         previousTime = System.currentTimeMillis();
         currentXIndex++;
         for (int i = 0; i < size; i++) {
-          double newValue = perlinNoise.perlin(currentXIndex * stepSizeX, i * stepSizeY);
+          double newValue = perlinNoise.getFor(currentXIndex * stepSizeX, i * stepSizeY);
           values[i] = newValue;
           if(newValue > max){
             max = newValue;
@@ -130,7 +129,7 @@ public class PerlinNoiseVisualizeTests {
     double stepSizeY = 0.01;
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
-        values[i][j] = perlinNoise.perlin(i * stepSize, j * stepSizeY);
+        values[i][j] = perlinNoise.getFor(i * stepSize, j * stepSizeY);
       }
     }
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(values, 5);
@@ -143,7 +142,7 @@ public class PerlinNoiseVisualizeTests {
       }
       int index = currentIndex.incrementAndGet();
       for (int i = 0; i < size; i++) {
-        values[size - 1][i] = perlinNoise.perlin(index * stepSize, i * stepSizeY);
+        values[size - 1][i] = perlinNoise.getFor(index * stepSize, i * stepSizeY);
       }
       image.updateImage(values);
     }, 5, 5, TimeUnit.MILLISECONDS);
@@ -168,7 +167,7 @@ public class PerlinNoiseVisualizeTests {
     double stepSizeZ = 0.05;
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
-        values[i][j] = perlinNoise.perlin(i * stepSize, j * stepSizeY, 0);
+        values[i][j] = perlinNoise.getFor(i * stepSize, j * stepSizeY, 0);
       }
     }
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(values, 5);
@@ -181,7 +180,7 @@ public class PerlinNoiseVisualizeTests {
              zIndex = currentZIndex.incrementAndGet();
           for (int i = 0; i < size; i++) {
            for (int j = 0; j < size; j++) {
-            values[i][j] = perlinNoise.perlin(i * stepSize, j * stepSizeY, zIndex * stepSizeZ);
+            values[i][j] = perlinNoise.getFor(i * stepSize, j * stepSizeY, zIndex * stepSizeZ);
             }
           }
           image.updateImage(values);

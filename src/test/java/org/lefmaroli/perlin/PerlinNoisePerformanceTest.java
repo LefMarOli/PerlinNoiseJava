@@ -16,7 +16,7 @@ public class PerlinNoisePerformanceTest {
   public void testPerformance() {
     int numIterations = 10000;
     for (int i = 0; i < numIterations; i++) {
-      perlinNoise.perlin(i * 0.5);
+      perlinNoise.getFor(i * 0.5);
     }
   }
 }

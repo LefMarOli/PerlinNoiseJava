@@ -195,6 +195,6 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       perlinData[1] = widthDist;
       perlinData[2] = (double) (heightIndex) / (heightInterpolationPoints);
     }
-    return perlin.perlin(perlinData) * getMaxAmplitude();
+    return perlin.getFor(perlinData) * getMaxAmplitude();
   }
 }

@@ -84,7 +84,7 @@ public class PerlinNoise {
     PerlinNoise.initializeBoundsForDimension(dimension);
   }
 
-  public double perlin(double... coordinates) {
+  public double getFor(double... coordinates) {
     if (coordinates.length != dimension) {
       throw new IllegalArgumentException(
           "Coordinates length should be the same as the number of dimensions");
