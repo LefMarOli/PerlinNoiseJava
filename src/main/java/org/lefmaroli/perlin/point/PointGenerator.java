@@ -61,7 +61,7 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
   protected Double[] generateNextSegment() {
     for (int i = 0; i < noiseSegmentLength; i++) {
       currentPosition++;
-      perlinData[0] =  currentPosition * getStepSize();
+      perlinData[0] = currentPosition * getStepSize();
       results[i] = perlin.getFor(perlinData) * getMaxAmplitude();
     }
     return results;

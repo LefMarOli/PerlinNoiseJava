@@ -11,7 +11,7 @@ public abstract class CornerMatrix {
   }
 
   @Override
-  public String toString(){
+  public String toString() {
     StringBuilder builder = new StringBuilder().append("CornerMatrix{");
     int[] indices = new int[getDimension()];
     int allRowsCount = 1 << getDimension();
@@ -26,8 +26,6 @@ public abstract class CornerMatrix {
     builder.append("}");
     return builder.toString();
   }
-
-
 
   abstract CornerMatrix getSubMatrix(int index);
 

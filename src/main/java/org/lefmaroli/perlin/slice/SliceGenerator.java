@@ -54,10 +54,10 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     line = new double[sliceHeight];
     this.circularWidthResolution = this.widthInterpolationPoints / (double) this.sliceWidth;
     this.circularHeightResolution = this.heightInterpolationPoints / (double) this.sliceHeight;
-    if(isCircular){
+    if (isCircular) {
       perlin = new PerlinNoise(5);
       perlinData = new double[5];
-    }else{
+    } else {
       perlin = new PerlinNoise(3);
       perlinData = new double[3];
     }

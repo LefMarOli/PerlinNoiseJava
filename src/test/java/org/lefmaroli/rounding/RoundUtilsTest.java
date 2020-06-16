@@ -90,7 +90,7 @@ public class RoundUtilsTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNLargerThanM(){
+  public void testNLargerThanM() {
     RoundUtils.roundNToClosestFactorOfM(85, 50);
   }
 

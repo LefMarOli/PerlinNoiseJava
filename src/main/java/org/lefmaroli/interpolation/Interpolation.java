@@ -15,33 +15,41 @@ public class Interpolation {
 
   private Interpolation() {}
 
-  public static double linear(CornerMatrix cornerMatrix, double[] distances){
+  public static double linear(CornerMatrix cornerMatrix, double[] distances) {
     checkDistances(distances, cornerMatrix.getDimension());
     return linearUnchecked(cornerMatrix, distances);
   }
 
-  private static double linearUnchecked(CornerMatrix cornerMatrix, double[] distances){
-    if(cornerMatrix.getDimension() == 1){
-      return linearUnchecked(cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
-    }else{
+  private static double linearUnchecked(CornerMatrix cornerMatrix, double[] distances) {
+    if (cornerMatrix.getDimension() == 1) {
+      return linearUnchecked(
+          cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
+    } else {
       double firstInterpolation = linearUnchecked(cornerMatrix.getSubMatrix(0), distances);
       double secondInterpolation = linearUnchecked(cornerMatrix.getSubMatrix(1), distances);
-      return linearUnchecked(firstInterpolation, secondInterpolation, distances[distances.length - cornerMatrix.getDimension()]);
+      return linearUnchecked(
+          firstInterpolation,
+          secondInterpolation,
+          distances[distances.length - cornerMatrix.getDimension()]);
     }
   }
 
-  public static double linearWithFade(CornerMatrix cornerMatrix, double[] distances){
+  public static double linearWithFade(CornerMatrix cornerMatrix, double[] distances) {
     checkDistances(distances, cornerMatrix.getDimension());
     return linearWithFadeUnchecked(cornerMatrix, distances);
   }
 
-  private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances){
-    if(cornerMatrix.getDimension() == 1){
-      return linearWithFadeUnchecked(cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
-    }else{
+  private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances) {
+    if (cornerMatrix.getDimension() == 1) {
+      return linearWithFadeUnchecked(
+          cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
+    } else {
       double firstInterpolation = linearWithFadeUnchecked(cornerMatrix.getSubMatrix(0), distances);
       double secondInterpolation = linearWithFadeUnchecked(cornerMatrix.getSubMatrix(1), distances);
-      return linearWithFadeUnchecked(firstInterpolation, secondInterpolation, distances[distances.length - cornerMatrix.getDimension()]);
+      return linearWithFadeUnchecked(
+          firstInterpolation,
+          secondInterpolation,
+          distances[distances.length - cornerMatrix.getDimension()]);
     }
   }
 

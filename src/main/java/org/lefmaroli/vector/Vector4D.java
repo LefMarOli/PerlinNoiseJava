@@ -38,15 +38,15 @@ public class Vector4D {
     return getVectorProduct(other.x, other.y, other.z, other.t);
   }
 
-  public double getCoordinatesProduct(double otherX){
+  public double getCoordinatesProduct(double otherX) {
     return this.x * otherX;
   }
 
-  public double getCoordinatesProduct(double otherX, double otherY){
+  public double getCoordinatesProduct(double otherX, double otherY) {
     return (this.x * otherX) + (this.y * otherY);
   }
 
-  public double getCoordinatesProduct(double otherX, double otherY, double otherZ){
+  public double getCoordinatesProduct(double otherX, double otherY, double otherZ) {
     return (this.x * otherX) + (this.y * otherY) + (this.z * otherZ);
   }
 

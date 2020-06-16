@@ -37,10 +37,10 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
     this.lineData = new double[lineLength];
     this.circularResolution = this.lineInterpolationPoints / (double) this.lineLength;
-    if(isCircular){
+    if (isCircular) {
       perlin = new PerlinNoise(3);
       perlinData = new double[3];
-    }else{
+    } else {
       perlin = new PerlinNoise(2);
       perlinData = new double[2];
     }

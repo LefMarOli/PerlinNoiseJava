@@ -7,13 +7,13 @@ import org.junit.Test;
 public class PerlinNoiseTest {
 
   @Test(expected = IllegalArgumentException.class)
-  public void testWrongNumberOfIndices(){
+  public void testWrongNumberOfIndices() {
     PerlinNoise perlinNoise = new PerlinNoise(2);
     perlinNoise.getFor(0.5);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testWrongNumberOfIndices2(){
+  public void testWrongNumberOfIndices2() {
     PerlinNoise perlinNoise = new PerlinNoise(2);
     perlinNoise.getFor(0.5, 0.3, 15.4);
   }

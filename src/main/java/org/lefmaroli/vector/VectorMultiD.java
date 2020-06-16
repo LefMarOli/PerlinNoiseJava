@@ -3,13 +3,13 @@ package org.lefmaroli.vector;
 public class VectorMultiD {
   private final double[] coordinates;
 
-  public VectorMultiD(double... coordinates){
+  public VectorMultiD(double... coordinates) {
     this.coordinates = coordinates;
   }
 
-  public VectorMultiD normalize(){
+  public VectorMultiD normalize() {
     double length = getLength();
-    if(Double.compare(length, 1.0) != 0){
+    if (Double.compare(length, 1.0) != 0) {
       for (int i = 0; i < coordinates.length; i++) {
         coordinates[i] = coordinates[i] / length;
       }
@@ -17,7 +17,7 @@ public class VectorMultiD {
     return this;
   }
 
-  public double getLength(){
+  public double getLength() {
     double result = 0.0;
     for (double coordinate : coordinates) {
       result += coordinate * coordinate;

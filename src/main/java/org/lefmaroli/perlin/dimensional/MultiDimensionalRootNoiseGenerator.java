@@ -42,11 +42,10 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
       int interpolationPoints, int dimensionLength, String dimensionName) {
     if (isCircular) {
       int toEvaluate = interpolationPoints;
-      if(interpolationPoints > dimensionLength){
+      if (interpolationPoints > dimensionLength) {
         toEvaluate = dimensionLength;
       }
-      int newInterpolationPoints =
-          RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
+      int newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
       LogManager.getLogger(this.getClass())
           .warn(
               "Modified required interpolation point count for {} from {} to {} to respect"
