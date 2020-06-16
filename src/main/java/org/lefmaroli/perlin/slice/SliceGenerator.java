@@ -4,14 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lefmaroli.interpolation.Interpolation;
+import org.lefmaroli.perlin.PerlinNoise;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
-import org.lefmaroli.random.RandomGenerator;
-import org.lefmaroli.vector.Vector3D;
 
 public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][]>
     implements SliceNoiseGenerator {
-  private static final double MAX_3D_VECTOR_PRODUCT_VALUE = Math.sqrt(2.0) / 2.0;
 
   private static final Logger LOGGER = LogManager.getLogger(SliceGenerator.class);
 
@@ -25,14 +22,13 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private final int heightInterpolationPoints;
   private final int sliceWidth;
   private final int sliceHeight;
-  private final RandomGenerator randomGenerator;
-  private final int randomBoundsXCount;
-  private final int randomBoundsYCount;
   private final double[] line;
   private final int noiseSegmentLength;
-  private Vector3D[][] previousBounds;
-  private Vector3D[][] currentBounds;
   private int currentPosInNoiseInterpolation = 0;
+  private final double circularWidthResolution;
+  private final double circularHeightResolution;
+  private final PerlinNoise perlin;
+  private final double[] perlinData;
 
   SliceGenerator(
       int noiseInterpolationPoints,
@@ -54,25 +50,18 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
             heightInterpolationPoint, sliceHeight, "slice height");
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
-    this.randomGenerator = new RandomGenerator(randomSeed);
-    this.randomBoundsXCount = 2 + this.sliceWidth / this.widthInterpolationPoints;
-    this.randomBoundsYCount = 2 + this.sliceHeight / this.heightInterpolationPoints;
     this.noiseSegmentLength = computeNoiseSegmentLength(sliceWidth, sliceHeight);
-    this.previousBounds = getNewBounds();
-    this.currentBounds = getNewBounds();
     line = new double[sliceHeight];
+    this.circularWidthResolution = this.widthInterpolationPoints / (double) this.sliceWidth;
+    this.circularHeightResolution = this.heightInterpolationPoints / (double) this.sliceHeight;
+    if(isCircular){
+      perlin = new PerlinNoise(5);
+      perlinData = new double[5];
+    }else{
+      perlin = new PerlinNoise(3);
+      perlinData = new double[3];
+    }
     LOGGER.debug("Create new {}", this);
-  }
-
-  private static double adjustValueRange(double interpolatedValue) {
-    double adjusted = ((interpolatedValue / MAX_3D_VECTOR_PRODUCT_VALUE) + 1.0) / 2.0;
-    if (adjusted > 1.0) {
-      adjusted = 1.0;
-    }
-    if (adjusted < 0.0) {
-      adjusted = 0.0;
-    }
-    return adjusted;
   }
 
   public int getWidthInterpolationPoints() {
@@ -147,11 +136,6 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     double[][][] results = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
     for (int i = 0; i < noiseSegmentLength; i++) {
       currentPosInNoiseInterpolation++;
-      if (currentPosInNoiseInterpolation == getNoiseInterpolationPoints()) {
-        previousBounds = currentBounds;
-        currentBounds = getNewBounds();
-        currentPosInNoiseInterpolation = 0;
-      }
       System.arraycopy(
           processNoiseDomain(currentPosInNoiseInterpolation), 0, results[i], 0, sliceWidth);
     }
@@ -176,92 +160,41 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     return computedNoiseSegmentLength;
   }
 
-  private Vector3D[][] getNewBounds() {
-    Vector3D[][] newBounds = new Vector3D[randomBoundsXCount][randomBoundsYCount];
-    for (int i = 0; i < randomBoundsXCount; i++) {
-      for (int j = 0; j < randomBoundsYCount; j++) {
-        newBounds[i][j] = randomGenerator.getRandomUnitVector3D();
-      }
-    }
-    if (isCircular()) {
-      newBounds[randomBoundsXCount - 2] = newBounds[0];
-      newBounds[randomBoundsXCount - 1] = newBounds[1];
-      for (int i = 0; i < randomBoundsXCount; i++) {
-        newBounds[i][randomBoundsYCount - 2] = newBounds[i][0];
-        newBounds[i][randomBoundsYCount - 1] = newBounds[i][1];
-      }
-    }
-    return newBounds;
-  }
-
   private double[][] processNoiseDomain(int noiseIndex) {
     double[][] slice = new double[sliceWidth][sliceHeight];
-    double noiseDist = (double) (noiseIndex) / (getNoiseInterpolationPoints());
-    for (int xIndex = 0; xIndex < sliceWidth; xIndex++) {
+    double noiseDist = (double) (noiseIndex) * getStepSize();
+    for (int widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
       System.arraycopy(
-          processSliceWidthDomain(noiseDist, xIndex), 0, slice[xIndex], 0, sliceHeight);
+          processSliceWidthDomain(noiseDist, widthIndex), 0, slice[widthIndex], 0, sliceHeight);
     }
     return slice;
   }
 
-  private double[] processSliceWidthDomain(double noiseDist, int xIndex) {
-    int x = xIndex % widthInterpolationPoints;
-    double xDist = (double) (x) / (widthInterpolationPoints);
-    int lowerBoundXIndex = xIndex / widthInterpolationPoints;
-    for (int yIndex = 0; yIndex < sliceHeight; yIndex++) {
-      line[yIndex] = processSliceHeightDomain(noiseDist, xDist, yIndex, lowerBoundXIndex);
+  private double[] processSliceWidthDomain(double noiseDist, int widthIndex) {
+    double widthDist;
+    if (isCircular()) {
+      widthDist = widthIndex / (double) sliceWidth * 2 * Math.PI;
+    } else {
+      widthDist = (double) (widthIndex) / (widthInterpolationPoints);
+    }
+    for (int heightIndex = 0; heightIndex < sliceHeight; heightIndex++) {
+      line[heightIndex] = processSliceHeightDomain(noiseDist, widthDist, heightIndex);
     }
     return line;
   }
 
-  private double processSliceHeightDomain(
-      double noiseDist, double xDist, int yIndex, int lowerBoundXIndex) {
-    int y = yIndex % heightInterpolationPoints;
-    double yDist = (double) (y) / (heightInterpolationPoints);
-    int lowerBoundYIndex = yIndex / heightInterpolationPoints;
-    double interpolatedValue =
-        interpolate(noiseDist, xDist, yDist, lowerBoundXIndex, lowerBoundYIndex);
-    return adjustValueRange(interpolatedValue) * getMaxAmplitude();
-  }
-
-  private double interpolate(
-      double noiseDist, double xDist, double yDist, int lowerBoundXIndex, int lowerBoundYIndex) {
-
-    Vector3D previousTopLeftBound = previousBounds[lowerBoundXIndex][lowerBoundYIndex];
-    Vector3D previousTopRightBound = previousBounds[lowerBoundXIndex][lowerBoundYIndex + 1];
-    Vector3D previousBottomLeftBound = previousBounds[lowerBoundXIndex + 1][lowerBoundYIndex];
-    Vector3D previousBottomRightBound = previousBounds[lowerBoundXIndex + 1][lowerBoundYIndex + 1];
-    Vector3D nextTopLeftBound = currentBounds[lowerBoundXIndex][lowerBoundYIndex];
-    Vector3D nextTopRightBound = currentBounds[lowerBoundXIndex][lowerBoundYIndex + 1];
-    Vector3D nextBottomLeftBound = currentBounds[lowerBoundXIndex + 1][lowerBoundYIndex];
-    Vector3D nextBottomRightBound = currentBounds[lowerBoundXIndex + 1][lowerBoundYIndex + 1];
-
-    double previousTopLeftImpact = previousTopLeftBound.getVectorProduct(xDist, yDist, noiseDist);
-    double previousTopRightImpact =
-        previousTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist);
-    double previousBottomLeftImpact =
-        previousBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist);
-    double previousBottomRightImpact =
-        previousBottomRightBound.getVectorProduct(xDist - 1.0, yDist - 1.0, noiseDist);
-    double nextTopLeftImpact = nextTopLeftBound.getVectorProduct(xDist, yDist, noiseDist - 1.0);
-    double nextTopRightImpact =
-        nextTopRightBound.getVectorProduct(xDist, yDist - 1.0, noiseDist - 1.0);
-    double nextBottomLeftImpact =
-        nextBottomLeftBound.getVectorProduct(xDist - 1.0, yDist, noiseDist - 1.0);
-    double nextBottomRightImpact =
-        nextBottomRightBound.getVectorProduct(xDist - 1.0, yDist - 1.0, noiseDist - 1.0);
-
-    return Interpolation.linear3DWithFade(
-        previousTopLeftImpact,
-        nextTopLeftImpact,
-        previousTopRightImpact,
-        nextTopRightImpact,
-        previousBottomLeftImpact,
-        nextBottomLeftImpact,
-        previousBottomRightImpact,
-        nextBottomRightImpact,
-        xDist,
-        yDist,
-        noiseDist);
+  private double processSliceHeightDomain(double noiseDist, double widthDist, int heightIndex) {
+    perlinData[0] = noiseDist;
+    if (isCircular()) {
+      perlinData[1] = (Math.cos(widthDist) * circularWidthResolution) + circularWidthResolution;
+      perlinData[2] = (Math.sin(widthDist) * circularWidthResolution) + circularWidthResolution;
+      double heightDist = heightIndex / (double) sliceHeight * 2 * Math.PI;
+      perlinData[3] = (Math.cos(heightDist) * circularHeightResolution) + circularHeightResolution;
+      perlinData[4] = (Math.sin(heightDist) * circularHeightResolution) + circularHeightResolution;
+    } else {
+      perlinData[1] = widthDist;
+      perlinData[2] = (double) (heightIndex) / (heightInterpolationPoints);
+    }
+    return perlin.getFor(perlinData) * getMaxAmplitude();
   }
 }

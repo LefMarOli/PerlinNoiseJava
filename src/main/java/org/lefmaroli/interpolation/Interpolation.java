@@ -1,15 +1,53 @@
 package org.lefmaroli.interpolation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Interpolation {
+
+  private static final Map<Integer, Map.Entry<String, String>> FORMAT_MAP = new HashMap<>(3);
+
+  static {
+    FORMAT_MAP.put(2, Map.entry("Plane", "x and y"));
+    FORMAT_MAP.put(3, Map.entry("Cube", "x, y and z"));
+    FORMAT_MAP.put(4, Map.entry("Hypercube", "x, y, z and t"));
+  }
 
   private Interpolation() {}
 
-  private static final String SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT =
-      "%s should be bounded between [0.0, 1.0]";
+  public static double linear(CornerMatrix cornerMatrix, double[] distances){
+    checkDistances(distances, cornerMatrix.getDimension());
+    return linearUnchecked(cornerMatrix, distances);
+  }
+
+  private static double linearUnchecked(CornerMatrix cornerMatrix, double[] distances){
+    if(cornerMatrix.getDimension() == 1){
+      return linearUnchecked(cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
+    }else{
+      double firstInterpolation = linearUnchecked(cornerMatrix.getSubMatrix(0), distances);
+      double secondInterpolation = linearUnchecked(cornerMatrix.getSubMatrix(1), distances);
+      return linearUnchecked(firstInterpolation, secondInterpolation, distances[distances.length - cornerMatrix.getDimension()]);
+    }
+  }
+
+  public static double linearWithFade(CornerMatrix cornerMatrix, double[] distances){
+    checkDistances(distances, cornerMatrix.getDimension());
+    return linearWithFadeUnchecked(cornerMatrix, distances);
+  }
+
+  private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances){
+    if(cornerMatrix.getDimension() == 1){
+      return linearWithFadeUnchecked(cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);
+    }else{
+      double firstInterpolation = linearWithFadeUnchecked(cornerMatrix.getSubMatrix(0), distances);
+      double secondInterpolation = linearWithFadeUnchecked(cornerMatrix.getSubMatrix(1), distances);
+      return linearWithFadeUnchecked(firstInterpolation, secondInterpolation, distances[distances.length - cornerMatrix.getDimension()]);
+    }
+  }
 
   public static double linear(double y1, double y2, double mu) {
     if (mu < 0.0 || mu > 1.0) {
-      throw new IllegalArgumentException(String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, ""));
+      throw new DistanceNotBoundedException(Dimension.X.index);
     }
     return linearUnchecked(y1, y2, mu);
   }
@@ -20,100 +58,33 @@ public class Interpolation {
 
   public static double fade(double value) {
     if (value < 0.0 || value > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "Value to fade"));
+      throw new ValueNotBoundedException("Value to fade");
     }
     return fadeUnchecked(value);
   }
 
-  public static double linear2D(
-      double x1y1, double x1y2, double x2y1, double x2y2, double muX, double muY) {
-    if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
-    }
-    if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
-    }
-    return linear2DUnchecked(x1y1, x1y2, x2y1, x2y2, muX, muY);
+  private static String getDimensionsOrderForDimension(int dimension) {
+    return FORMAT_MAP.get(dimension).getValue();
   }
 
-  public static double linear2DWithFade(
-      double x1y1, double x1y2, double x2y1, double x2y2, double muX, double muY) {
-    if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
+  private static void checkDistances(double[] distances, int numberOfDimensions) {
+    if (distances.length != numberOfDimensions) {
+      throw new DistancesArrayLengthException(
+          numberOfDimensions, getDimensionsOrderForDimension(numberOfDimensions));
     }
-    if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
+    for (int i = 0; i < numberOfDimensions; i++) {
+      if (distances[i] < 0.0 || distances[i] > 1.0) {
+        throw new DistanceNotBoundedException(i);
+      }
     }
-    return linear2DWithFadeUnchecked(x1y1, x1y2, x2y1, x2y2, muX, muY);
   }
 
-  public static double linear3D(
-      double x1y1z1,
-      double x1y1z2,
-      double x1y2z1,
-      double x1y2z2,
-      double x2y1z1,
-      double x2y1z2,
-      double x2y2z1,
-      double x2y2z2,
-      double muX,
-      double muY,
-      double muZ) {
-    if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
-    }
-    if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
-    }
-    if (muZ < 0.0 || muZ > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuZ"));
-    }
-    return linear3DUnchecked(
-        x1y1z1, x1y1z2, x1y2z1, x1y2z2, x2y1z1, x2y1z2, x2y2z1, x2y2z2, muX, muY, muZ);
+  private static double linearUnchecked(double y1, double y2, double distance) {
+    return y1 + distance * (y2 - y1);
   }
 
-  public static double linear3DWithFade(
-      double x1y1z1,
-      double x1y1z2,
-      double x1y2z1,
-      double x1y2z2,
-      double x2y1z1,
-      double x2y1z2,
-      double x2y2z1,
-      double x2y2z2,
-      double muX,
-      double muY,
-      double muZ) {
-    if (muX < 0.0 || muX > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuX"));
-    }
-    if (muY < 0.0 || muY > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuY"));
-    }
-    if (muZ < 0.0 || muZ > 1.0) {
-      throw new IllegalArgumentException(
-          String.format(SHOULD_BE_BOUNDED_BETWEEN_0_1_FORMAT, "MuZ"));
-    }
-    return linear3DWithFadeUnchecked(
-        x1y1z1, x1y1z2, x1y2z1, x1y2z2, x2y1z1, x2y1z2, x2y2z1, x2y2z2, muX, muY, muZ);
-  }
-
-  private static double linearUnchecked(double y1, double y2, double mu) {
-    return y1 * (1 - mu) + y2 * mu;
-  }
-
-  private static double linearWithFadeUnchecked(double y1, double y2, double mu) {
-    return linearUnchecked(y1, y2, fadeUnchecked(mu));
+  private static double linearWithFadeUnchecked(double y1, double y2, double distance) {
+    return linearUnchecked(y1, y2, fadeUnchecked(distance));
   }
 
   private static double fadeUnchecked(double value) {
@@ -122,51 +93,34 @@ public class Interpolation {
     return 6 * valueCubed * value * value - 15 * valueCubed * value + 10 * valueCubed;
   }
 
-  private static double linear2DUnchecked(
-      double x1y1, double x1y2, double x2y1, double x2y2, double muX, double muY) {
-    double topInterpolation = Interpolation.linearUnchecked(x1y1, x2y1, muX);
-    double bottomInterpolation = Interpolation.linearUnchecked(x1y2, x2y2, muX);
-    return Interpolation.linearUnchecked(topInterpolation, bottomInterpolation, muY);
-  }
+  enum Dimension {
+    X(0, "X"),
+    Y(1, "Y"),
+    Z(2, "Z"),
+    T(3, "T");
 
-  private static double linear2DWithFadeUnchecked(
-      double x1y1, double x1y2, double x2y1, double x2y2, double muX, double muY) {
-    double topInterpolation = Interpolation.linearWithFadeUnchecked(x1y1, x2y1, muX);
-    double bottomInterpolation = Interpolation.linearWithFadeUnchecked(x1y2, x2y2, muX);
-    return Interpolation.linearWithFadeUnchecked(topInterpolation, bottomInterpolation, muY);
-  }
+    private final int index;
+    private final String name;
 
-  private static double linear3DUnchecked(
-      double x1y1z1,
-      double x1y1z2,
-      double x1y2z1,
-      double x1y2z2,
-      double x2y1z1,
-      double x2y1z2,
-      double x2y2z1,
-      double x2y2z2,
-      double muX,
-      double muY,
-      double muZ) {
-    double frontInterpolation = linear2DUnchecked(x1y1z1, x1y2z1, x2y1z1, x2y2z1, muX, muY);
-    double backInterpolation = linear2DUnchecked(x1y1z2, x1y2z2, x2y1z2, x2y2z2, muX, muY);
-    return linearUnchecked(frontInterpolation, backInterpolation, muZ);
-  }
+    Dimension(int index, String name) {
+      this.index = index;
+      this.name = name;
+    }
 
-  private static double linear3DWithFadeUnchecked(
-      double x1y1z1,
-      double x1y1z2,
-      double x1y2z1,
-      double x1y2z2,
-      double x2y1z1,
-      double x2y1z2,
-      double x2y2z1,
-      double x2y2z2,
-      double muX,
-      double muY,
-      double muZ) {
-    double frontInterpolation = linear2DWithFadeUnchecked(x1y1z1, x1y2z1, x2y1z1, x2y2z1, muX, muY);
-    double backInterpolation = linear2DWithFadeUnchecked(x1y1z2, x1y2z2, x2y1z2, x2y2z2, muX, muY);
-    return linearWithFadeUnchecked(frontInterpolation, backInterpolation, muZ);
+    public static Dimension getFromIndex(int index) {
+      if (index > 3 || index < 0) {
+        throw new IllegalArgumentException("Supported dimensions from 0(X) to 3(T)");
+      }
+      for (Dimension value : Dimension.values()) {
+        if (value.index == index) {
+          return value;
+        }
+      }
+      return null;
+    }
+
+    public String getName() {
+      return name;
+    }
   }
 }

@@ -1,23 +1,15 @@
 package org.lefmaroli.random;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
-import org.lefmaroli.vector.Vector2D;
-import org.lefmaroli.vector.Vector3D;
+import org.lefmaroli.vector.VectorMultiD;
 
 public class RandomGenerator {
 
-  private static final List<Vector2D> UNIT_VECTORS_TEMPLATES_2D = new ArrayList<>(360);
-  private static final List<Vector3D> UNIT_VECTORS_TEMPLATES_3D = new ArrayList<>(10000);
-
-  static {
-    // Generate unit 2D vectors
-    for (int angle = 0; angle < 360; angle++) {
-      double radian = angle * Math.PI / 180.0;
-      UNIT_VECTORS_TEMPLATES_2D.add(new Vector2D(Math.cos(radian), Math.sin(radian)));
-    }
-  }
+  public static final int NUMBER_OF_TEMPLATES = 10000;
+  private static final Map<Integer, VectorMultiD[]> UNIT_VECTORS_TEMPLATES_MULTI_D =
+      new HashMap<>(5);
 
   private final Random basicRandGenerator;
 
@@ -29,34 +21,38 @@ public class RandomGenerator {
     this.basicRandGenerator = new Random(seed);
   }
 
-  private static void generate3DSamples(Random randomGenerator) {
+  private static void generateMultiDSamples(
+      Random randomGenerator, int dimensions, VectorMultiD[] templates) {
     double lengthLimit = 1E-4;
     double max = 1.0;
     double min = -1.0;
-    for (int i = 0; i < 10000; i++) {
-      Vector3D vector3D = new Vector3D(0, 0, 0);
-      double length = 0.0;
-      while (length < lengthLimit) {
-        double x = randomGenerator.nextDouble() * (max - min + 1) + min;
-        double y = randomGenerator.nextDouble() * (max - min + 1) + min;
-        double z = randomGenerator.nextDouble() * (max - min + 1) + min;
-        vector3D = new Vector3D(x, y, z);
-        length = vector3D.getLength();
+    for (int i = 0; i < NUMBER_OF_TEMPLATES; i++) {
+      VectorMultiD vectorMultiD = new VectorMultiD(0);
+      if (dimensions == 1) {
+        double value = randomGenerator.nextDouble() * (max - min + 1) + min;
+        templates[i] = new VectorMultiD(value);
+      } else {
+        double length = 0.0;
+        double[] coordinates = new double[dimensions];
+        while (length < lengthLimit) {
+          for (int j = 0; j < dimensions; j++) {
+            coordinates[j] = randomGenerator.nextDouble() * (max - min + 1) + min;
+          }
+          vectorMultiD = new VectorMultiD(coordinates);
+          length = vectorMultiD.getLength();
+        }
+        templates[i] = vectorMultiD.normalize();
       }
-      UNIT_VECTORS_TEMPLATES_3D.add(vector3D.normalize());
     }
   }
 
-  public Vector2D getRandomUnitVector2D() {
-    int angle = basicRandGenerator.nextInt(UNIT_VECTORS_TEMPLATES_2D.size());
-    return UNIT_VECTORS_TEMPLATES_2D.get(angle);
-  }
-
-  public Vector3D getRandomUnitVector3D() {
-    if (UNIT_VECTORS_TEMPLATES_3D.isEmpty()) {
-      generate3DSamples(basicRandGenerator);
+  public VectorMultiD getRandomUnitVectorOfDim(int dimension) {
+    if (!UNIT_VECTORS_TEMPLATES_MULTI_D.containsKey(dimension)) {
+      UNIT_VECTORS_TEMPLATES_MULTI_D.put(dimension, new VectorMultiD[NUMBER_OF_TEMPLATES]);
+      generateMultiDSamples(
+          basicRandGenerator, dimension, UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension));
     }
-    int rand = basicRandGenerator.nextInt(UNIT_VECTORS_TEMPLATES_3D.size());
-    return UNIT_VECTORS_TEMPLATES_3D.get(rand);
+    int rand = basicRandGenerator.nextInt(NUMBER_OF_TEMPLATES);
+    return UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension)[rand];
   }
 }

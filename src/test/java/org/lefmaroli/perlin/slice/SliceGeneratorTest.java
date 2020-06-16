@@ -128,7 +128,7 @@ public class SliceGeneratorTest {
 
   @Test
   public void testGetNoiseInterpolationPoints() {
-    assertEquals(noiseInterpolationPoints, defaultGenerator.getNoiseInterpolationPoints());
+    assertEquals(1.0 / noiseInterpolationPoints, defaultGenerator.getStepSize(), 1E-9);
   }
 
   @Test
@@ -406,7 +406,14 @@ public class SliceGeneratorTest {
             "results",
             "line",
             "noiseSegmentLength",
-            "currentPosInNoiseInterpolation")
+            "currentPosInNoiseInterpolation",
+            "corners",
+            "distances",
+            "stepSize",
+            "circularWidthResolution",
+            "circularHeightResolution",
+            "perlin",
+            "perlinData")
         .verify();
   }
 
@@ -504,7 +511,7 @@ public class SliceGeneratorTest {
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
-      if (System.currentTimeMillis() - previousTime > 1) {
+      if (System.currentTimeMillis() - previousTime > 15) {
         previousTime = System.currentTimeMillis();
         double[][] newSlices = generator.getNext(1)[0];
         for (int i = 0; i < generator.getSliceWidth() * 3; i++) {

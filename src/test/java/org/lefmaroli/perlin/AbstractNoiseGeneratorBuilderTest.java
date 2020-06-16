@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.IntegerGenerator;
-import org.lefmaroli.perlin.data.NoiseData;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class AbstractNoiseGeneratorBuilderTest {
@@ -50,7 +49,7 @@ public class AbstractNoiseGeneratorBuilderTest {
 
   @Test
   public void testCreateSingleLayer() throws NoiseBuilderException {
-    INoiseGenerator<MockNoiseData> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
+    INoiseGenerator<Double> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
     assertTrue(built instanceof MockNoiseGeneratorLayer);
   }
 
@@ -70,21 +69,7 @@ public class AbstractNoiseGeneratorBuilderTest {
             dimensions + 1, new IntegerGenerator(1, 0.5));
   }
 
-  private static class MockNoiseData implements NoiseData<Double, MockNoiseData> {
-
-    @Override
-    public void add(MockNoiseData other) {}
-
-    @Override
-    public void normalizeBy(double maxValue) {}
-
-    @Override
-    public Double getAsRawData() {
-      return 0.0;
-    }
-  }
-
-  private static class MockNoiseGenerator implements INoiseGenerator<MockNoiseData> {
+  private static class MockNoiseGenerator implements INoiseGenerator<Double> {
 
     @Override
     public boolean equals(Object other) {
@@ -102,8 +87,8 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    public MockNoiseData[] getNext(int count) {
-      return new MockNoiseData[0];
+    public Double[] getNext(int count) {
+      return new Double[0];
     }
 
     @Override
@@ -115,7 +100,7 @@ public class AbstractNoiseGeneratorBuilderTest {
   private static class MockNoiseGeneratorLayer extends MockNoiseGenerator {}
 
   private static class MockNoiseBuilder
-      extends NoiseBuilder<MockNoiseData, MockNoiseGenerator, MockNoiseBuilder> {
+      extends NoiseBuilder<Double, MockNoiseGenerator, MockNoiseBuilder> {
 
     MockNoiseBuilder() {
       super(5);
@@ -139,7 +124,7 @@ public class AbstractNoiseGeneratorBuilderTest {
   }
 
   private static class WrongSubClassImplementationMock
-      extends NoiseBuilder<MockNoiseData, MockNoiseGenerator, WrongSubClassImplementationMock> {
+      extends NoiseBuilder<Double, MockNoiseGenerator, WrongSubClassImplementationMock> {
 
     public WrongSubClassImplementationMock(int dimensions) {
       super(dimensions);

@@ -37,18 +37,6 @@ public class SliceNoiseGeneratorBuilderTest {
     assertEquals(noisePointGenerator, noisePointGenerator2);
   }
 
-  @Test
-  public void testBuilderPatternForSubclass() {
-    new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
-        .withWidthInterpolationPointGenerator(new IntegerGenerator(5, 0.5))
-        .withHeightInterpolationPointGenerator(new IntegerGenerator(4, 0.5));
-  }
-
-  @Test
-  public void testBuilderPatternForCircularity() {
-    new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight).withCircularBounds();
-  }
-
   // Fake test to visualize data, doesn't assert anything
   @Ignore
   @Test

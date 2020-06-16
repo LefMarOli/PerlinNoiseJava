@@ -2,6 +2,7 @@ package org.lefmaroli.perlin.line;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,17 +32,6 @@ public class LineNoiseGeneratorBuilderTest {
     LineNoiseGenerator noisePointGenerator2 = lineNoiseGeneratorBuilder.build();
     assertNotNull(noisePointGenerator2);
     assertEquals(noisePointGenerator, noisePointGenerator2);
-  }
-
-  @Test
-  public void testBuilderPatternForSubclass() {
-    new LineNoiseGeneratorBuilder(lineLength)
-        .withLineInterpolationPointCountGenerator(new IntegerGenerator(5, 0.5));
-  }
-
-  @Test
-  public void testBuilderPatternForCircularity() {
-    new LineNoiseGeneratorBuilder(lineLength).withCircularBounds();
   }
 
   // Fake test to visualize data, doesn't assert anything
