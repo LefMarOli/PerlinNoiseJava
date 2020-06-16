@@ -323,12 +323,7 @@ public class LineGeneratorTest {
   public void getNextLines() throws InterruptedException {
     LineGenerator generator =
         new LineGenerator(
-            defaultInterpolationPointsAlongNoiseSpace,
-            500,
-            lineLength,
-            1.0,
-            randomSeed,
-            true);
+            defaultInterpolationPointsAlongNoiseSpace, 500, lineLength, 1.0, randomSeed, true);
     double[][] lines = generator.getNext(requestedLines);
     double[][] appended = new double[requestedLines][lineLength * 2];
     for (int i = 0; i < lineLength; i++) {

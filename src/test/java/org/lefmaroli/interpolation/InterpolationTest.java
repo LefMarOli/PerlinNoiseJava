@@ -7,13 +7,13 @@ import org.junit.Test;
 public class InterpolationTest {
 
   @Test(expected = DistancesArrayLengthException.class)
-  public void testWrongDistanceArrayLength(){
+  public void testWrongDistanceArrayLength() {
     CornerMatrix matrix = CornerMatrix.getForDimension(4);
     Interpolation.linear(matrix, new double[3]);
   }
 
   @Test(expected = DistanceNotBoundedException.class)
-  public void testNotBoundedDistance(){
+  public void testNotBoundedDistance() {
     CornerMatrix matrix = CornerMatrix.getForDimension(4);
     double[] distances = new double[4];
     distances[0] = 0.4;

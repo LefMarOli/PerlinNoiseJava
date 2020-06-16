@@ -44,7 +44,7 @@ public class RoundUtils {
     if (n <= 0) {
       throw new IllegalArgumentException("n must be greater than 0");
     }
-    if (n > m){
+    if (n > m) {
       throw new IllegalArgumentException("m must greater than n");
     }
     if (m % n == 0) {

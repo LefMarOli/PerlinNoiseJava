@@ -28,7 +28,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
     return stepSize;
   }
 
-  public int getNoiseInterpolationPoints(){
+  public int getNoiseInterpolationPoints() {
     return noiseInterpolationPoints;
   }
 
@@ -48,9 +48,9 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
       return false;
     }
     RootNoiseGenerator<?> that = (RootNoiseGenerator<?>) o;
-    return randomSeed == that.randomSeed &&
-        Double.compare(that.stepSize, stepSize) == 0 &&
-        Double.compare(that.maxAmplitude, maxAmplitude) == 0;
+    return randomSeed == that.randomSeed
+        && Double.compare(that.stepSize, stepSize) == 0
+        && Double.compare(that.maxAmplitude, maxAmplitude) == 0;
   }
 
   @Override

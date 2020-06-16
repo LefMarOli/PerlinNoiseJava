@@ -6,9 +6,8 @@ import org.junit.Test;
 
 public class InterpolationTestWithCornerMatrix {
 
-
   @Test
-  public void test1D(){
+  public void test1D() {
     CornerMatrix cornerMatrix = CornerMatrix.getForDimension(1);
     cornerMatrix.setValueAtIndices(0, 0);
     cornerMatrix.setValueAtIndices(1, 1);
@@ -18,7 +17,7 @@ public class InterpolationTestWithCornerMatrix {
   }
 
   @Test
-  public void test2D(){
+  public void test2D() {
     CornerMatrix cornerMatrix = CornerMatrix.getForDimension(2);
     cornerMatrix.setValueAtIndices(0.0, 0, 0);
     cornerMatrix.setValueAtIndices(1.0, 0, 1);
@@ -31,7 +30,7 @@ public class InterpolationTestWithCornerMatrix {
   }
 
   @Test
-  public void test3D(){
+  public void test3D() {
     CornerMatrix cornerMatrix = CornerMatrix.getForDimension(3);
     double[] distances3D = new double[3];
     double value = 0.0;
@@ -71,5 +70,4 @@ public class InterpolationTestWithCornerMatrix {
     double actual = Interpolation.linear(cornerMatrix, distances4D);
     assertEquals(2.6, actual, 1E-9);
   }
-
 }

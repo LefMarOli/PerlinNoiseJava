@@ -20,7 +20,6 @@ public class PerlinNoise {
     }
   }
 
-
   public static void initializeBoundsForDimension(int dimension) {
     initializeBoundsForDimension(dimension, System.currentTimeMillis());
   }
@@ -97,7 +96,7 @@ public class PerlinNoise {
     populateCornerMatrix(dimension);
 
     double interpolated = Interpolation.linearWithFade(cornerMatrix, distancesArray);
-    if(dimension == 1){
+    if (dimension == 1) {
       return (interpolated + 1.0) / 2.0;
     }
     double adjusted = adjustInRange(interpolated);

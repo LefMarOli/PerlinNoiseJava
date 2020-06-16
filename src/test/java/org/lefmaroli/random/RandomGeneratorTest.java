@@ -3,7 +3,6 @@ package org.lefmaroli.random;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.lefmaroli.vector.Vector2D;
 import org.lefmaroli.vector.VectorMultiD;
 
 public class RandomGeneratorTest {
