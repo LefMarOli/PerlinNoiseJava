@@ -454,7 +454,7 @@ public class SliceGeneratorTest {
     }
   }
 
-  @Ignore
+  @Ignore("Skipped, only used to visualize results")
   @Test
   public void visualizeLine() {
     SliceGenerator generator =
@@ -487,7 +487,7 @@ public class SliceGeneratorTest {
       ;
   }
 
-  @Ignore
+  @Ignore("Skipped, only used to visualize results")
   @Test
   public void testCircularity() throws InterruptedException {
     SliceGenerator generator =
@@ -527,7 +527,7 @@ public class SliceGeneratorTest {
     }
   }
 
-  @Ignore
+  @Ignore("Skipped, only used to visualize results")
   @Test
   public void testVisualizeMorphingImage() throws InterruptedException {
     SliceGenerator generator =

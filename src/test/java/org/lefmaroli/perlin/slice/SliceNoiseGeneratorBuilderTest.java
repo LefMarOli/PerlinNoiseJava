@@ -37,8 +37,7 @@ public class SliceNoiseGeneratorBuilderTest {
     assertEquals(noisePointGenerator, noisePointGenerator2);
   }
 
-  // Fake test to visualize data, doesn't assert anything
-  @Ignore
+  @Ignore("Skipped, only used to visualize results")
   @Test
   public void getNextSlices() throws NoiseBuilderException, InterruptedException {
     IntegerGenerator widthInterpolationPointGenerator = new IntegerGenerator(128, 0.9);

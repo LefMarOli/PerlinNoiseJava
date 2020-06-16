@@ -10,15 +10,9 @@ import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 
-@Ignore
+@Ignore("Tests skipped, visual assessment only")
 public class PerlinNoiseVisualizeTests {
 
-  //  @BeforeClass
-  //  public static void setup(){
-  //    PerlinNoise.initializeBounds();
-  //  }
-  //
-  @Ignore
   @Test
   public void test1D() {
     PerlinNoise perlin = new PerlinNoise(1);
@@ -38,7 +32,6 @@ public class PerlinNoiseVisualizeTests {
       ;
   }
 
-  @Ignore
   @Test
   public void test1D_2() {
     PerlinNoise perlin = new PerlinNoise(2);
@@ -58,7 +51,6 @@ public class PerlinNoiseVisualizeTests {
       ;
   }
 
-  @Ignore
   @Test
   public void test2D() throws InterruptedException {
     PerlinNoise perlinNoise = new PerlinNoise(2);
@@ -121,7 +113,6 @@ public class PerlinNoiseVisualizeTests {
     }
   }
 
-  @Ignore
   @Test
   public void getNextLines() {
     PerlinNoise perlinNoise = new PerlinNoise(2);
@@ -162,7 +153,6 @@ public class PerlinNoiseVisualizeTests {
     }
   }
 
-  @Ignore
   @Test
   public void getNextSlice() throws InterruptedException {
     PerlinNoise perlinNoise = new PerlinNoise(3);

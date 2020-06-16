@@ -33,8 +33,7 @@ public class LineNoiseGeneratorBuilderTest {
     assertEquals(noisePointGenerator, noisePointGenerator2);
   }
 
-  // Fake test to visualize data, doesn't assert anything
-  @Ignore
+  @Ignore("Skipped, only used to visualize results")
   @Test
   public void getNextLines() throws NoiseBuilderException, InterruptedException {
     IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(6687855, 0.9);

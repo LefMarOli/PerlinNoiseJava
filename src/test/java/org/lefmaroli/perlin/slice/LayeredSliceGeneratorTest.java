@@ -208,7 +208,7 @@ public class LayeredSliceGeneratorTest {
     assertTrue(otherGenerator.isCircular());
   }
 
-  @Ignore
+  @Ignore("Skipped, only used to visualize results")
   @Test
   public void visualize() throws InterruptedException {
     List<SliceNoiseGenerator> newLayers = new ArrayList<>(3);
