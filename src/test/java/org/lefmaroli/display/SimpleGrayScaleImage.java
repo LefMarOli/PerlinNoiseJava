@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,12 +52,9 @@ public class SimpleGrayScaleImage {
         g.fillRect(i, j, pixelScale, pixelScale);
       }
     }
-
     EventQueue.invokeLater(
         () -> {
           label.setIcon(new ImageIcon(image));
-          framedImage.revalidate();
-          framedImage.repaint();
         });
   }
 

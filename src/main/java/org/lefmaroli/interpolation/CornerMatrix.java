@@ -16,7 +16,7 @@ public abstract class CornerMatrix {
     int[] indices = new int[getDimension()];
     int allRowsCount = 1 << getDimension();
     for (int i = 0; i < allRowsCount; i++) {
-      builder.append("\n");
+      builder.append(System.lineSeparator());
       for (int j = 0; j < getDimension(); j++) {
         indices[getDimension() - 1 - j] = (i >> j) & 1;
       }
@@ -93,7 +93,7 @@ public abstract class CornerMatrix {
 
     @Override
     public void setValueAtIndices(double value, int... indices) {
-      subMatrices[indices[indices.length - getDimension()]].setValueAtIndices(value, indices);
+      subMatrices[indices[indices.length - dimension]].setValueAtIndices(value, indices);
     }
 
     @Override
@@ -103,13 +103,13 @@ public abstract class CornerMatrix {
 
     @Override
     protected String getStringRepresentationForIndices(int... indices) {
-      int index = indices[indices.length - getDimension()];
+      int index = indices[indices.length - dimension];
       return "[" + index + "]" + subMatrices[index].getStringRepresentationForIndices(indices);
     }
 
     @Override
     public double get(int... indices) {
-      return subMatrices[indices[indices.length - getDimension()]].get(indices);
+      return subMatrices[indices[indices.length - dimension]].get(indices);
     }
   }
 }

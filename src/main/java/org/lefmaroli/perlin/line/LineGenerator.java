@@ -18,6 +18,8 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private final int noiseSegmentLength;
   private int currentPosition = 0;
   private final double circularResolution;
+  private final PerlinNoise perlin;
+  private final double[] perlinData;
 
   public LineGenerator(
       int noiseInterpolationPoints,
@@ -35,6 +37,13 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
     this.lineData = new double[lineLength];
     this.circularResolution = this.lineInterpolationPoints / (double) this.lineLength;
+    if(isCircular){
+      perlin = new PerlinNoise(3);
+      perlinData = new double[3];
+    }else{
+      perlin = new PerlinNoise(2);
+      perlinData = new double[2];
+    }
     LOGGER.debug("Created new {}", this);
   }
 
@@ -120,15 +129,14 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   private double processLineDomain(double noiseDist, int lineIndex) {
-    double lineStepSize = 1.0 / lineInterpolationPoints;
-    double lineDist = lineIndex * lineStepSize;
+    perlinData[0] = noiseDist;
     if (isCircular()) {
       double angle = lineIndex / (double) lineLength * 2 * Math.PI;
-      double xCoordinate = (Math.cos(angle) * circularResolution) + circularResolution;
-      double yCoordinate = (Math.sin(angle) * circularResolution) + circularResolution;
-      return PerlinNoise.perlin(noiseDist, xCoordinate, yCoordinate) * getMaxAmplitude();
+      perlinData[1] = (Math.cos(angle) * circularResolution) + circularResolution;
+      perlinData[2] = (Math.sin(angle) * circularResolution) + circularResolution;
     } else {
-      return PerlinNoise.perlin(noiseDist, lineDist) * getMaxAmplitude();
+      perlinData[1] = lineIndex / (double) lineInterpolationPoints;
     }
+    return perlin.perlin(perlinData) * getMaxAmplitude();
   }
 }

@@ -22,7 +22,6 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
     this.stepSize = 1.0 / noiseInterpolationPoints;
     this.maxAmplitude = maxAmplitude;
     this.randomSeed = randomSeed;
-    PerlinNoise.initializeBoundsWithSeed(randomSeed);
   }
 
   public double getStepSize() {

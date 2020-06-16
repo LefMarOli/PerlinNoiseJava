@@ -135,7 +135,9 @@ public class PointGeneratorTest {
             "generated",
             "noiseSegmentLength",
             "results",
-            "stepSize")
+            "stepSize",
+            "perlin",
+            "perlinData")
         .verify();
   }
 

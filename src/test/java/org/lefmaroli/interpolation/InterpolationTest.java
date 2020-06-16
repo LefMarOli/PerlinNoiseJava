@@ -6,6 +6,23 @@ import org.junit.Test;
 
 public class InterpolationTest {
 
+  @Test(expected = DistancesArrayLengthException.class)
+  public void testWrongDistanceArrayLength(){
+    CornerMatrix matrix = CornerMatrix.getForDimension(4);
+    Interpolation.linear(matrix, new double[3]);
+  }
+
+  @Test(expected = DistanceNotBoundedException.class)
+  public void testNotBoundedDistance(){
+    CornerMatrix matrix = CornerMatrix.getForDimension(4);
+    double[] distances = new double[4];
+    distances[0] = 0.4;
+    distances[1] = 4.4;
+    distances[2] = 0.6;
+    distances[3] = 0.75;
+    Interpolation.linear(matrix, distances);
+  }
+
   @Test
   public void testLinearSmallToBigInterpolation() {
     // 1 and 2 as values, distance of 0.5

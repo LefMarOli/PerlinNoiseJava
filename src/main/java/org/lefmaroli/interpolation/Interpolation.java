@@ -79,16 +79,8 @@ public class Interpolation {
     }
   }
 
-  private static double linearUnchecked(double[] lineCorners, double distance) {
-    return linearUnchecked(lineCorners[0], lineCorners[1], distance);
-  }
-
   private static double linearUnchecked(double y1, double y2, double distance) {
     return y1 + distance * (y2 - y1);
-  }
-
-  private static double linearWithFadeUnchecked(double[] lineCorners, double distance) {
-    return linearUnchecked(lineCorners, fadeUnchecked(distance));
   }
 
   private static double linearWithFadeUnchecked(double y1, double y2, double distance) {

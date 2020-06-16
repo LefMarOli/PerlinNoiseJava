@@ -14,11 +14,14 @@ public class PointGenerator extends RootNoiseGenerator<Double>
   private final int noiseSegmentLength;
   private final Double[] results;
   private int currentPosition = 0;
+  private final PerlinNoise perlin;
+  private final double[] perlinData = new double[1];
 
   public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
     super(interpolationPoints, maxAmplitude, randomSeed);
     this.noiseSegmentLength = Math.min(interpolationPoints, MAX_NUMBER_INTERPOLATION_POINTS);
     results = new Double[noiseSegmentLength];
+    perlin = new PerlinNoise(1);
     LOGGER.debug("Created new {}", this);
   }
 
@@ -59,8 +62,8 @@ public class PointGenerator extends RootNoiseGenerator<Double>
   protected Double[] generateNextSegment() {
     for (int i = 0; i < noiseSegmentLength; i++) {
       currentPosition++;
-      double positionInSegment =  currentPosition * getStepSize();
-      results[i] = PerlinNoise.perlin(positionInSegment) * getMaxAmplitude();
+      perlinData[0] =  currentPosition * getStepSize();
+      results[i] = perlin.perlin(perlinData) * getMaxAmplitude();
     }
     return results;
   }

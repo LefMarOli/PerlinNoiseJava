@@ -1,90 +1,105 @@
 package org.lefmaroli.perlin;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.random.RandomGenerator;
-import org.lefmaroli.vector.Vector4D;
+import org.lefmaroli.vector.VectorMultiD;
 
 public class PerlinNoise {
 
-  private static final int NUMBER_OF_BOUNDS_4D = 2 << 5;
-  private static final double MAX_VALUE_VECTOR_PRODUCT = 0.5;
-  private static final Vector4D[][][][] BOUNDS_4D =
-      new Vector4D[NUMBER_OF_BOUNDS_4D][NUMBER_OF_BOUNDS_4D][NUMBER_OF_BOUNDS_4D]
-          [NUMBER_OF_BOUNDS_4D];
-  private static final CornerMatrix CORNER_MATRIX = CornerMatrix.getForDimension(4);
-  private static final double[] DISTANCES_4D = new double[4];
-  private static final AtomicBoolean INITIALIZED = new AtomicBoolean(false);
+  private static final double MAX_VALUE_VECTOR_PRODUCT = Math.sqrt(2.0) / 2.0;
+  private static final Map<Integer, AtomicBoolean> IS_INITIALIZED_MAP = new HashMap<>(5);
+  private static final Map<Integer, VectorMultiD[]> BOUNDS_MAP = new HashMap<>(1);
 
-  private PerlinNoise() {}
-
-  public static void initializeBounds(){
-    initializeBoundsWithSeed(System.currentTimeMillis());
+  static {
+    for (int i = 1; i <= 5; i++) {
+      IS_INITIALIZED_MAP.put(i, new AtomicBoolean(false));
+    }
   }
 
-  public static void initializeBoundsWithSeed(long seed) {
+
+  public static void initializeBoundsForDimension(int dimension) {
+    initializeBoundsForDimension(dimension, System.currentTimeMillis());
+  }
+
+  public static void initializeBoundsForDimension(int dimension, long seed) {
     // Initialize bounds
-    if (!INITIALIZED.compareAndExchange(false, true)) {
+    if (!IS_INITIALIZED_MAP.containsKey(dimension)) {
+      throw new IllegalArgumentException(
+          "Dimension " + dimension + " not supported, max dimension is 5");
+    }
+    if (!IS_INITIALIZED_MAP.get(dimension).compareAndExchange(false, true)) {
+      int numberOfBoundsPerDimension = findNumberOfBoundsForDim(dimension);
+      int numberOfBounds = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, dimension);
+      BOUNDS_MAP.put(dimension, new VectorMultiD[numberOfBounds]);
       RandomGenerator generator = new RandomGenerator(seed);
-      for (int i = 0; i < NUMBER_OF_BOUNDS_4D; i++) {
-        for (int j = 0; j < NUMBER_OF_BOUNDS_4D; j++) {
-          for (int k = 0; k < NUMBER_OF_BOUNDS_4D; k++) {
-            for (int m = 0; m < NUMBER_OF_BOUNDS_4D; m++) {
-              BOUNDS_4D[i][j][k][m] = generator.getRandomUnitVector4D();
-            }
-          }
-        }
+      for (int i = 0; i < numberOfBounds; i++) {
+        BOUNDS_MAP.get(dimension)[i] = generator.getRandomUnitVectorOfDim(dimension);
       }
     }
   }
 
-  public static double perlin(double x) {
-    return perlin(x, 0.0);
-  }
-
-  public static double perlin(double x, double y) {
-    return perlin(x, y, 0.0);
-  }
-
-  public static double perlin(double x, double y, double z) {
-    return perlin(x, y, z, 0.0);
-  }
-
-  public static double perlin(double x, double y, double z, double t) {
-    if(!INITIALIZED.get()){
-      throw new IllegalStateException("Perlin noise needs to be initialized before first use.");
-    }
-    int intPartX = (int) x;
-    int intPartY = (int) y;
-    int intPartZ = (int) z;
-    int intPartT = (int) t;
-    double distX = x - intPartX;
-    double distY = y - intPartY;
-    double distZ = z - intPartZ;
-    double distT = t - intPartT;
-    DISTANCES_4D[0] = distX;
-    DISTANCES_4D[1] = distY;
-    DISTANCES_4D[2] = distZ;
-    DISTANCES_4D[3] = distT;
-
-    for (int xIndex = 0; xIndex < 2; xIndex++) {
-      int xBoundIndex = getIndexBound(intPartX + xIndex);
-      for (int yIndex = 0; yIndex < 2; yIndex++) {
-        int yBoundIndex = getIndexBound(intPartY + yIndex);
-        for (int zIndex = 0; zIndex < 2; zIndex++) {
-          int zBoundIndex = getIndexBound(intPartZ + zIndex);
-          for (int tIndex = 0; tIndex < 2; tIndex++) {
-            int tBoundIndex = getIndexBound(intPartT + tIndex);
-            double vectorProduct = BOUNDS_4D[xBoundIndex][yBoundIndex][zBoundIndex][tBoundIndex]
-                .getVectorProduct(
-                    distX - xIndex, distY - yIndex, distZ - zIndex, distT - tIndex);
-            CORNER_MATRIX.setValueAtIndices(vectorProduct, xIndex, yIndex, zIndex, tIndex);
-          }
-        }
+  private static int findNumberOfBoundsForDim(int dim) {
+    double limit = Math.pow(1E6, 1.0 / dim);
+    for (int i = 0; i < 21; i++) {
+      if (1 << i > limit) {
+        return 1 << i;
       }
     }
-    double interpolated = Interpolation.linearWithFade(CORNER_MATRIX, DISTANCES_4D);
+    return 2;
+  }
+
+  protected static double adjustInRange(double interpolated) {
+    return ((interpolated / MAX_VALUE_VECTOR_PRODUCT) + 1.0) / 2.0;
+  }
+
+  protected int getIndexBound(int intPart) {
+    return intPart & (numberOfBoundsPerDimension - 1);
+  }
+
+  private final int numberOfBoundsPerDimension;
+  private final int[] boundsIndicesMultipliers;
+  private final double[] distancesArray;
+  private final CornerMatrix cornerMatrix;
+  private final int[] indexIntegerParts;
+  private final int[] indicesArray;
+  private final double[] cornerDistanceArray;
+  private final int dimension;
+
+  public PerlinNoise(int dimension) {
+    this.dimension = dimension;
+    distancesArray = new double[dimension];
+    cornerMatrix = CornerMatrix.getForDimension(dimension);
+    indexIntegerParts = new int[dimension];
+    indicesArray = new int[dimension];
+    cornerDistanceArray = new double[dimension];
+    numberOfBoundsPerDimension = PerlinNoise.findNumberOfBoundsForDim(dimension);
+    boundsIndicesMultipliers = new int[dimension];
+    for (int i = 0; i < dimension; i++) {
+      boundsIndicesMultipliers[i] = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, i);
+    }
+    PerlinNoise.initializeBoundsForDimension(dimension);
+  }
+
+  public double perlin(double... coordinates) {
+    if (coordinates.length != dimension) {
+      throw new IllegalArgumentException(
+          "Coordinates length should be the same as the number of dimensions");
+    }
+    for (int i = 0; i < dimension; i++) {
+      indexIntegerParts[i] = (int) coordinates[i];
+      distancesArray[i] = coordinates[i] - indexIntegerParts[i];
+    }
+
+    populateCornerMatrix(dimension);
+
+    double interpolated = Interpolation.linearWithFade(cornerMatrix, distancesArray);
+    if(dimension == 1){
+      return (interpolated + 1.0) / 2.0;
+    }
     double adjusted = adjustInRange(interpolated);
     if (adjusted > 1.0) {
       adjusted = 1.0;
@@ -94,11 +109,36 @@ public class PerlinNoise {
     return adjusted;
   }
 
-  protected static double adjustInRange(double interpolated) {
-    return ((interpolated / MAX_VALUE_VECTOR_PRODUCT) + 1.0) / 2.0;
+  private void populateCornerMatrix(int currentDimension) {
+    for (int i = 0; i < 2; i++) {
+      indicesArray[currentDimension - 1] = i;
+      cornerDistanceArray[currentDimension - 1] =
+          distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
+      if (currentDimension == 1) {
+        int boundIndex = getBoundIndexFromIndices();
+        VectorMultiD currentBound = BOUNDS_MAP.get(dimension)[boundIndex];
+        double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
+        cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
+      } else {
+        populateCornerMatrix(currentDimension - 1);
+      }
+    }
   }
 
-  protected static int getIndexBound(int intPart) {
-    return intPart & (NUMBER_OF_BOUNDS_4D - 1);
+  private int getBoundIndexFromIndices() {
+    int boundIndex = 0;
+    for (int i = 0; i < indexIntegerParts.length; i++) {
+      boundIndex +=
+          getIndexBound(indexIntegerParts[i] + indicesArray[i]) * boundsIndicesMultipliers[i];
+    }
+    return boundIndex;
+  }
+
+  private static int getIntMultipliedByItselfNTimes(int number, int times) {
+    int result = 1;
+    for (int i = 0; i < times; i++) {
+      result *= number;
+    }
+    return result;
   }
 }

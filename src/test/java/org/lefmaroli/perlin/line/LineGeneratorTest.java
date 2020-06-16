@@ -278,7 +278,9 @@ public class LineGeneratorTest {
             "corners",
             "distances",
             "stepSize",
-            "circularResolution")
+            "circularResolution",
+            "perlin",
+            "perlinData")
         .verify();
   }
 

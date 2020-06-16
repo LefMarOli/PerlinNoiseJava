@@ -411,7 +411,9 @@ public class SliceGeneratorTest {
             "distances",
             "stepSize",
             "circularWidthResolution",
-            "circularHeightResolution")
+            "circularHeightResolution",
+            "perlin",
+            "perlinData")
         .verify();
   }
 
@@ -508,7 +510,7 @@ public class SliceGeneratorTest {
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
-      if (System.currentTimeMillis() - previousTime > 1) {
+      if (System.currentTimeMillis() - previousTime > 15) {
         previousTime = System.currentTimeMillis();
         double[][] newSlices = generator.getNext(1)[0];
         for (int i = 0; i < generator.getSliceWidth() * 3; i++) {

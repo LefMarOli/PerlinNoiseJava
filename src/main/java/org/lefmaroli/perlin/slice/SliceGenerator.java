@@ -27,6 +27,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private int currentPosInNoiseInterpolation = 0;
   private final double circularWidthResolution;
   private final double circularHeightResolution;
+  private final PerlinNoise perlin;
+  private final double[] perlinData;
 
   SliceGenerator(
       int noiseInterpolationPoints,
@@ -52,6 +54,13 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     line = new double[sliceHeight];
     this.circularWidthResolution = this.widthInterpolationPoints / (double) this.sliceWidth;
     this.circularHeightResolution = this.heightInterpolationPoints / (double) this.sliceHeight;
+    if(isCircular){
+      perlin = new PerlinNoise(5);
+      perlinData = new double[5];
+    }else{
+      perlin = new PerlinNoise(3);
+      perlinData = new double[3];
+    }
     LOGGER.debug("Create new {}", this);
   }
 
@@ -175,18 +184,17 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   private double processSliceHeightDomain(double noiseDist, double widthDist, int heightIndex) {
-    double heightDist;
+    perlinData[0] = noiseDist;
     if (isCircular()) {
-      double res = circularHeightResolution * circularWidthResolution;
-      double offset = circularHeightResolution + circularWidthResolution;
-      heightDist = heightIndex / (double) sliceHeight * Math.PI;
-      double x = (res * Math.cos(heightDist) * Math.cos(widthDist)) + offset;
-      double y = (res * Math.cos(heightDist) * Math.sin(widthDist)) + offset;
-      double z = (res * Math.sin(heightDist)) + offset;
-      return PerlinNoise.perlin(noiseDist, x, y, z);
+      perlinData[1] = (Math.cos(widthDist) * circularWidthResolution) + circularWidthResolution;
+      perlinData[2] = (Math.sin(widthDist) * circularWidthResolution) + circularWidthResolution;
+      double heightDist = heightIndex / (double) sliceHeight * 2 * Math.PI;
+      perlinData[3] = (Math.cos(heightDist) * circularHeightResolution) + circularHeightResolution;
+      perlinData[4] = (Math.sin(heightDist) * circularHeightResolution) + circularHeightResolution;
     } else {
-      heightDist = (double) (heightIndex) / (heightInterpolationPoints);
-      return PerlinNoise.perlin(noiseDist, widthDist, heightDist) * getMaxAmplitude();
+      perlinData[1] = widthDist;
+      perlinData[2] = (double) (heightIndex) / (heightInterpolationPoints);
     }
+    return perlin.perlin(perlinData) * getMaxAmplitude();
   }
 }
