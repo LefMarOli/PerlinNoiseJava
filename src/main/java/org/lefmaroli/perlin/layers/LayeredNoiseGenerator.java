@@ -13,7 +13,7 @@ import org.lefmaroli.perlin.INoiseGenerator;
 public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     implements INoiseGenerator<N> {
 
-  private final Logger LOGGER = LogManager.getLogger(this.getClass());
+  private final Logger logger = LogManager.getLogger(this.getClass());
   private final double maxAmplitude;
   private final TaskScheduler scheduler;
   private final List<L> layers;
@@ -82,7 +82,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
       try {
         addTogether(results, future.get());
       } catch (InterruptedException e) {
-        LOGGER.error("Layer process got interrupted, interrupting thread.", e);
+        logger.error("Layer process got interrupted, interrupting thread.", e);
         Thread.currentThread().interrupt();
       } catch (ExecutionException e) {
         throw new LayerProcessException(e);
