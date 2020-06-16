@@ -121,7 +121,7 @@ public class LayeredLineGeneratorTest {
     ToStringVerifier.forClass(LayeredLineGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
-        .withIgnoredFields("scheduler", "jitterStrategy", "LOGGER")
+        .withIgnoredFields("scheduler", "jitterStrategy", "logger")
         .verify();
   }
 
