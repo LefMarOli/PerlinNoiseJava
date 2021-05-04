@@ -80,7 +80,7 @@ public class LineNoiseGeneratorBuilderTest {
             .build();
 
     double duration = 0.0;
-    int numberOfIterations = 5*5000;
+    int numberOfIterations = 5 * 5000;
     for (int i = 0; i < numberOfIterations; i++) {
       long start = System.currentTimeMillis();
       noiseGenerator.getNext();

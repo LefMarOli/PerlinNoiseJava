@@ -1,7 +1,6 @@
 package org.lefmaroli.perlin.point;
 
 import java.util.List;
-import org.lefmaroli.execution.ExecutorServiceScheduler;
 import org.lefmaroli.perlin.layers.LayeredNoiseGenerator;
 
 public class LayeredPointGenerator extends LayeredNoiseGenerator<Double, PointNoiseGenerator>
@@ -28,7 +27,7 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<Double, PointNo
 
   @Override
   protected Double addTogether(Double results, Double newLayer) {
-      return results + newLayer;
+    return results + newLayer;
   }
 
   @Override

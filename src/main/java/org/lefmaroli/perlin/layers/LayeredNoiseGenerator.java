@@ -39,7 +39,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
   @Override
   public N getNext() {
     var results = getContainer();
-    for(L layer: layers){
+    for (L layer : layers) {
       results = addTogether(results, layer.getNext());
     }
     return normalizeBy(results, maxAmplitude);

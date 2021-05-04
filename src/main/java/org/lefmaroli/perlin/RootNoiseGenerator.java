@@ -33,10 +33,10 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   }
 
   public C getNext() {
-    if(!generated.isEmpty()){
+    if (!generated.isEmpty()) {
       return generated.poll();
     }
-    //generate missing data
+    // generate missing data
     computeAtLeast();
     return generated.poll();
   }

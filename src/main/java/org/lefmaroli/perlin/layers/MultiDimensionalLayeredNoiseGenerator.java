@@ -2,7 +2,6 @@ package org.lefmaroli.perlin.layers;
 
 import java.util.List;
 import java.util.Objects;
-import org.lefmaroli.execution.ExecutorServiceScheduler;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
 

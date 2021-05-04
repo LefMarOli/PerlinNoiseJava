@@ -69,7 +69,7 @@ public class LayeredSliceGenerator
   protected double[][] addTogether(double[][] results, double[][] newLayer) {
     for (var i = 0; i < results.length; i++) {
       for (var j = 0; j < results[0].length; j++) {
-          results[i][j] = results[i][j] + newLayer[i][j];
+        results[i][j] = results[i][j] + newLayer[i][j];
       }
     }
     return results;
@@ -79,7 +79,7 @@ public class LayeredSliceGenerator
   protected double[][] normalizeBy(double[][] data, double maxAmplitude) {
     for (var i = 0; i < data.length; i++) {
       for (var j = 0; j < data[0].length; j++) {
-          data[i][j] = data[i][j] / maxAmplitude;
+        data[i][j] = data[i][j] / maxAmplitude;
       }
     }
     return data;

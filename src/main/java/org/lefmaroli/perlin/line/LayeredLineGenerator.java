@@ -59,7 +59,7 @@ public class LayeredLineGenerator
   @Override
   protected double[] addTogether(double[] results, double[] newLayer) {
     for (var i = 0; i < results.length; i++) {
-        results[i] = results[i] + newLayer[i];
+      results[i] = results[i] + newLayer[i];
     }
     return results;
   }
@@ -67,7 +67,7 @@ public class LayeredLineGenerator
   @Override
   protected double[] normalizeBy(double[] data, double maxAmplitude) {
     for (var i = 0; i < data.length; i++) {
-        data[i] = data[i] / maxAmplitude;
+      data[i] = data[i] / maxAmplitude;
     }
     return data;
   }

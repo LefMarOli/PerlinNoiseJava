@@ -16,6 +16,6 @@ public class LayerProcess<N, L extends INoiseGenerator<N>> extends JitterTask<N[
   @Override
   protected N[] process() {
     return null;
-//    return layer.getNext();
+    //    return layer.getNext();
   }
 }

@@ -8,8 +8,6 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.EventQueue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -85,7 +83,6 @@ public class LineGeneratorTest {
   public void getNextLinesCorrectSize() {
     double[] lines = defaultLineGenerator.getNext();
     assertEquals(lineLength, lines.length, 0);
-
   }
 
   @Test
@@ -115,10 +112,10 @@ public class LineGeneratorTest {
   @Test
   public void testValuesBounded() {
     double[] line = defaultLineGenerator.getNext();
-      for (double value : line) {
-        assertTrue(value > 0.0);
-        assertTrue(value < maxAmplitude);
-      }
+    for (double value : line) {
+      assertTrue(value > 0.0);
+      assertTrue(value < maxAmplitude);
+    }
   }
 
   @Test
@@ -340,7 +337,7 @@ public class LineGeneratorTest {
         }
         im.updateImage(newImage);
         image = newImage;
-       } else {
+      } else {
         Thread.sleep(2);
       }
     }
