@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.slice;
 
+import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,6 +9,10 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -371,7 +376,7 @@ public class SliceGeneratorTest {
             "randomBoundsYCount",
             "previousBounds",
             "currentBounds",
-            "results",
+            "segmentResult",
             "line",
             "noiseSegmentLength",
             "currentPosInNoiseInterpolation",
@@ -451,13 +456,47 @@ public class SliceGeneratorTest {
     chart.addEquidistantDataSeries(ySlice, label);
     chart.setVisible();
     chart.setYAxisRange(0.0, 1.0);
-    while (true)
-      ;
+
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              double[][] newSlices = generator.getNext();
+              for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+                for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
+                  patched[i][j] =
+                      newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+                }
+              }
+              for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+                ySlice[i] = patched[i][25];
+              }
+              chart.updateDataSeries(
+                  dataSeries -> {
+                    for (int i = 0; i < ySlice.length; i++) {
+                      dataSeries.updateByIndex(i, ySlice[i]);
+                    }
+                  },
+                  label);
+            },
+            5,
+            30,
+            TimeUnit.MILLISECONDS);
+
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        15,
+        TimeUnit.SECONDS);
+
+    waitAtMost(17, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 
   @Ignore("Skipped, only used to visualize results")
   @Test
-  public void testCircularity() throws InterruptedException {
+  public void testCircularity() {
     SliceGenerator generator =
         new SliceGenerator(
             noiseInterpolationPoints,
@@ -475,29 +514,41 @@ public class SliceGeneratorTest {
         patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
       }
     }
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 1);
+    SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 5);
     image.setVisible();
-    long previousTime = System.currentTimeMillis();
-    while (true) {
-      if (System.currentTimeMillis() - previousTime > 15) {
-        previousTime = System.currentTimeMillis();
-        double[][] newSlices = generator.getNext();
-        for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-          for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
-            patched[i][j] =
-                newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
-          }
-        }
-        image.updateImage(patched);
-      } else {
-        Thread.sleep(1);
-      }
-    }
+
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              double[][] newSlices = generator.getNext();
+              for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
+                for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
+                  patched[i][j] =
+                      newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+                }
+              }
+              image.updateImage(patched);
+            },
+            5,
+            60,
+            TimeUnit.MILLISECONDS);
+
+    int testDurationInMs = 15;
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        testDurationInMs,
+        TimeUnit.SECONDS);
+
+    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 
   @Ignore("Skipped, only used to visualize results")
   @Test
-  public void testVisualizeMorphingImage() throws InterruptedException {
+  public void testVisualizeMorphingImage() {
     SliceGenerator generator =
         new SliceGenerator(
             noiseInterpolationPoints,
@@ -509,17 +560,23 @@ public class SliceGeneratorTest {
             System.currentTimeMillis(),
             false);
     double[][] slice = generator.getNext();
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 1);
+    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
-    long previousTime = System.currentTimeMillis();
-    while (true) {
-      if (System.currentTimeMillis() - previousTime > 5) {
-        previousTime = System.currentTimeMillis();
-        slice = generator.getNext();
-        image.updateImage(slice);
-      } else {
-        Thread.sleep(1);
-      }
-    }
+
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> image.updateImage(generator.getNext()), 5, 60, TimeUnit.MILLISECONDS);
+
+    int testDurationInMs = 15;
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        testDurationInMs,
+        TimeUnit.SECONDS);
+
+    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 }

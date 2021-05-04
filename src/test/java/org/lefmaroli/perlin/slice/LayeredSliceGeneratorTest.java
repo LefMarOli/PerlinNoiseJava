@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.slice;
 
+import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -10,6 +11,10 @@ import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,8 +23,8 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 public class LayeredSliceGeneratorTest {
 
   private static final double maxAmplitude = 1.75;
-  private static final int defaultSliceWidth = 150;
-  private static final int defaultSliceHeight = 150;
+  private static final int defaultSliceWidth = 200;
+  private static final int defaultSliceHeight = 200;
   private LayeredSliceGenerator defaultGenerator;
   private List<SliceNoiseGenerator> layers;
   private static final boolean isCircularDefault = false;
@@ -118,8 +123,8 @@ public class LayeredSliceGeneratorTest {
       for (double value : lines) {
         assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
         assertTrue(
-            "Actual value greater than max amplitude of " + maxAmplitude + ":" + value,
-            value <= maxAmplitude);
+            "Actual value greater than 1.0:" + value,
+            value <= 1.0);
       }
     }
   }
@@ -166,7 +171,7 @@ public class LayeredSliceGeneratorTest {
     ToStringVerifier.forClass(LayeredSliceGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
-        .withIgnoredFields("scheduler", "jitterStrategy", "logger")
+        .withIgnoredFields("scheduler", "jitterStrategy", "logger", "container")
         .verify();
   }
 
@@ -199,11 +204,11 @@ public class LayeredSliceGeneratorTest {
 
   @Ignore("Skipped, only used to visualize results")
   @Test
-  public void visualize() throws InterruptedException {
+  public void visualize() {
     List<SliceNoiseGenerator> newLayers = new ArrayList<>(3);
     newLayers.add(
         new SliceGenerator(
-            100,
+            10,
             20,
             60,
             defaultSliceWidth,
@@ -223,7 +228,7 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     newLayers.add(
         new SliceGenerator(
-            500,
+            15,
             50,
             50,
             defaultSliceWidth,
@@ -233,17 +238,29 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     SliceNoiseGenerator generator = new LayeredSliceGenerator(newLayers);
     double[][] slices = generator.getNext();
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices, 1);
+    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices, 5);
     image.setVisible();
-    long previousTime = System.currentTimeMillis();
-    while (true) {
-      if (System.currentTimeMillis() - previousTime > 5) {
-        previousTime = System.currentTimeMillis();
-        double[][] newSlice = generator.getNext();
-        image.updateImage(newSlice);
-      } else {
-        Thread.sleep(1);
-      }
-    }
+
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              double[][] newSlice = generator.getNext();
+              image.updateImage(newSlice);
+            },
+            5,
+            100,
+            TimeUnit.MILLISECONDS);
+
+    int testDurationInMs = 15;
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        testDurationInMs,
+        TimeUnit.SECONDS);
+
+    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 }

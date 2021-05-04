@@ -147,7 +147,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       computedNoiseSegmentLength = 1;
       int estimatedSliceSize = sliceWidth * sliceHeight / MB_10_IN_DOUBLES_SIZE * 10;
       LOGGER.warn(
-          "Creating slice generator of more than 10MB in size (Estimated at {}MB",
+          "Creating slice generator of more than 10MB in size (Estimated at {}MB)",
           estimatedSliceSize);
     }
     return computedNoiseSegmentLength;

@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.line;
 
+import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -7,8 +8,12 @@ import static org.junit.Assert.assertTrue;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
-import java.awt.EventQueue;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import javax.swing.SwingUtilities;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,21 +23,12 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 public class LineGeneratorTest {
 
   private static final int lineLength = 200;
-  private static final int requestedLines = 700;
   private LineGenerator defaultLineGenerator;
   private static final double maxAmplitude = 5.0;
   private final long randomSeed = System.currentTimeMillis();
   private static final int defaultInterpolationPointsAlongLine = 25;
   private static final int defaultInterpolationPointsAlongNoiseSpace = 50;
   private static final boolean isCircular = false;
-
-  private static void assertExpectedArrayEqualsActual(
-      double[] expected, double[] actual, double delta) {
-    assertEquals(expected.length, actual.length, delta);
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(expected[i], actual[i], delta);
-    }
-  }
 
   @Before
   public void setup() {
@@ -258,7 +254,7 @@ public class LineGeneratorTest {
             "randomBoundsCount",
             "previousBounds",
             "currentBounds",
-            "results",
+            "segmentResult",
             "lineData",
             "currentPosition",
             "corners",
@@ -306,46 +302,60 @@ public class LineGeneratorTest {
 
   @Ignore("Fake test to visualize data, doesn't assert anything")
   @Test
-  public void getNextLines() throws InterruptedException {
+  public void getNextLines() {
     LineGenerator generator =
         new LineGenerator(
             defaultInterpolationPointsAlongNoiseSpace, 500, lineLength, 1.0, randomSeed, true);
-    int requested = 10;
+    int requested = 200;
 
-    double[][] image = new double[requestedLines][lineLength * 2];
+    final double[][] image = new double[requested][lineLength * 2];
     double[] line;
-    for (int i = 0; i < lineLength; i++) {
+    for (int i = 0; i < requested; i++) {
       line = generator.getNext();
-      for (int j = 0; j < requested; j++) {
-        image[j][i] = line[i];
-        image[j][i + lineLength] = line[i];
+      for (int j = 0; j < lineLength; j++) {
+        image[i][j] = line[j];
+        image[i][j + lineLength] = line[j];
       }
     }
     SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
     im.setVisible();
 
-    double[][] newImage = new double[requestedLines][lineLength * 2];
-    long previousTime = System.currentTimeMillis();
-    while (true) {
-      if (System.currentTimeMillis() - previousTime > 5) {
-        previousTime = System.currentTimeMillis();
-        System.arraycopy(image, 1, newImage, 0, image.length - 1);
-        line = generator.getNext();
-        for (int i = 0; i < line.length; i++) {
-          newImage[image.length - 1][i] = line[i];
-          newImage[image.length - 1][i + lineLength] = line[i];
-        }
-        im.updateImage(newImage);
-        image = newImage;
-      } else {
-        Thread.sleep(2);
-      }
-    }
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              double[] newline = generator.getNext();
+              for (int j = 0; j < requested - 1; j++) {
+                for (int k = 0; k < newline.length; k++) {
+                  image[j][k] = image[j + 1][k];
+                  image[j][k + lineLength] = image[j + 1][k + lineLength];
+                }
+              }
+              for (int i = 0; i < newline.length; i++) {
+                image[image.length - 1][i] = newline[i];
+                image[image.length - 1][i + lineLength] = newline[i];
+              }
+              im.updateImage(image);
+            },
+            1,
+            30,
+            TimeUnit.MILLISECONDS);
+
+    int testDurationInMs = 15;
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        testDurationInMs,
+        TimeUnit.SECONDS);
+
+    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 
   @Ignore("Fake test to visualize data, doesn't assert anything")
   @Test
-  public void testMorphingLine() throws InterruptedException {
+  public void testMorphingLine() {
     // Transform into testable test like circular bounds
     LineGenerator layer2D =
         new LineGenerator(
@@ -362,23 +372,34 @@ public class LineGeneratorTest {
     chart.setVisible();
     chart.setYAxisRange(0.0, 1.0);
 
-    long previousTime = System.currentTimeMillis();
-    while (true) {
-      if (System.currentTimeMillis() - previousTime > 15) {
-        previousTime = System.currentTimeMillis();
-        double[] newline = layer2D.getNext();
-        EventQueue.invokeLater(
-            () ->
-                chart.updateDataSeries(
-                    dataSeries -> {
-                      for (int i = 0; i < newline.length; i++) {
-                        dataSeries.updateByIndex(i, newline[i]);
-                      }
-                    },
-                    label));
-      } else {
-        Thread.sleep(2);
-      }
-    }
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              double[] newline = layer2D.getNext();
+              SwingUtilities.invokeLater(
+                  () ->
+                      chart.updateDataSeries(
+                          dataSeries -> {
+                            for (int i = 0; i < newline.length; i++) {
+                              dataSeries.updateByIndex(i, newline[i]);
+                            }
+                          },
+                          label));
+            },
+            5,
+            30,
+            TimeUnit.MILLISECONDS);
+
+    int testDurationInMs = 15;
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        testDurationInMs,
+        TimeUnit.SECONDS);
+
+    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 }

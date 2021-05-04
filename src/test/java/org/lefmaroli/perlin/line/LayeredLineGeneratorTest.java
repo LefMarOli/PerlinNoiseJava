@@ -72,7 +72,7 @@ public class LayeredLineGeneratorTest {
     double[] line = defaultGenerator.getNext();
     for (double value : line) {
       assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
-      assertTrue(value <= maxAmplitude);
+      assertTrue("Actual value greater than 1.0: " + value, value <= 1.0);
     }
   }
 
@@ -111,7 +111,7 @@ public class LayeredLineGeneratorTest {
     ToStringVerifier.forClass(LayeredLineGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
-        .withIgnoredFields("scheduler", "jitterStrategy", "logger")
+        .withIgnoredFields("scheduler", "jitterStrategy", "logger", "container")
         .verify();
   }
 

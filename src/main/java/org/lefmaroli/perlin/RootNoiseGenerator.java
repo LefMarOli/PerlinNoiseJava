@@ -33,11 +33,9 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   }
 
   public C getNext() {
-    if (!generated.isEmpty()) {
-      return generated.poll();
+    if (generated.size() - 1 < noiseInterpolationPoints) {
+      addNextNoiseSegmentToQueue();
     }
-    // generate missing data
-    computeAtLeast();
     return generated.poll();
   }
 
@@ -78,7 +76,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   protected abstract C[] generateNextSegment();
 
-  private void computeAtLeast() {
+  private void addNextNoiseSegmentToQueue() {
     generated.addAll(Arrays.asList(generateNextSegment()));
   }
 }

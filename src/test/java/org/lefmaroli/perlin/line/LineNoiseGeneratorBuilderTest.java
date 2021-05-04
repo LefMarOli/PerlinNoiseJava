@@ -1,8 +1,13 @@
 package org.lefmaroli.perlin.line;
 
+import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
@@ -35,9 +40,10 @@ public class LineNoiseGeneratorBuilderTest {
 
   @Ignore("Skipped, only used to visualize results")
   @Test
-  public void getNextLines() throws NoiseBuilderException, InterruptedException {
-    IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(6687855, 0.9);
+  public void getNextLines() throws NoiseBuilderException {
+    IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(500, 0.9);
     IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(80, 0.5);
+    int lineLength = 200;
     LineNoiseGenerator generator =
         new LineNoiseGeneratorBuilder(lineLength)
             .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
@@ -45,26 +51,42 @@ public class LineNoiseGeneratorBuilderTest {
             .withNumberOfLayers(4)
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
             .build();
-    int requestedLines = 800;
-    double[][] image = new double[requestedLines][lineLength];
+    int requestedLines = 200;
+    final double[][] image = new double[requestedLines][lineLength];
     for (int i = 0; i < requestedLines; i++) {
-      image[i] = generator.getNext();
+      double[] nextLine = generator.getNext();
+      System.arraycopy(nextLine, 0, image[i], 0, lineLength);
     }
     SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
     im.setVisible();
-    double[][] newImage = new double[requestedLines][lineLength];
-    long previousTime = System.currentTimeMillis();
-    while (true) {
-      if (System.currentTimeMillis() - previousTime > 5) {
-        previousTime = System.currentTimeMillis();
-        System.arraycopy(image, 1, newImage, 0, image.length - 1);
-        newImage[newImage.length - 1] = generator.getNext();
-        im.updateImage(newImage);
-        image = newImage;
-      } else {
-        Thread.sleep(2);
-      }
-    }
+
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              for (int i = 0; i < requestedLines - 1; i++) {
+                for (int j = 0; j < lineLength; j++) {
+                  image[i][j] = image[i + 1][j];
+                }
+              }
+              double[] nextLine = generator.getNext();
+              System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
+              im.updateImage(image);
+            },
+            5,
+            30,
+            TimeUnit.MILLISECONDS);
+
+    int testDurationInMs = 15;
+    ses.schedule(
+        () -> {
+          scheduledFuture.cancel(true);
+          ses.shutdown();
+        },
+        testDurationInMs,
+        TimeUnit.SECONDS);
+
+    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 
   @Ignore

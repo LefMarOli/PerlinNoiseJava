@@ -2,7 +2,6 @@ package org.lefmaroli.display;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
@@ -47,11 +46,12 @@ public class SimpleGrayScaleImage {
     Graphics2D g = (Graphics2D) image.getGraphics();
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < length; j++) {
-        g.setColor(COLORS[(int) (newData[i][j] * 255)]);
+        int colorIndex = (int) (newData[i][j] * 255);
+        g.setColor(COLORS[colorIndex]);
         g.fillRect(i, j, pixelScale, pixelScale);
       }
     }
-    EventQueue.invokeLater(() -> label.setIcon(new ImageIcon(image)));
+    label.setIcon(new ImageIcon(image));
   }
 
   private static void assertDataIsRectangular(double[][] data) {
