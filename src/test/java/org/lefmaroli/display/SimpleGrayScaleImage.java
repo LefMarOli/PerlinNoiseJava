@@ -51,8 +51,7 @@ public class SimpleGrayScaleImage {
         g.fillRect(i, j, pixelScale, pixelScale);
       }
     }
-    EventQueue.invokeLater(
-        () -> label.setIcon(new ImageIcon(image)));
+    EventQueue.invokeLater(() -> label.setIcon(new ImageIcon(image)));
   }
 
   private static void assertDataIsRectangular(double[][] data) {

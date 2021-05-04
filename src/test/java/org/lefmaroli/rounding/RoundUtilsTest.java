@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class RoundUtilsTest {
 
-  private final static int TOTAL_NUMBERS = 10;
+  private static final int TOTAL_NUMBERS = 10;
   private final List<Integer> testList = new ArrayList<>(TOTAL_NUMBERS);
 
   @Before

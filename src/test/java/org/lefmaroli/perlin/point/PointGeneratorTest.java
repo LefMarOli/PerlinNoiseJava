@@ -20,8 +20,7 @@ public class PointGeneratorTest {
   private final long randomSeed = System.currentTimeMillis();
   private PointGenerator defaultGenerator;
 
-  private static void assertExpectedArrayEqualsActual(
-      Double[] expected, Double[] actual) {
+  private static void assertExpectedArrayEqualsActual(Double[] expected, Double[] actual) {
     assertEquals(expected.length, actual.length, 1.0E-18);
     for (int i = 0; i < expected.length; i++) {
       assertEquals(expected[i], actual[i], 1.0E-18);

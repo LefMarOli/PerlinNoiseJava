@@ -47,12 +47,13 @@ public class RandomGenerator {
   }
 
   public VectorMultiD getRandomUnitVectorOfDim(int dimension) {
-    UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(dimension, k-> {
-      var v = new VectorMultiD[NUMBER_OF_TEMPLATES];
-      generateMultiDSamples(
-          basicRandGenerator, dimension, v);
-      return v;
-    });
+    UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(
+        dimension,
+        k -> {
+          var v = new VectorMultiD[NUMBER_OF_TEMPLATES];
+          generateMultiDSamples(basicRandGenerator, dimension, v);
+          return v;
+        });
     var rand = basicRandGenerator.nextInt(NUMBER_OF_TEMPLATES);
     return UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension)[rand];
   }
