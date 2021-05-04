@@ -13,7 +13,7 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<
   private final boolean isCircular;
 
   protected MultiDimensionalLayeredNoiseGenerator(List<L> layers) {
-    super(layers, new ExecutorServiceScheduler(10));
+    super(layers);
     isCircular = checkCircularity(layers);
   }
 

@@ -66,9 +66,4 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
     }
     return results;
   }
-
-  @Override
-  protected Double[] getArrayOfSubType(int count) {
-    return new Double[count];
-  }
 }

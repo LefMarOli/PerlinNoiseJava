@@ -19,11 +19,12 @@ public class LayeredLineGeneratorTest {
   private static final int defaultLineLength = 125;
   private LayeredLineGenerator defaultGenerator;
   private List<LineNoiseGenerator> layers;
+  private static final int numLayers = 3;
   private static final boolean isCircularDefault = false;
 
   @Before
   public void setup() {
-    layers = new ArrayList<>(3);
+    layers = new ArrayList<>(numLayers);
     layers.add(
         new LineGenerator(
             2048, 2048, defaultLineLength, 1.0, System.currentTimeMillis(), isCircularDefault));
@@ -61,23 +62,17 @@ public class LayeredLineGeneratorTest {
   }
 
   @Test
-  public void testGetNextCount() {
-    int expectedCount = 10;
-    double[][] nextLines = defaultGenerator.getNext(expectedCount);
-    assertEquals(expectedCount, nextLines.length, 0);
-    for (double[] line : nextLines) {
-      assertEquals(defaultLineLength, line.length, 0);
-    }
+  public void testGetNext() {
+    double[] nextLine = defaultGenerator.getNext();
+    assertEquals(defaultLineLength, nextLine.length, 0);
   }
 
   @Test
   public void testGetNextBoundedValues() {
-    double[][] lines = defaultGenerator.getNext(10);
-    for (double[] line : lines) {
-      for (double value : line) {
-        assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
-        assertTrue(value <= maxAmplitude);
-      }
+    double[] line = defaultGenerator.getNext();
+    for (double value : line) {
+      assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
+      assertTrue(value <= maxAmplitude);
     }
   }
 
@@ -88,12 +83,7 @@ public class LayeredLineGeneratorTest {
 
   @Test
   public void testNumLayersGenerated() {
-    assertEquals(layers.size(), defaultGenerator.getNumberOfLayers(), 0);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testGetNextNegativeCount() {
-    defaultGenerator.getNext(-6);
+    assertEquals(numLayers, defaultGenerator.getNumberOfLayers(), 0);
   }
 
   @Test

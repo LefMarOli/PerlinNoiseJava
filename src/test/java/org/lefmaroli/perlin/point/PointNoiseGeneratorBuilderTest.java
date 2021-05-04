@@ -42,11 +42,10 @@ public class PointNoiseGeneratorBuilderTest {
             .build();
 
     double duration = 0.0;
-    int numberOfIterations = 1000;
-    int count = 5000;
+    int numberOfIterations = 1000 * 5000;
     for (int i = 0; i < numberOfIterations; i++) {
       long start = System.currentTimeMillis();
-      noiseGenerator.getNext(count);
+      noiseGenerator.getNext();
       long end = System.currentTimeMillis();
       duration += end - start;
     }

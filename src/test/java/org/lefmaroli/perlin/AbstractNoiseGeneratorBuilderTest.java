@@ -87,8 +87,8 @@ public class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    public Double[] getNext(int count) {
-      return new Double[0];
+    public Double getNext() {
+      return 0.0;
     }
 
     @Override

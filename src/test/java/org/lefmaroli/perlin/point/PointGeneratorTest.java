@@ -1,6 +1,5 @@
 package org.lefmaroli.perlin.point;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,15 +37,9 @@ public class PointGeneratorTest {
   }
 
   @Test
-  public void testGetNextSegmentCount() {
-    Double[] nextSegment = defaultGenerator.getNext(expectedCount);
-    assertEquals(expectedCount, nextSegment.length, 0);
-  }
-
-  @Test
   public void testValuesBounded() {
-    Double[] nextSegment = defaultGenerator.getNext(expectedCount);
-    for (Double pointNoiseData : nextSegment) {
+    for (int i = 0; i < expectedCount; i++) {
+      Double pointNoiseData = defaultGenerator.getNext();
       assertNotNull(pointNoiseData);
       assertTrue(pointNoiseData < 1.0);
       assertTrue(pointNoiseData > 0.0);
@@ -60,8 +53,12 @@ public class PointGeneratorTest {
     PointGenerator amplifiedLayer =
         new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
 
-    Double[] values = defaultGenerator.getNext(expectedCount);
-    Double[] actualAmplifiedValues = amplifiedLayer.getNext(expectedCount);
+    Double[] values = new Double[expectedCount];
+    Double[] actualAmplifiedValues = new Double[expectedCount];
+    for (int i = 0; i < expectedCount; i++) {
+      values[i] = defaultGenerator.getNext();
+      actualAmplifiedValues[i] = amplifiedLayer.getNext();
+    }
 
     for (int i = 0; i < values.length; i++) {
       values[i] = values[i] * amplitudeFactor;
@@ -72,20 +69,14 @@ public class PointGeneratorTest {
   @Test
   public void testCreateSamePoints() {
     PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
-    Double[] nextSegment1 = defaultGenerator.getNext(expectedCount);
-    Double[] nextSegment2 = sameLayer.getNext(expectedCount);
-    assertArrayEquals(nextSegment1, nextSegment2);
+    for (int i = 0; i < expectedCount; i++) {
+      assertEquals(defaultGenerator.getNext(), sameLayer.getNext(), 0.0);
+    }
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testCreate() {
     new PointGenerator(-5, 1.0, 0L);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNegativeCount() {
-    PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-    layer.getNext(-5);
   }
 
   @Test

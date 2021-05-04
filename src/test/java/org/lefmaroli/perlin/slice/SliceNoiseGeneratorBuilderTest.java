@@ -51,14 +51,14 @@ public class SliceNoiseGeneratorBuilderTest {
             .withNumberOfLayers(4)
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
             .build();
-    double[][] slice = generator.getNext(1)[0];
+    double[][] slice = generator.getNext();
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        slice = generator.getNext(1)[0];
+        slice = generator.getNext();
         image.updateImage(slice);
       } else {
         Thread.sleep(2);
@@ -80,11 +80,10 @@ public class SliceNoiseGeneratorBuilderTest {
             .build();
 
     double duration = 0.0;
-    int numberOfIterations = 5;
-    int count = 10;
+    int numberOfIterations = 5 * 10;
     for (int i = 0; i < numberOfIterations; i++) {
       long start = System.currentTimeMillis();
-      noiseGenerator.getNext(count);
+      noiseGenerator.getNext();
       long end = System.currentTimeMillis();
       duration += end - start;
       logger.info("Finished iteration " + i);

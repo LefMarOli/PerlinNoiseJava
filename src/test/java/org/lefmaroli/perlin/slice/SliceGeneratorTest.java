@@ -24,16 +24,7 @@ public class SliceGeneratorTest {
   private static final double maxAmplitude = 1.0;
   private static final boolean isCircular = false;
   private final long randomSeed = System.currentTimeMillis();
-  int requestedCount = 10;
   private SliceGenerator defaultGenerator;
-
-  private static void assertExpectedArrayEqualsActual(
-      double[] expected, double[] actual, double delta) {
-    assertEquals(expected.length, actual.length, delta);
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(expected[i], actual[i], delta);
-    }
-  }
 
   @Before
   public void setup() {
@@ -116,13 +107,10 @@ public class SliceGeneratorTest {
 
   @Test
   public void getNextSlicesCorrectSize() {
-    double[][][] noiseData = defaultGenerator.getNext(requestedCount);
-    assertEquals(requestedCount, noiseData.length, 0);
-    for (double[][] slice : noiseData) {
-      assertEquals(sliceWidth, slice.length, 0);
-      for (double[] line : slice) {
-        assertEquals(sliceHeight, line.length, 0);
-      }
+    double[][] noiseData = defaultGenerator.getNext();
+    assertEquals(sliceWidth, noiseData.length, 0);
+    for (double[] line : noiseData) {
+      assertEquals(sliceHeight, line.length, 0);
     }
   }
 
@@ -156,11 +144,6 @@ public class SliceGeneratorTest {
     assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testGetNextLinesInvalidCount() {
-    defaultGenerator.getNext(-5);
-  }
-
   @Test
   public void testHugeSlice() {
     new SliceGenerator(
@@ -176,13 +159,11 @@ public class SliceGeneratorTest {
 
   @Test
   public void testValuesBounded() {
-    double[][][] slices = defaultGenerator.getNext(10);
-    for (double[][] slice : slices) {
-      for (double[] line : slice) {
-        for (double value : line) {
-          assertTrue("Value " + value + "not bounded by 0", value > 0.0);
-          assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
-        }
+    double[][] slice = defaultGenerator.getNext();
+    for (double[] line : slice) {
+      for (double value : line) {
+        assertTrue("Value " + value + "not bounded by 0", value > 0.0);
+        assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
       }
     }
   }
@@ -202,20 +183,18 @@ public class SliceGeneratorTest {
             randomSeed,
             isCircular);
 
-    double[][][] slices = defaultGenerator.getNext(requestedCount);
-    double[][][] amplifiedSlices = amplifiedLayer.getNext(requestedCount);
+    double[][] slice = defaultGenerator.getNext();
+    double[][] amplifiedSlice = amplifiedLayer.getNext();
 
-    for (double[][] slice : slices) {
-      for (double[] lines : slice) {
-        for (int j = 0; j < lines.length; j++) {
-          lines[j] = lines[j] * newMaxAmplitude;
-        }
+    for (double[] lines : slice) {
+      for (int j = 0; j < lines.length; j++) {
+        lines[j] = lines[j] * newMaxAmplitude;
       }
     }
 
-    for (int i = 0; i < slices.length; i++) {
-      for (int j = 0; j < slices[0].length; j++) {
-        assertExpectedArrayEqualsActual(slices[i][j], amplifiedSlices[i][j], 1e-18);
+    for (int i = 0; i < slice.length; i++) {
+      for (int j = 0; j < slice[0].length; j++) {
+        assertEquals(slice[i][j], amplifiedSlice[i][j], 1e-18);
       }
     }
   }
@@ -232,14 +211,14 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    double[][][] nextSegment1 = defaultGenerator.getNext(requestedCount);
-    double[][][] nextSegment2 = same.getNext(requestedCount);
+    double[][] nextSegment1 = defaultGenerator.getNext();
+    double[][] nextSegment2 = same.getNext();
 
     assertEquals(nextSegment1.length, nextSegment2.length, 0);
     assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
       for (int j = 0; j < nextSegment1[0].length; j++) {
-        assertExpectedArrayEqualsActual(nextSegment1[i][j], nextSegment2[i][j], 0.0);
+        assertEquals(nextSegment1[i][j], nextSegment2[i][j], 0.0);
       }
     }
   }
@@ -418,7 +397,7 @@ public class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             true);
-    double[][] line = generator.getNext(1)[0];
+    double[][] line = generator.getNext();
     double[] firstLine = line[0];
     double[] secondLine = line[1];
     double[] lastLine = line[generator.getSliceWidth() - 1];
@@ -456,7 +435,7 @@ public class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             true);
-    double[][] slices = generator.getNext(1)[0];
+    double[][] slices = generator.getNext();
     double[][] patched = new double[generator.getSliceWidth() * 3][generator.getSliceHeight() * 3];
     for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
       for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
@@ -489,7 +468,7 @@ public class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             true);
-    double[][] slices = generator.getNext(1)[0];
+    double[][] slices = generator.getNext();
     double[][] patched = new double[generator.getSliceWidth() * 3][generator.getSliceHeight() * 3];
     for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
       for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
@@ -502,7 +481,7 @@ public class SliceGeneratorTest {
     while (true) {
       if (System.currentTimeMillis() - previousTime > 15) {
         previousTime = System.currentTimeMillis();
-        double[][] newSlices = generator.getNext(1)[0];
+        double[][] newSlices = generator.getNext();
         for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
           for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
             patched[i][j] =
@@ -529,16 +508,15 @@ public class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             false);
-    int count = 1;
-    double[][][] slices = generator.getNext(count);
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 1);
+    double[][] slice = generator.getNext();
+    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 1);
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        slices = generator.getNext(1);
-        image.updateImage(slices[0]);
+        slice = generator.getNext();
+        image.updateImage(slice);
       } else {
         Thread.sleep(1);
       }

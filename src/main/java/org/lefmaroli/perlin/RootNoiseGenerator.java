@@ -32,11 +32,13 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
     return noiseInterpolationPoints;
   }
 
-  public C[] getNext(int count) {
-    if (count < 1) {
-      throw new IllegalArgumentException("Count must be greater than 0");
+  public C getNext() {
+    if(!generated.isEmpty()){
+      return generated.poll();
     }
-    return computeAtLeast(count);
+    //generate missing data
+    computeAtLeast();
+    return generated.poll();
   }
 
   @Override
@@ -65,7 +67,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   public abstract int getNoiseSegmentLength();
 
-  protected void assertValidValues(List<String> names, int... values) {
+  protected static void assertValidValues(List<String> names, int... values) {
     for (var i = 0; i < values.length; i++) {
       if (values[i] < 0) {
         throw new IllegalArgumentException(
@@ -76,34 +78,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   protected abstract C[] generateNextSegment();
 
-  protected abstract C[] getArrayOfSubType(int count);
-
-  private C[] computeAtLeast(int count) {
-    C[] results = getArrayOfSubType(count);
-    if (count < generated.size()) {
-      for (var i = 0; i < count; i++) {
-        results[i] = generated.poll();
-      }
-    } else {
-      int currentIndex = generated.size();
-      for (var i = 0; i < currentIndex; i++) {
-        results[i] = generated.poll();
-      }
-      int remainingCount = count - currentIndex;
-      int noiseSegmentLength = getNoiseSegmentLength();
-      while (remainingCount > noiseSegmentLength) {
-        C[] nextSegment = generateNextSegment();
-        System.arraycopy(nextSegment, 0, results, currentIndex, noiseSegmentLength);
-        currentIndex += noiseSegmentLength;
-        remainingCount -= noiseSegmentLength;
-      }
-      C[] lastSegment = generateNextSegment();
-      System.arraycopy(lastSegment, 0, results, currentIndex, remainingCount);
-      C[] lastPortion = getArrayOfSubType(noiseSegmentLength - remainingCount);
-      System.arraycopy(
-          lastSegment, remainingCount, lastPortion, 0, noiseSegmentLength - remainingCount);
-      generated.addAll(Arrays.asList(lastPortion));
-    }
-    return results;
+  private void computeAtLeast() {
+    generated.addAll(Arrays.asList(generateNextSegment()));
   }
 }

@@ -1,24 +1,16 @@
 package org.lefmaroli.perlin.layers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.lefmaroli.execution.TaskScheduler;
 import org.lefmaroli.perlin.INoiseGenerator;
 
 public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     implements INoiseGenerator<N> {
 
-  private final Logger logger = LogManager.getLogger(this.getClass());
   private final double maxAmplitude;
-  private final TaskScheduler scheduler;
   private final List<L> layers;
 
-  protected LayeredNoiseGenerator(List<L> layers, TaskScheduler scheduler) {
+  protected LayeredNoiseGenerator(List<L> layers) {
     if (layers.isEmpty()) {
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }
@@ -28,7 +20,6 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
       sum += layer.getMaxAmplitude();
     }
     this.maxAmplitude = sum;
-    this.scheduler = scheduler;
   }
 
   @Override
@@ -46,11 +37,12 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
   }
 
   @Override
-  public N[] getNext(int count) {
-    if (count < 1) {
-      throw new IllegalArgumentException("Parameter count must be greater than 0");
+  public N getNext() {
+    var results = getContainer();
+    for(L layer: layers){
+      results = addTogether(results, layer.getNext());
     }
-    return generateResults(count);
+    return normalizeBy(results, maxAmplitude);
   }
 
   public double getMaxAmplitude() {
@@ -65,29 +57,9 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     return layers;
   }
 
-  protected abstract N[] initializeResults(int count);
+  protected abstract N getContainer();
 
-  protected abstract void addTogether(N[] results, N[] newLayer);
+  protected abstract N addTogether(N results, N newLayer);
 
-  protected abstract N[] normalizeBy(N[] data, double maxAmplitude);
-
-  private N[] generateResults(int count) {
-    N[] results = initializeResults(count);
-    List<CompletableFuture<N[]>> futures = new ArrayList<>(layers.size());
-    for (L layer : layers) {
-      LayerProcess<N, L> layerProcess = new LayerProcess<>(layer, count);
-      futures.add(scheduler.schedule(layerProcess));
-    }
-    for (CompletableFuture<N[]> future : futures) {
-      try {
-        addTogether(results, future.get());
-      } catch (InterruptedException e) {
-        logger.error("Layer process got interrupted, interrupting thread.", e);
-        Thread.currentThread().interrupt();
-      } catch (ExecutionException e) {
-        throw new LayerProcessException(e);
-      }
-    }
-    return normalizeBy(results, maxAmplitude);
-  }
+  protected abstract N normalizeBy(N data, double maxAmplitude);
 }

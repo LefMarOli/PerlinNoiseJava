@@ -8,7 +8,7 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<Double, PointNo
     implements PointNoiseGenerator {
 
   LayeredPointGenerator(List<PointNoiseGenerator> layers) {
-    super(layers, new ExecutorServiceScheduler(10));
+    super(layers);
   }
 
   @Override
@@ -22,26 +22,17 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<Double, PointNo
   }
 
   @Override
-  protected Double[] initializeResults(int count) {
-    var toInitialize = new Double[count];
-    for (var i = 0; i < count; i++) {
-      toInitialize[i] = 0.0;
-    }
-    return toInitialize;
+  protected Double getContainer() {
+    return 0.0;
   }
 
   @Override
-  protected void addTogether(Double[] results, Double[] newLayer) {
-    for (var i = 0; i < results.length; i++) {
-      results[i] = results[i] + newLayer[i];
-    }
+  protected Double addTogether(Double results, Double newLayer) {
+      return results + newLayer;
   }
 
   @Override
-  protected Double[] normalizeBy(Double[] data, double maxAmplitude) {
-    for (var i = 0; i < data.length; i++) {
-      data[i] = data[i] / maxAmplitude;
-    }
-    return data;
+  protected Double normalizeBy(Double data, double maxAmplitude) {
+    return data / maxAmplitude;
   }
 }

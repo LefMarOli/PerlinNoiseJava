@@ -104,28 +104,22 @@ public class LayeredSliceGeneratorTest {
 
   @Test
   public void testGetNextCount() {
-    int expectedCount = 10;
-    double[][][] slices = defaultGenerator.getNext(expectedCount);
-    assertEquals(expectedCount, slices.length, 0);
-    for (double[][] slice : slices) {
-      assertEquals(defaultSliceWidth, slice.length, 0);
-      for (double[] line : slice) {
-        assertEquals(defaultSliceHeight, line.length, 0);
-      }
+    double[][] slice = defaultGenerator.getNext();
+    assertEquals(defaultSliceWidth, slice.length, 0);
+    for (double[] line : slice) {
+      assertEquals(defaultSliceHeight, line.length, 0);
     }
   }
 
   @Test
   public void testGetNextBoundedValues() {
-    double[][][] slices = defaultGenerator.getNext(10);
-    for (double[][] slice : slices) {
-      for (double[] lines : slice) {
-        for (double value : lines) {
-          assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
-          assertTrue(
-              "Actual value greater than max amplitude of " + maxAmplitude + ":" + value,
-              value <= maxAmplitude);
-        }
+    double[][] slice = defaultGenerator.getNext();
+    for (double[] lines : slice) {
+      for (double value : lines) {
+        assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
+        assertTrue(
+            "Actual value greater than max amplitude of " + maxAmplitude + ":" + value,
+            value <= maxAmplitude);
       }
     }
   }
@@ -138,11 +132,6 @@ public class LayeredSliceGeneratorTest {
   @Test
   public void testNumLayersGenerated() {
     assertEquals(layers.size(), defaultGenerator.getNumberOfLayers(), 0);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testGetNextNegativeCount() {
-    defaultGenerator.getNext(-6);
   }
 
   @Test
@@ -243,16 +232,15 @@ public class LayeredSliceGeneratorTest {
             System.currentTimeMillis(),
             isCircularDefault));
     SliceNoiseGenerator generator = new LayeredSliceGenerator(newLayers);
-    int count = 1;
-    double[][][] slices = generator.getNext(count);
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices[0], 1);
+    double[][] slices = generator.getNext();
+    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices, 1);
     image.setVisible();
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        double[][][] newSlices = generator.getNext(1);
-        image.updateImage(newSlices[0]);
+        double[][] newSlice = generator.getNext();
+        image.updateImage(newSlice);
       } else {
         Thread.sleep(1);
       }

@@ -14,12 +14,12 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   private final int lineInterpolationPoints;
   private final int lineLength;
-  private final double[] lineData;
   private final int noiseSegmentLength;
   private int currentPosition = 0;
   private final double circularResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
+  private final double[][] segmentResult;
 
   public LineGenerator(
       int noiseInterpolationPoints,
@@ -35,7 +35,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         correctInterpolationPointsForCircularity(
             lineInterpolationPoints, lineLength, "line length");
     this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
-    this.lineData = new double[lineLength];
+    this.segmentResult = new double[noiseSegmentLength][lineLength];
     this.circularResolution = this.lineInterpolationPoints / (double) this.lineLength;
     if (isCircular) {
       perlin = new PerlinNoise(3);
@@ -96,18 +96,11 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   @Override
   protected double[][] generateNextSegment() {
-    var results = new double[noiseSegmentLength][lineLength];
     for (var i = 0; i < noiseSegmentLength; i++) {
       currentPosition++;
-      double[] line = processNoiseDomain(currentPosition);
-      System.arraycopy(line, 0, results[i], 0, line.length);
+      processNoiseDomain(currentPosition, segmentResult[i]);
     }
-    return results;
-  }
-
-  @Override
-  protected double[][] getArrayOfSubType(int count) {
-    return new double[count][lineLength];
+    return segmentResult;
   }
 
   private int computeNoiseSegmentLength(int lineLength) {
@@ -120,12 +113,11 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     return computedNoiseSegmentLength;
   }
 
-  private double[] processNoiseDomain(int noiseIndex) {
+  private void processNoiseDomain(int noiseIndex, double[] lineData) {
     double noiseDist = (double) (noiseIndex) * getStepSize();
     for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
       lineData[lineIndex] = processLineDomain(noiseDist, lineIndex);
     }
-    return lineData;
   }
 
   private double processLineDomain(double noiseDist, int lineIndex) {

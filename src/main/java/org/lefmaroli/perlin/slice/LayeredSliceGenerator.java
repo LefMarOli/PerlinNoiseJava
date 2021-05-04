@@ -10,11 +10,13 @@ public class LayeredSliceGenerator
 
   private final int sliceWidth;
   private final int sliceHeight;
+  private final double[][] container;
 
   protected LayeredSliceGenerator(List<SliceNoiseGenerator> sliceNoiseGenerators) {
     super(sliceNoiseGenerators);
     this.sliceWidth = sliceNoiseGenerators.get(0).getSliceWidth();
     this.sliceHeight = sliceNoiseGenerators.get(0).getSliceHeight();
+    this.container = new double[getSliceWidth()][getSliceHeight()];
     assertAllLayersHaveSameSize(sliceNoiseGenerators);
   }
 
@@ -59,28 +61,25 @@ public class LayeredSliceGenerator
   }
 
   @Override
-  protected double[][][] initializeResults(int count) {
-    return new double[count][getSliceWidth()][getSliceHeight()];
+  protected double[][] getContainer() {
+    return container;
   }
 
   @Override
-  protected void addTogether(double[][][] results, double[][][] newLayer) {
+  protected double[][] addTogether(double[][] results, double[][] newLayer) {
     for (var i = 0; i < results.length; i++) {
       for (var j = 0; j < results[0].length; j++) {
-        for (var k = 0; k < results[0][0].length; k++) {
-          results[i][j][k] = results[i][j][k] + newLayer[i][j][k];
-        }
+          results[i][j] = results[i][j] + newLayer[i][j];
       }
     }
+    return results;
   }
 
   @Override
-  protected double[][][] normalizeBy(double[][][] data, double maxAmplitude) {
+  protected double[][] normalizeBy(double[][] data, double maxAmplitude) {
     for (var i = 0; i < data.length; i++) {
       for (var j = 0; j < data[0].length; j++) {
-        for (var k = 0; k < data[0][0].length; k++) {
-          data[i][j][k] = data[i][j][k] / maxAmplitude;
-        }
+          data[i][j] = data[i][j] / maxAmplitude;
       }
     }
     return data;

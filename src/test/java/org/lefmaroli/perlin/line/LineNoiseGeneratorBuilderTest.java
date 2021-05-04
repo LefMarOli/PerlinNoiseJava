@@ -46,16 +46,21 @@ public class LineNoiseGeneratorBuilderTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
             .build();
     int requestedLines = 800;
-    double[][] lines = generator.getNext(requestedLines);
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(lines, 5);
-    image.setVisible();
+    double[][] image = new double[requestedLines][lineLength];
+    for (int i = 0; i < requestedLines; i++) {
+      image[i] = generator.getNext();
+    }
+    SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
+    im.setVisible();
+    double[][] newImage = new double[requestedLines][lineLength];
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        System.arraycopy(lines, 1, lines, 0, lines.length - 1);
-        lines[lines.length - 1] = generator.getNext(1)[0];
-        image.updateImage(lines);
+        System.arraycopy(image, 1, newImage, 0, image.length - 1);
+        newImage[newImage.length - 1] = generator.getNext();
+        im.updateImage(newImage);
+        image = newImage;
       } else {
         Thread.sleep(2);
       }
@@ -75,11 +80,10 @@ public class LineNoiseGeneratorBuilderTest {
             .build();
 
     double duration = 0.0;
-    int numberOfIterations = 5;
-    int count = 5000;
+    int numberOfIterations = 5*5000;
     for (int i = 0; i < numberOfIterations; i++) {
       long start = System.currentTimeMillis();
-      noiseGenerator.getNext(count);
+      noiseGenerator.getNext();
       long end = System.currentTimeMillis();
       duration += end - start;
       logger.info("Finished iteration " + i);

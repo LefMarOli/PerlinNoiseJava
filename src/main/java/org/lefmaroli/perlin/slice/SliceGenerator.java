@@ -22,13 +22,13 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private final int heightInterpolationPoints;
   private final int sliceWidth;
   private final int sliceHeight;
-  private final double[] line;
   private final int noiseSegmentLength;
   private int currentPosInNoiseInterpolation = 0;
   private final double circularWidthResolution;
   private final double circularHeightResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
+  private final double[][][] segmentResult;
 
   SliceGenerator(
       int noiseInterpolationPoints,
@@ -51,7 +51,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
     this.noiseSegmentLength = computeNoiseSegmentLength(sliceWidth, sliceHeight);
-    line = new double[sliceHeight];
+    this.segmentResult = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
     this.circularWidthResolution = this.widthInterpolationPoints / (double) this.sliceWidth;
     this.circularHeightResolution = this.heightInterpolationPoints / (double) this.sliceHeight;
     if (isCircular) {
@@ -133,18 +133,11 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
 
   @Override
   protected double[][][] generateNextSegment() {
-    var results = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
     for (var i = 0; i < noiseSegmentLength; i++) {
       currentPosInNoiseInterpolation++;
-      System.arraycopy(
-          processNoiseDomain(currentPosInNoiseInterpolation), 0, results[i], 0, sliceWidth);
+      processNoiseDomain(currentPosInNoiseInterpolation, segmentResult[i]);
     }
-    return results;
-  }
-
-  @Override
-  protected double[][][] getArrayOfSubType(int count) {
-    return new double[count][sliceWidth][sliceHeight];
+    return segmentResult;
   }
 
   private int computeNoiseSegmentLength(int sliceWidth, int sliceHeight) {
@@ -160,17 +153,14 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     return computedNoiseSegmentLength;
   }
 
-  private double[][] processNoiseDomain(int noiseIndex) {
-    var slice = new double[sliceWidth][sliceHeight];
+  private void processNoiseDomain(int noiseIndex, double[][] slice) {
     double noiseDist = (double) (noiseIndex) * getStepSize();
     for (var widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
-      System.arraycopy(
-          processSliceWidthDomain(noiseDist, widthIndex), 0, slice[widthIndex], 0, sliceHeight);
+      processSliceWidthDomain(noiseDist, widthIndex, slice[widthIndex]);
     }
-    return slice;
   }
 
-  private double[] processSliceWidthDomain(double noiseDist, int widthIndex) {
+  private void processSliceWidthDomain(double noiseDist, int widthIndex, double[] line) {
     double widthDist;
     if (isCircular()) {
       widthDist = widthIndex / (double) sliceWidth * 2 * Math.PI;
@@ -180,7 +170,6 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     for (var heightIndex = 0; heightIndex < sliceHeight; heightIndex++) {
       line[heightIndex] = processSliceHeightDomain(noiseDist, widthDist, heightIndex);
     }
-    return line;
   }
 
   private double processSliceHeightDomain(double noiseDist, double widthDist, int heightIndex) {
