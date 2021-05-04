@@ -80,7 +80,7 @@ public class Interpolation {
       throw new DistancesArrayLengthException(
           numberOfDimensions, getDimensionsOrderForDimension(numberOfDimensions));
     }
-    for (int i = 0; i < numberOfDimensions; i++) {
+    for (var i = 0; i < numberOfDimensions; i++) {
       if (distances[i] < 0.0 || distances[i] > 1.0) {
         throw new DistanceNotBoundedException(i);
       }

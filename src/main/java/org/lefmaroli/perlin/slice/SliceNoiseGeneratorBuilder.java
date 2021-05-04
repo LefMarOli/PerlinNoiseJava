@@ -42,8 +42,7 @@ public class SliceNoiseGeneratorBuilder
 
   @Override
   protected SliceNoiseGenerator buildSingleNoiseLayer(
-      List<Integer> interpolationPoints, double layerAmplitude, long randomSeed)
-      throws NoiseBuilderException {
+      List<Integer> interpolationPoints, double layerAmplitude, long randomSeed) {
     return new SliceGenerator(
         interpolationPoints.get(0),
         interpolationPoints.get(1),
@@ -56,8 +55,7 @@ public class SliceNoiseGeneratorBuilder
   }
 
   @Override
-  protected SliceNoiseGenerator buildMultipleNoiseLayer(List<SliceNoiseGenerator> layers)
-      throws NoiseBuilderException {
+  protected SliceNoiseGenerator buildMultipleNoiseLayer(List<SliceNoiseGenerator> layers) {
     return new LayeredSliceGenerator(layers);
   }
 }

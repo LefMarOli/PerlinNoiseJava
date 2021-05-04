@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,10 +33,6 @@ public class LineChart {
     this.xAxisLabel = xAxisLabel;
     this.yAxisLabel = yAxisLabel;
     this.framedChart = getFramedChart();
-  }
-
-  public void addEquidistantDataSeries(Double[] dataSeries, String dataSeriesLabel) {
-    addEquidistantDataSeries(Arrays.asList(dataSeries), dataSeriesLabel);
   }
 
   public void addEquidistantDataSeries(double[] dataSeries, String dataSeriesLabel) {
@@ -106,7 +101,7 @@ public class LineChart {
     setGridLines(plot);
   }
 
-  private void setGridLines(XYPlot plot) {
+  private static void setGridLines(XYPlot plot) {
     plot.setRangeGridlinesVisible(true);
     plot.setRangeGridlinePaint(Color.BLACK);
 

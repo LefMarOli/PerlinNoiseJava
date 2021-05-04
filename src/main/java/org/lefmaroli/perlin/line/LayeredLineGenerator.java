@@ -55,19 +55,18 @@ public class LayeredLineGenerator
   }
 
   @Override
-  protected double[][] addTogether(double[][] results, double[][] newLayer) {
-    for (int i = 0; i < results.length; i++) {
-      for (int j = 0; j < results[0].length; j++) {
+  protected void addTogether(double[][] results, double[][] newLayer) {
+    for (var i = 0; i < results.length; i++) {
+      for (var j = 0; j < results[0].length; j++) {
         results[i][j] = results[i][j] + newLayer[i][j];
       }
     }
-    return results;
   }
 
   @Override
   protected double[][] normalizeBy(double[][] data, double maxAmplitude) {
-    for (int i = 0; i < data.length; i++) {
-      for (int j = 0; j < data[0].length; j++) {
+    for (var i = 0; i < data.length; i++) {
+      for (var j = 0; j < data[0].length; j++) {
         data[i][j] = data[i][j] / maxAmplitude;
       }
     }
@@ -75,7 +74,7 @@ public class LayeredLineGenerator
   }
 
   private void assertAllLayersHaveSameLineLength(List<LineNoiseGenerator> layers) {
-    for (int i = 0; i < layers.size(); i++) {
+    for (var i = 0; i < layers.size(); i++) {
       if (layers.get(i).getLineLength() != lineLength) {
         throw new IllegalArgumentException(
             "Layer " + i + " does not have the same line length as the first provided layer");

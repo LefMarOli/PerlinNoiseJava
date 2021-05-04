@@ -22,10 +22,10 @@ public abstract class NoiseBuilder<
   protected long randomSeed = System.currentTimeMillis();
   private NumberGenerator<Double> amplitudeGenerator = new DoubleGenerator(1.0, 0.5);
 
-  public NoiseBuilder(int dimensions) {
+  protected NoiseBuilder(int dimensions) {
     this.dimensions = dimensions;
     this.interpolationPointCountGenerators = new ArrayList<>(dimensions);
-    for (int i = 0; i < dimensions; i++) {
+    for (var i = 0; i < dimensions; i++) {
       this.interpolationPointCountGenerators.add(
           DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR.getCopy());
     }
@@ -115,10 +115,10 @@ public abstract class NoiseBuilder<
   }
 
   private List<L> generateNoiseLayers() throws NoiseBuilderException {
-    Random randomGenerator = new Random(randomSeed);
+    var randomGenerator = new Random(randomSeed);
     List<L> layers = new ArrayList<>(numberOfLayers);
-    for (int i = 0; i < numberOfLayers; i++) {
-      long layerRandomSeed = randomGenerator.nextLong();
+    for (var i = 0; i < numberOfLayers; i++) {
+      var layerRandomSeed = randomGenerator.nextLong();
       try {
         layers.add(generateNoiseLayer(i, layerRandomSeed));
       } catch (NoiseLayerException e) {

@@ -15,16 +15,16 @@ import org.junit.Test;
 
 public class PointGeneratorTest {
 
-  private final int interpolationPoints = 50;
-  private final int expectedCount = 500;
+  private static final int interpolationPoints = 50;
+  private static final int expectedCount = 500;
   private final long randomSeed = System.currentTimeMillis();
   private PointGenerator defaultGenerator;
 
   private static void assertExpectedArrayEqualsActual(
-      Double[] expected, Double[] actual, double delta) {
-    assertEquals(expected.length, actual.length, delta);
+      Double[] expected, Double[] actual) {
+    assertEquals(expected.length, actual.length, 1.0E-18);
     for (int i = 0; i < expected.length; i++) {
-      assertEquals(expected[i], actual[i], delta);
+      assertEquals(expected[i], actual[i], 1.0E-18);
     }
   }
 
@@ -67,7 +67,7 @@ public class PointGeneratorTest {
     for (int i = 0; i < values.length; i++) {
       values[i] = values[i] * amplitudeFactor;
     }
-    assertExpectedArrayEqualsActual(values, actualAmplifiedValues, 1e-18);
+    assertExpectedArrayEqualsActual(values, actualAmplifiedValues);
   }
 
   @Test

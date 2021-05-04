@@ -163,39 +163,28 @@ public class SliceGeneratorTest {
 
   @Test
   public void testHugeSlice() {
-    SliceGenerator amplifiedLayer =
-        new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
-            10000,
-            10000,
-            maxAmplitude,
-            randomSeed,
-            isCircular);
+    new SliceGenerator(
+        noiseInterpolationPoints,
+        widthInterpolationPoints,
+        heightInterpolationPoints,
+        10000,
+        10000,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
   }
 
   @Test
   public void testValuesBounded() {
     double[][][] slices = defaultGenerator.getNext(10);
-    //        double min = Double.MAX_VALUE;
-    //        double max = Double.MIN_VALUE;
     for (double[][] slice : slices) {
       for (double[] line : slice) {
         for (double value : line) {
           assertTrue("Value " + value + "not bounded by 0", value > 0.0);
           assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
-          //                    if (value > max) {
-          //                        max = value;
-          //                    }
-          //                    if (value < min) {
-          //                        min = value;
-          //                    }
         }
       }
     }
-    //        LogManager.getLogger(this.getClass()).info("Min: " + min);
-    //        LogManager.getLogger(this.getClass()).info("Max: " + max);
   }
 
   @Test
@@ -548,8 +537,8 @@ public class SliceGeneratorTest {
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        double[][][] newSlices = generator.getNext(1);
-        image.updateImage(newSlices[0]);
+        slices = generator.getNext(1);
+        image.updateImage(slices[0]);
       } else {
         Thread.sleep(1);
       }

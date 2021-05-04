@@ -15,7 +15,7 @@ public class RoundUtils {
     if (isPowerOfTwo(n)) {
       return n;
     } else {
-      int power = 0;
+      var power = 0;
       while (n != 0) { // 000000
         n >>= 1;
         power++;
@@ -28,7 +28,7 @@ public class RoundUtils {
     if (isPowerOfTwo(n)) {
       return n;
     } else {
-      int power = 0;
+      var power = 0;
       while (n != 1) { // 000001
         n >>= 1;
         power++;
@@ -52,7 +52,7 @@ public class RoundUtils {
     } else {
       List<Integer> factorsOfM = getFactorsOf(m);
       int minDistance = m + 1;
-      int closestFactor = 0;
+      var closestFactor = 0;
       for (Integer factor : factorsOfM) {
         int distance = Math.abs(n - factor);
         if (distance < minDistance) {
@@ -65,10 +65,10 @@ public class RoundUtils {
   }
 
   private static List<Integer> getFactorsOf(int number) {
-    List<Integer> toReturn = new ArrayList<>();
+    List<Integer> toReturn = new ArrayList<>(2);
     toReturn.add(1);
     toReturn.add(number);
-    for (int i = 2; i < Math.sqrt(number); i++) {
+    for (var i = 2; i < Math.sqrt(number); i++) {
       if (number % i == 0) {
         toReturn.add(i);
         toReturn.add(number / i);

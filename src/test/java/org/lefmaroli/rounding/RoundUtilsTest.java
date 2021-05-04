@@ -11,11 +11,12 @@ import org.junit.Test;
 
 public class RoundUtilsTest {
 
-  private final List<Integer> testList = new ArrayList<>();
+  private final static int TOTAL_NUMBERS = 10;
+  private final List<Integer> testList = new ArrayList<>(TOTAL_NUMBERS);
 
   @Before
   public void setup() {
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < TOTAL_NUMBERS; i++) {
       testList.add((int) Math.pow(2, i));
     }
   }

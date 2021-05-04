@@ -9,7 +9,7 @@ public abstract class MultiDimensionalNoiseBuilder<
 
   private boolean isCircular = false;
 
-  public MultiDimensionalNoiseBuilder(int dimensions) {
+  protected MultiDimensionalNoiseBuilder(int dimensions) {
     super(dimensions);
   }
 

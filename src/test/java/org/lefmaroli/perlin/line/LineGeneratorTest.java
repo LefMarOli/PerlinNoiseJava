@@ -19,14 +19,14 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 
 public class LineGeneratorTest {
 
-  private final int lineLength = 200;
-  private final int requestedLines = 700;
+  private static final int lineLength = 200;
+  private static final int requestedLines = 700;
   private LineGenerator defaultLineGenerator;
-  private double maxAmplitude = 5.0;
-  private long randomSeed = System.currentTimeMillis();
-  private int defaultInterpolationPointsAlongLine = 25;
-  private int defaultInterpolationPointsAlongNoiseSpace = 50;
-  private boolean isCircular = false;
+  private static final double maxAmplitude = 5.0;
+  private final long randomSeed = System.currentTimeMillis();
+  private static final int defaultInterpolationPointsAlongLine = 25;
+  private static final int defaultInterpolationPointsAlongNoiseSpace = 50;
+  private static final boolean isCircular = false;
 
   private static void assertExpectedArrayEqualsActual(
       double[] expected, double[] actual, double delta) {
@@ -334,19 +334,23 @@ public class LineGeneratorTest {
     }
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(appended, 5);
     image.setVisible();
+
+    double[][] appendedNewValues = new double[requestedLines][lineLength * 2];
+    double[] newValues;
+    double[] appendedNewLineValues = new double[lineLength * 2];
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
         previousTime = System.currentTimeMillis();
-        System.arraycopy(appended, 1, appended, 0, appended.length - 1);
-        double[] newValues = generator.getNext(1)[0];
-        double[] appendedNewValues = new double[lineLength * 2];
+        System.arraycopy(appended, 1, appendedNewValues, 0, appended.length - 1);
+        newValues = generator.getNext(1)[0];
         for (int i = 0; i < newValues.length; i++) {
-          appendedNewValues[i] = newValues[i];
-          appendedNewValues[i + lineLength] = newValues[i];
+          appendedNewLineValues[i] = newValues[i];
+          appendedNewLineValues[i + lineLength] = newValues[i];
         }
-        appended[lines.length - 1] = appendedNewValues;
-        image.updateImage(appended);
+        appendedNewValues[lines.length - 1] = appendedNewLineValues;
+        image.updateImage(appendedNewValues);
+        appended = appendedNewValues;
       } else {
         Thread.sleep(2);
       }
@@ -365,7 +369,7 @@ public class LineGeneratorTest {
             System.currentTimeMillis(),
             true);
     double[][] lines = layer2D.getNext(1);
-    List<Double> values = new ArrayList<>();
+    List<Double> values = new ArrayList<>(lineLength);
     double[] line = lines[0];
     for (Double aDouble : line) {
       values.add(aDouble);

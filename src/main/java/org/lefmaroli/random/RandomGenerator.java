@@ -23,19 +23,19 @@ public class RandomGenerator {
 
   private static void generateMultiDSamples(
       Random randomGenerator, int dimensions, VectorMultiD[] templates) {
-    double lengthLimit = 1E-4;
-    double max = 1.0;
-    double min = -1.0;
-    for (int i = 0; i < NUMBER_OF_TEMPLATES; i++) {
-      VectorMultiD vectorMultiD = new VectorMultiD(0);
+    var lengthLimit = 1E-4;
+    var max = 1.0;
+    var min = -1.0;
+    for (var i = 0; i < NUMBER_OF_TEMPLATES; i++) {
+      var vectorMultiD = new VectorMultiD(0);
       if (dimensions == 1) {
         double value = randomGenerator.nextDouble() * (max - min + 1) + min;
         templates[i] = new VectorMultiD(value);
       } else {
-        double length = 0.0;
-        double[] coordinates = new double[dimensions];
+        var length = 0.0;
+        var coordinates = new double[dimensions];
         while (length < lengthLimit) {
-          for (int j = 0; j < dimensions; j++) {
+          for (var j = 0; j < dimensions; j++) {
             coordinates[j] = randomGenerator.nextDouble() * (max - min + 1) + min;
           }
           vectorMultiD = new VectorMultiD(coordinates);
@@ -47,12 +47,13 @@ public class RandomGenerator {
   }
 
   public VectorMultiD getRandomUnitVectorOfDim(int dimension) {
-    if (!UNIT_VECTORS_TEMPLATES_MULTI_D.containsKey(dimension)) {
-      UNIT_VECTORS_TEMPLATES_MULTI_D.put(dimension, new VectorMultiD[NUMBER_OF_TEMPLATES]);
+    UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(dimension, k-> {
+      var v = new VectorMultiD[NUMBER_OF_TEMPLATES];
       generateMultiDSamples(
-          basicRandGenerator, dimension, UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension));
-    }
-    int rand = basicRandGenerator.nextInt(NUMBER_OF_TEMPLATES);
+          basicRandGenerator, dimension, v);
+      return v;
+    });
+    var rand = basicRandGenerator.nextInt(NUMBER_OF_TEMPLATES);
     return UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension)[rand];
   }
 }

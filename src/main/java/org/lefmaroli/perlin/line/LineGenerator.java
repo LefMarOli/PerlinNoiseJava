@@ -96,8 +96,8 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   @Override
   protected double[][] generateNextSegment() {
-    double[][] results = new double[noiseSegmentLength][lineLength];
-    for (int i = 0; i < noiseSegmentLength; i++) {
+    var results = new double[noiseSegmentLength][lineLength];
+    for (var i = 0; i < noiseSegmentLength; i++) {
       currentPosition++;
       double[] line = processNoiseDomain(currentPosition);
       System.arraycopy(line, 0, results[i], 0, line.length);
@@ -122,7 +122,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   private double[] processNoiseDomain(int noiseIndex) {
     double noiseDist = (double) (noiseIndex) * getStepSize();
-    for (int lineIndex = 0; lineIndex < lineLength; lineIndex++) {
+    for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
       lineData[lineIndex] = processLineDomain(noiseDist, lineIndex);
     }
     return lineData;

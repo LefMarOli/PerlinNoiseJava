@@ -5,13 +5,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.lefmaroli.configuration.ConfigurationLoader;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 
 @Ignore("Tests skipped, visual assessment only")
 public class PerlinNoiseVisualizeTests {
+
+  private static final Logger LOGGER = LogManager.getLogger(PerlinNoiseVisualizeTests.class);
 
   @Test
   public void test1D() {
@@ -74,7 +79,7 @@ public class PerlinNoiseVisualizeTests {
       }
     }
 
-    System.out.println("Min: " + min + ", Max: " + max);
+    LOGGER.debug("Min: " + min + ", Max: " + max);
 
     LineChart chart = new LineChart("Test", "length", "values");
     String label = "line";
@@ -91,11 +96,11 @@ public class PerlinNoiseVisualizeTests {
           values[i] = newValue;
           if (newValue > max) {
             max = newValue;
-            System.out.println("New max: " + max);
+            LOGGER.debug("New max: " + max);
           }
           if (newValue < min) {
             min = newValue;
-            System.out.println("New min: " + min);
+            LOGGER.debug("New min: " + min);
           }
         }
         EventQueue.invokeLater(

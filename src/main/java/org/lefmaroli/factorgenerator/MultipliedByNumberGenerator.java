@@ -7,7 +7,7 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
   private N previousValue;
   private boolean firstCall = true;
 
-  public MultipliedByNumberGenerator(N initialValue, double factor) {
+  protected MultipliedByNumberGenerator(N initialValue, double factor) {
     this.initialValue = initialValue;
     this.factor = factor;
   }
@@ -19,7 +19,7 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
       previousValue = initialValue;
       return initialValue;
     } else {
-      N newValue = getXMultipliedByY(previousValue, factor);
+      var newValue = getXMultipliedByY(previousValue, factor);
       previousValue = newValue;
       return newValue;
     }

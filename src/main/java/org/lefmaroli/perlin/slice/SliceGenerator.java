@@ -133,8 +133,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
 
   @Override
   protected double[][][] generateNextSegment() {
-    double[][][] results = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
-    for (int i = 0; i < noiseSegmentLength; i++) {
+    var results = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
+    for (var i = 0; i < noiseSegmentLength; i++) {
       currentPosInNoiseInterpolation++;
       System.arraycopy(
           processNoiseDomain(currentPosInNoiseInterpolation), 0, results[i], 0, sliceWidth);
@@ -161,9 +161,9 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   private double[][] processNoiseDomain(int noiseIndex) {
-    double[][] slice = new double[sliceWidth][sliceHeight];
+    var slice = new double[sliceWidth][sliceHeight];
     double noiseDist = (double) (noiseIndex) * getStepSize();
-    for (int widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
+    for (var widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
       System.arraycopy(
           processSliceWidthDomain(noiseDist, widthIndex), 0, slice[widthIndex], 0, sliceHeight);
     }
@@ -177,7 +177,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     } else {
       widthDist = (double) (widthIndex) / (widthInterpolationPoints);
     }
-    for (int heightIndex = 0; heightIndex < sliceHeight; heightIndex++) {
+    for (var heightIndex = 0; heightIndex < sliceHeight; heightIndex++) {
       line[heightIndex] = processSliceHeightDomain(noiseDist, widthDist, heightIndex);
     }
     return line;

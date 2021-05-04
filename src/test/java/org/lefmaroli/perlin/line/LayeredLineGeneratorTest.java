@@ -19,7 +19,7 @@ public class LayeredLineGeneratorTest {
   private static final int defaultLineLength = 125;
   private LayeredLineGenerator defaultGenerator;
   private List<LineNoiseGenerator> layers;
-  private boolean isCircularDefault = false;
+  private static final boolean isCircularDefault = false;
 
   @Before
   public void setup() {

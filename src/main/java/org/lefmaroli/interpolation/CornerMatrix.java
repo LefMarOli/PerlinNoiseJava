@@ -12,12 +12,12 @@ public abstract class CornerMatrix {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder().append("CornerMatrix{");
-    int[] indices = new int[getDimension()];
+    var builder = new StringBuilder("CornerMatrix{");
+    var indices = new int[getDimension()];
     int allRowsCount = 1 << getDimension();
-    for (int i = 0; i < allRowsCount; i++) {
+    for (var i = 0; i < allRowsCount; i++) {
       builder.append(System.lineSeparator());
-      for (int j = 0; j < getDimension(); j++) {
+      for (var j = 0; j < getDimension(); j++) {
         indices[getDimension() - 1 - j] = (i >> j) & 1;
       }
       builder.append(getStringRepresentationForIndices(indices));
@@ -74,11 +74,11 @@ public abstract class CornerMatrix {
     CornerMatrixMultiD(int dimension) {
       this.dimension = dimension;
       if (dimension == 2) {
-        for (int i = 0; i < 2; i++) {
+        for (var i = 0; i < 2; i++) {
           subMatrices[i] = new CornerMatrix1D();
         }
       } else {
-        for (int i = 0; i < 2; i++) {
+        for (var i = 0; i < 2; i++) {
           subMatrices[i] = new CornerMatrixMultiD(dimension - 1);
         }
       }

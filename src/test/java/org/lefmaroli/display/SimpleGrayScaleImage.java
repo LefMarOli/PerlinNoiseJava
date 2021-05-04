@@ -14,7 +14,7 @@ public class SimpleGrayScaleImage {
   private static final Color[] COLORS = new Color[256];
 
   static {
-    for (int i = 0; i <= 255; i++) {
+    for (var i = 0; i <= 255; i++) {
       COLORS[i] = new Color(i, i, i);
     }
   }
@@ -52,12 +52,10 @@ public class SimpleGrayScaleImage {
       }
     }
     EventQueue.invokeLater(
-        () -> {
-          label.setIcon(new ImageIcon(image));
-        });
+        () -> label.setIcon(new ImageIcon(image)));
   }
 
-  private void assertDataIsRectangular(double[][] data) {
+  private static void assertDataIsRectangular(double[][] data) {
     if (data.length < 1) {
       throw new IllegalArgumentException("Provided data is empty");
     }

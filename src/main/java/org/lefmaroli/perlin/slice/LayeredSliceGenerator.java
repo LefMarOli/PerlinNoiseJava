@@ -64,22 +64,21 @@ public class LayeredSliceGenerator
   }
 
   @Override
-  protected double[][][] addTogether(double[][][] results, double[][][] newLayer) {
-    for (int i = 0; i < results.length; i++) {
-      for (int j = 0; j < results[0].length; j++) {
-        for (int k = 0; k < results[0][0].length; k++) {
+  protected void addTogether(double[][][] results, double[][][] newLayer) {
+    for (var i = 0; i < results.length; i++) {
+      for (var j = 0; j < results[0].length; j++) {
+        for (var k = 0; k < results[0][0].length; k++) {
           results[i][j][k] = results[i][j][k] + newLayer[i][j][k];
         }
       }
     }
-    return results;
   }
 
   @Override
   protected double[][][] normalizeBy(double[][][] data, double maxAmplitude) {
-    for (int i = 0; i < data.length; i++) {
-      for (int j = 0; j < data[0].length; j++) {
-        for (int k = 0; k < data[0][0].length; k++) {
+    for (var i = 0; i < data.length; i++) {
+      for (var j = 0; j < data[0].length; j++) {
+        for (var k = 0; k < data[0][0].length; k++) {
           data[i][j][k] = data[i][j][k] / maxAmplitude;
         }
       }
@@ -88,7 +87,7 @@ public class LayeredSliceGenerator
   }
 
   private void assertAllLayersHaveSameSize(List<SliceNoiseGenerator> layers) {
-    for (int i = 0; i < layers.size(); i++) {
+    for (var i = 0; i < layers.size(); i++) {
       if (layers.get(i).getSliceWidth() != sliceWidth) {
         throw new IllegalArgumentException(
             "Layer " + i + " does not have the same slice width as the first provided layer");

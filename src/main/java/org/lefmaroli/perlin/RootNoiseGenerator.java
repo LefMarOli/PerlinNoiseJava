@@ -14,7 +14,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   private final int noiseInterpolationPoints;
   private final double maxAmplitude;
 
-  public RootNoiseGenerator(int noiseInterpolationPoints, double maxAmplitude, long randomSeed) {
+  protected RootNoiseGenerator(int noiseInterpolationPoints, double maxAmplitude, long randomSeed) {
     if (noiseInterpolationPoints < 0) {
       throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
     }
@@ -66,7 +66,7 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   public abstract int getNoiseSegmentLength();
 
   protected void assertValidValues(List<String> names, int... values) {
-    for (int i = 0; i < values.length; i++) {
+    for (var i = 0; i < values.length; i++) {
       if (values[i] < 0) {
         throw new IllegalArgumentException(
             String.format("%s must be greater than 0", names.get(i)));
@@ -81,12 +81,12 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   private C[] computeAtLeast(int count) {
     C[] results = getArrayOfSubType(count);
     if (count < generated.size()) {
-      for (int i = 0; i < count; i++) {
+      for (var i = 0; i < count; i++) {
         results[i] = generated.poll();
       }
     } else {
       int currentIndex = generated.size();
-      for (int i = 0; i < currentIndex; i++) {
+      for (var i = 0; i < currentIndex; i++) {
         results[i] = generated.poll();
       }
       int remainingCount = count - currentIndex;

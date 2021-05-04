@@ -23,7 +23,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }
     this.layers = layers;
-    double sum = 0.0;
+    var sum = 0.0;
     for (L layer : layers) {
       sum += layer.getMaxAmplitude();
     }
@@ -67,7 +67,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
 
   protected abstract N[] initializeResults(int count);
 
-  protected abstract N[] addTogether(N[] results, N[] newLayer);
+  protected abstract void addTogether(N[] results, N[] newLayer);
 
   protected abstract N[] normalizeBy(N[] data, double maxAmplitude);
 

@@ -13,7 +13,7 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
 
   private final boolean isCircular;
 
-  public MultiDimensionalRootNoiseGenerator(
+  protected MultiDimensionalRootNoiseGenerator(
       int noiseInterpolationPoints, double maxAmplitude, long randomSeed, boolean isCircular) {
     super(noiseInterpolationPoints, maxAmplitude, randomSeed);
     this.isCircular = isCircular;
@@ -41,11 +41,8 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
   protected int correctInterpolationPointsForCircularity(
       int interpolationPoints, int dimensionLength, String dimensionName) {
     if (isCircular) {
-      int toEvaluate = interpolationPoints;
-      if (interpolationPoints > dimensionLength) {
-        toEvaluate = dimensionLength;
-      }
-      int newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
+      var toEvaluate = Math.min(interpolationPoints, dimensionLength);
+      var newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
       LogManager.getLogger(this.getClass())
           .warn(
               "Modified required interpolation point count for {} from {} to {} to respect"

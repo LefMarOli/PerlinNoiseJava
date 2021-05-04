@@ -17,8 +17,8 @@ public class SliceNoiseGeneratorBuilderTest {
 
   Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
-  private int sliceWidth = 400;
-  private int sliceHeight = 400;
+  private static final int sliceWidth = 400;
+  private static final int sliceHeight = 400;
 
   @Test
   public void testBuildNoiseSliceNotNull() throws NoiseBuilderException {

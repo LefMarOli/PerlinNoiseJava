@@ -16,7 +16,7 @@ public class LineNoiseGeneratorBuilderTest {
 
   Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
-  private int lineLength = 800;
+  private static final int lineLength = 800;
 
   @Test
   public void testBuildNoiseLineNotNull() throws NoiseBuilderException {

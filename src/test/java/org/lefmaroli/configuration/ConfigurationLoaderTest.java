@@ -1,12 +1,28 @@
 package org.lefmaroli.configuration;
 
+import static org.junit.Assert.assertThrows;
+
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(Parameterized.class)
 public class ConfigurationLoaderTest {
+
+  @Parameter() public String envVar;
+
+  @Parameter(1)
+  public Class<? extends Exception> expectedException;
+
+  @Parameter(2)
+  public String testTitle;
 
   private static String ENV;
 
@@ -33,37 +49,38 @@ public class ConfigurationLoaderTest {
     ConfigurationLoader.clear();
   }
 
-  @Test(expected = ConfigurationException.class)
-  public void testWrongEnvironmentTarget() {
-    System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, "nonsense");
-    ConfigurationLoader.getJitterStrategy();
+  @Parameters(name = "{index}: {2}")
+  public static Iterable<Object[]> data() {
+    String fileSeparator = java.io.File.separator;
+    return Arrays.asList(
+        new Object[][] {
+          {"nonsense", ConfigurationException.class, "Missing config file"},
+          {
+            fileSeparator + "config" + fileSeparator + "missingProperty",
+            MissingConfigurationException.class,
+            "Missing property in config file"
+          },
+          {
+            fileSeparator + "config" + fileSeparator + "classNotFound",
+            ConfigurationException.class,
+            "Class not found"
+          },
+          {
+            fileSeparator + "config" + fileSeparator + "noDefaultConstructor",
+            ConfigurationException.class,
+            "No default constructor"
+          },
+          {
+            fileSeparator + "config" + fileSeparator + "instantiationException",
+            ConfigurationException.class,
+            "Class instantiation exception"
+          },
+        });
   }
 
-  @Test(expected = MissingConfigurationException.class)
-  public void testMissingJitterConfigurationProperty() {
-    System.setProperty(
-        ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, "/config/missingProperty");
-    ConfigurationLoader.getJitterStrategy();
-  }
-
-  @Test(expected = ConfigurationException.class)
-  public void testClassNotFound() {
-    System.setProperty(
-        ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, "/config/classNotFound");
-    ConfigurationLoader.getJitterStrategy();
-  }
-
-  @Test(expected = ConfigurationException.class)
-  public void testNoDefaultConstructor() {
-    System.setProperty(
-        ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, "/config/noDefaultConstructor");
-    ConfigurationLoader.getJitterStrategy();
-  }
-
-  @Test(expected = ConfigurationException.class)
-  public void testInstantiationException() {
-    System.setProperty(
-        ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, "/config/instantiationException");
-    ConfigurationLoader.getJitterStrategy();
+  @Test
+  public void testWrongConfigs() {
+    System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, envVar);
+    assertThrows(expectedException, ConfigurationLoader::getJitterStrategy);
   }
 }

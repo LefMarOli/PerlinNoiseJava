@@ -10,7 +10,7 @@ public class VectorMultiD {
   public VectorMultiD normalize() {
     double length = getLength();
     if (Double.compare(length, 1.0) != 0) {
-      for (int i = 0; i < coordinates.length; i++) {
+      for (var i = 0; i < coordinates.length; i++) {
         coordinates[i] = coordinates[i] / length;
       }
     }
@@ -18,7 +18,7 @@ public class VectorMultiD {
   }
 
   public double getLength() {
-    double result = 0.0;
+    var result = 0.0;
     for (double coordinate : coordinates) {
       result += coordinate * coordinate;
     }
@@ -26,8 +26,8 @@ public class VectorMultiD {
   }
 
   public double getVectorProduct(double... other) {
-    double result = 0.0;
-    for (int i = 0; i < coordinates.length; i++) {
+    var result = 0.0;
+    for (var i = 0; i < coordinates.length; i++) {
       result += coordinates[i] * other[i];
     }
     return result;

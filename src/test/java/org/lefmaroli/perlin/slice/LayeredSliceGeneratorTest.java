@@ -22,7 +22,7 @@ public class LayeredSliceGeneratorTest {
   private static final int defaultSliceHeight = 150;
   private LayeredSliceGenerator defaultGenerator;
   private List<SliceNoiseGenerator> layers;
-  private boolean isCircularDefault = false;
+  private static final boolean isCircularDefault = false;
 
   @Before
   public void setup() {

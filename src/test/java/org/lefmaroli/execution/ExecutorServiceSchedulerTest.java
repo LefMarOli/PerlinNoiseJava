@@ -10,7 +10,7 @@ import org.junit.Test;
 public class ExecutorServiceSchedulerTest {
 
   @Test
-  public void testExecutorServiceSchedulerWithTaskException() throws InterruptedException {
+  public void testExecutorServiceSchedulerWithTaskException() {
     Callable<Double> callableThatThrows =
         () -> {
           throw new Exception("Testing exception handling");

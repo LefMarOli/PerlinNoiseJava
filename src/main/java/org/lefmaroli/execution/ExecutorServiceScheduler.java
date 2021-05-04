@@ -14,10 +14,6 @@ public class ExecutorServiceScheduler implements TaskScheduler {
     this.executorService = Executors.newFixedThreadPool(size);
   }
 
-  public ExecutorServiceScheduler(ExecutorService executorService) {
-    this.executorService = executorService;
-  }
-
   @Override
   public <R> CompletableFuture<R> schedule(Callable<R> task) {
     return CompletableFuture.supplyAsync(
