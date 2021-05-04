@@ -122,9 +122,7 @@ public class LayeredSliceGeneratorTest {
     for (double[] lines : slice) {
       for (double value : lines) {
         assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
-        assertTrue(
-            "Actual value greater than 1.0:" + value,
-            value <= 1.0);
+        assertTrue("Actual value greater than 1.0:" + value, value <= 1.0);
       }
     }
   }
