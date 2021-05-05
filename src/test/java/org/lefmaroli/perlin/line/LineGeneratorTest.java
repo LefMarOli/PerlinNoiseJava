@@ -19,6 +19,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.perlin.point.PointGenerator;
 
 public class LineGeneratorTest {
 
@@ -146,6 +147,20 @@ public class LineGeneratorTest {
     assertEquals(nextSegment1.length, nextSegment2.length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
       assertEquals(nextSegment1[i], nextSegment2[i], 0.0);
+    }
+  }
+
+  @Test
+  public void testCreateDifferentPointsForDifferentSeed(){
+    long randomSeed = System.currentTimeMillis();
+    LineGenerator layer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
+    LineGenerator sameLayer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed + 1, isCircular);
+    double[] nextSegment1 = layer.getNext();
+    double[] nextSegment2 = sameLayer.getNext();
+    assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    for (int i = 0; i < nextSegment1.length; i++) {
+      double val = nextSegment1[i];
+      assertNotEquals("Values are equal for i: " + i + ", value: " + val, val, nextSegment2[i]);
     }
   }
 

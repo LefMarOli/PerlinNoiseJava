@@ -229,6 +229,35 @@ public class SliceGeneratorTest {
   }
 
   @Test
+  public void testCreateDifferentGeneratedSlicesForDifferentRandomSeed() {
+    SliceGenerator diffRandSeed =
+        new SliceGenerator(
+            noiseInterpolationPoints,
+            widthInterpolationPoints,
+            heightInterpolationPoints,
+            sliceWidth,
+            sliceHeight,
+            maxAmplitude,
+            randomSeed + 1,
+            isCircular);
+    double[][] nextSegment1 = defaultGenerator.getNext();
+    double[][] nextSegment2 = diffRandSeed.getNext();
+
+    assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
+    for (int i = 0; i < nextSegment1.length; i++) {
+      for (int j = 0; j < nextSegment1[0].length; j++) {
+        double val = nextSegment1[i][j];
+        assertNotEquals(
+            "Values are equal for i: " + i + ", j: " + j + ", val: " + val,
+            val,
+            nextSegment2[i][j],
+            0.0);
+      }
+    }
+  }
+
+  @Test
   public void testEquals() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
