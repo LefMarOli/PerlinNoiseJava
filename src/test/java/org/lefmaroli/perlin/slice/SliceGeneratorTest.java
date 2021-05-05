@@ -152,15 +152,16 @@ public class SliceGeneratorTest {
 
   @Test
   public void testHugeSlice() {
-    SliceGenerator sliceGenerator = new SliceGenerator(
-        noiseInterpolationPoints,
-        widthInterpolationPoints,
-        heightInterpolationPoints,
-        10000,
-        10000,
-        maxAmplitude,
-        randomSeed,
-        isCircular);
+    SliceGenerator sliceGenerator =
+        new SliceGenerator(
+            noiseInterpolationPoints,
+            widthInterpolationPoints,
+            heightInterpolationPoints,
+            10000,
+            10000,
+            maxAmplitude,
+            randomSeed,
+            isCircular);
     assertNotNull(sliceGenerator);
   }
 

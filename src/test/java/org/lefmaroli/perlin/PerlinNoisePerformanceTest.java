@@ -3,7 +3,6 @@ package org.lefmaroli.perlin;
 import static org.awaitility.Awaitility.await;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
