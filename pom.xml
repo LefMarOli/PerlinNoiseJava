@@ -4,6 +4,22 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>PerlinNoiseJava</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>PerlinNoiseJava</name>
+  <groupId>org.lefmaroli</groupId>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <url>https://github.com/LefMarOli/PerlinNoiseJava</url>
+
+  <properties>
+    <maven.compiler.source>14</maven.compiler.source>
+    <maven.compiler.target>14</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.language>java</sonar.language>
+  </properties>
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
@@ -107,12 +123,6 @@
 
 
   </dependencies>
-  <groupId>org.lefmaroli</groupId>
-
-  <modelVersion>4.0.0</modelVersion>
-  <!-- FIXME change it to the project's website -->
-  <name>PerlinNoiseJava</name>
-  <!--  <url>http://www.example.com</url>-->
 
   <profiles>
     <profile>
@@ -168,21 +178,5 @@
       </properties>
     </profile>
   </profiles>
-
-  <properties>
-    <code.coverage.exclusions>
-      <!--      **/com/wkrzywiec/medium/noticeboard/controller/dto/**,-->
-      <!--      **/com/wkrzywiec/medium/noticeboard/entity/**,-->
-      <!--      **/com/wkrzywiec/medium/noticeboard/Application.java-->
-    </code.coverage.exclusions>
-    <maven.compiler.source>14</maven.compiler.source>
-    <maven.compiler.target>14</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-    <sonar.language>java</sonar.language>
-  </properties>
-
-  <version>1.0-SNAPSHOT</version>
 
 </project>
