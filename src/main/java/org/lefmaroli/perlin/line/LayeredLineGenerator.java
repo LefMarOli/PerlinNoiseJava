@@ -56,7 +56,7 @@ public class LayeredLineGenerator
   }
 
   @Override
-  protected double[] resetContainer(double[] container){
+  protected double[] resetContainer(double[] container) {
     Arrays.fill(container, 0.0);
     return container;
   }

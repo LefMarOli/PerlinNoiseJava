@@ -86,7 +86,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   @Override
-  protected double[] getNewContainer(){
+  protected double[] getNewContainer() {
     return new double[lineLength];
   }
 

@@ -50,7 +50,7 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
   }
 
   @Override
-  protected Double getNewContainer(){
+  protected Double getNewContainer() {
     return 0.0;
   }
 

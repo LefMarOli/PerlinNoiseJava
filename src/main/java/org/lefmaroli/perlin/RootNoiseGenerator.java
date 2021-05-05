@@ -76,14 +76,15 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   }
 
   protected abstract C generateNextSegment(C container);
+
   protected abstract C getNewContainer();
 
   private void addNextNoiseSegmentToQueue() {
     C container;
-    if(containersCount < 2){
+    if (containersCount < 2) {
       containersCount++;
       container = getNewContainer();
-    }else{
+    } else {
       container = containers.poll();
     }
     generated.add(generateNextSegment(container));

@@ -65,7 +65,7 @@ public class LayeredSliceGenerator
   }
 
   @Override
-  protected double[][] resetContainer(double[][] container){
+  protected double[][] resetContainer(double[][] container) {
     for (double[] rows : container) {
       Arrays.fill(rows, 0.0);
     }

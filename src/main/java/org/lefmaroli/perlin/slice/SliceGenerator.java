@@ -123,7 +123,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   @Override
-  protected double[][] getNewContainer(){
+  protected double[][] getNewContainer() {
     return new double[sliceWidth][sliceHeight];
   }
 

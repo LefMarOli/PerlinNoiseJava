@@ -44,10 +44,10 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
   @Override
   public N getNext() {
     N container;
-    if(containersCount < 2){
+    if (containersCount < 2) {
       containersCount++;
       container = getNewContainer();
-    }else{
+    } else {
       container = containers.poll();
     }
     addNextToQueue(container);
@@ -56,7 +56,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     return nextValue;
   }
 
-  private void addNextToQueue(N container){
+  private void addNextToQueue(N container) {
     container = resetContainer(container);
     for (L layer : layers) {
       container = addTogether(container, layer.getNext());
