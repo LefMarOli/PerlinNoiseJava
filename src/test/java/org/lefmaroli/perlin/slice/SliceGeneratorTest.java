@@ -3,6 +3,7 @@ package org.lefmaroli.perlin.slice;
 import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.jparams.verifier.tostring.NameStyle;
@@ -151,7 +152,7 @@ public class SliceGeneratorTest {
 
   @Test
   public void testHugeSlice() {
-    new SliceGenerator(
+    SliceGenerator sliceGenerator = new SliceGenerator(
         noiseInterpolationPoints,
         widthInterpolationPoints,
         heightInterpolationPoints,
@@ -160,6 +161,7 @@ public class SliceGeneratorTest {
         maxAmplitude,
         randomSeed,
         isCircular);
+    assertNotNull(sliceGenerator);
   }
 
   @Test

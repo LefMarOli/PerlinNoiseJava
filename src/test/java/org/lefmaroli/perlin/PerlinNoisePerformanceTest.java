@@ -1,5 +1,9 @@
 package org.lefmaroli.perlin;
 
+import static org.awaitility.Awaitility.await;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,11 +16,12 @@ public class PerlinNoisePerformanceTest {
     perlinNoise = new PerlinNoise(1, System.currentTimeMillis());
   }
 
-  @Test(timeout = 20)
+  @Test
   public void testPerformance() {
     int numIterations = 10000;
     for (int i = 0; i < numIterations; i++) {
       perlinNoise.getFor(i * 0.5);
     }
+    await().atMost(Duration.ofMillis(20));
   }
 }

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class InterpolationTestWithCornerMatrix {
+public class InterpolationWithCornerMatrixTest {
 
   @Test
   public void test1D() {

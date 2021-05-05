@@ -10,7 +10,7 @@ public abstract class JitterTask<R> implements Callable<R> {
   @Override
   public R call() {
     JITTER_STRATEGY.jitter();
-    R result = process();
+    var result = process();
     JITTER_STRATEGY.jitter();
     return result;
   }
