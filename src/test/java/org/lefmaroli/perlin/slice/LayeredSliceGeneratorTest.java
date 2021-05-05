@@ -23,8 +23,8 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 public class LayeredSliceGeneratorTest {
 
   private static final double maxAmplitude = 1.75;
-  private static final int defaultSliceWidth = 200;
-  private static final int defaultSliceHeight = 200;
+  private static final int defaultSliceWidth = 500;
+  private static final int defaultSliceHeight = 500;
   private LayeredSliceGenerator defaultGenerator;
   private List<SliceNoiseGenerator> layers;
   private static final boolean isCircularDefault = false;
@@ -247,14 +247,14 @@ public class LayeredSliceGeneratorTest {
               image.updateImage(newSlice);
             },
             5,
-            100,
+            300,
             TimeUnit.MILLISECONDS);
 
-    int testDurationInMs = 15;
+    int testDurationInMs = 500;
     ses.schedule(
         () -> {
           scheduledFuture.cancel(true);
-          ses.shutdown();
+          ses.shutdownNow();
         },
         testDurationInMs,
         TimeUnit.SECONDS);

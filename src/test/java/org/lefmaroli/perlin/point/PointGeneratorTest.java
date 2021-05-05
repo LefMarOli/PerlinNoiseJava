@@ -133,7 +133,8 @@ public class PointGeneratorTest {
             "currentPosition",
             "generated",
             "noiseSegmentLength",
-            "results",
+            "containers",
+            "containersCount",
             "stepSize",
             "perlin",
             "perlinData")

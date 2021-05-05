@@ -1,7 +1,9 @@
 package org.lefmaroli.perlin.layers;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Queue;
 import org.lefmaroli.perlin.INoiseGenerator;
 
 public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
@@ -9,6 +11,9 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
 
   private final double maxAmplitude;
   private final List<L> layers;
+  private final Queue<N> generated = new LinkedList<>();
+  private final Queue<N> containers = new LinkedList<>();
+  private int containersCount = 0;
 
   protected LayeredNoiseGenerator(List<L> layers) {
     if (layers.isEmpty()) {
@@ -38,11 +43,25 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
 
   @Override
   public N getNext() {
-    var results = getContainer();
-    for (L layer : layers) {
-      results = addTogether(results, layer.getNext());
+    N container;
+    if(containersCount < 2){
+      containersCount++;
+      container = getNewContainer();
+    }else{
+      container = containers.poll();
     }
-    return normalizeBy(results, maxAmplitude);
+    addNextToQueue(container);
+    var nextValue = generated.poll();
+    containers.add(nextValue);
+    return nextValue;
+  }
+
+  private void addNextToQueue(N container){
+    container = resetContainer(container);
+    for (L layer : layers) {
+      container = addTogether(container, layer.getNext());
+    }
+    generated.add(normalizeBy(container, maxAmplitude));
   }
 
   public double getMaxAmplitude() {
@@ -57,7 +76,9 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     return layers;
   }
 
-  protected abstract N getContainer();
+  protected abstract N getNewContainer();
+
+  protected abstract N resetContainer(N container);
 
   protected abstract N addTogether(N results, N newLayer);
 

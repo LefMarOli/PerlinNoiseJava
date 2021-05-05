@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.line;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
@@ -9,12 +10,10 @@ public class LayeredLineGenerator
     implements LineNoiseGenerator {
 
   private final int lineLength;
-  private final double[] container;
 
   LayeredLineGenerator(List<LineNoiseGenerator> layers) {
     super(layers);
     this.lineLength = layers.get(0).getLineLength();
-    this.container = new double[lineLength];
     assertAllLayersHaveSameLineLength(layers);
   }
 
@@ -52,7 +51,13 @@ public class LayeredLineGenerator
   }
 
   @Override
-  protected double[] getContainer() {
+  protected double[] getNewContainer() {
+    return new double[getLineLength()];
+  }
+
+  @Override
+  protected double[] resetContainer(double[] container){
+    Arrays.fill(container, 0.0);
     return container;
   }
 

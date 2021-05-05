@@ -21,7 +21,12 @@ public class LayeredPointGenerator extends LayeredNoiseGenerator<Double, PointNo
   }
 
   @Override
-  protected Double getContainer() {
+  protected Double getNewContainer() {
+    return 0.0;
+  }
+
+  @Override
+  protected Double resetContainer(Double container){
     return 0.0;
   }
 

@@ -22,13 +22,11 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private final int heightInterpolationPoints;
   private final int sliceWidth;
   private final int sliceHeight;
-  private final int noiseSegmentLength;
   private int currentPosInNoiseInterpolation = 0;
   private final double circularWidthResolution;
   private final double circularHeightResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
-  private final double[][][] segmentResult;
 
   SliceGenerator(
       int noiseInterpolationPoints,
@@ -50,8 +48,6 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
             heightInterpolationPoint, sliceHeight, "slice height");
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
-    this.noiseSegmentLength = computeNoiseSegmentLength(sliceWidth, sliceHeight);
-    this.segmentResult = new double[getNoiseSegmentLength()][sliceWidth][sliceHeight];
     this.circularWidthResolution = this.widthInterpolationPoints / (double) this.sliceWidth;
     this.circularHeightResolution = this.heightInterpolationPoints / (double) this.sliceHeight;
     if (isCircular) {
@@ -127,30 +123,15 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   @Override
-  public int getNoiseSegmentLength() {
-    return noiseSegmentLength;
+  protected double[][] getNewContainer(){
+    return new double[sliceWidth][sliceHeight];
   }
 
   @Override
-  protected double[][][] generateNextSegment() {
-    for (var i = 0; i < noiseSegmentLength; i++) {
-      currentPosInNoiseInterpolation++;
-      processNoiseDomain(currentPosInNoiseInterpolation, segmentResult[i]);
-    }
-    return segmentResult;
-  }
-
-  private int computeNoiseSegmentLength(int sliceWidth, int sliceHeight) {
-    int computedNoiseSegmentLength =
-        Math.min(MB_10_IN_DOUBLES_SIZE / (sliceWidth * sliceHeight), getNoiseInterpolationPoints());
-    if (computedNoiseSegmentLength < 1) {
-      computedNoiseSegmentLength = 1;
-      int estimatedSliceSize = sliceWidth * sliceHeight / MB_10_IN_DOUBLES_SIZE * 10;
-      LOGGER.warn(
-          "Creating slice generator of more than 10MB in size (Estimated at {}MB)",
-          estimatedSliceSize);
-    }
-    return computedNoiseSegmentLength;
+  protected double[][] generateNextSegment(double[][] container) {
+    currentPosInNoiseInterpolation++;
+    processNoiseDomain(currentPosInNoiseInterpolation, container);
+    return container;
   }
 
   private void processNoiseDomain(int noiseIndex, double[][] slice) {

@@ -14,12 +14,10 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   private final int lineInterpolationPoints;
   private final int lineLength;
-  private final int noiseSegmentLength;
   private int currentPosition = 0;
   private final double circularResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
-  private final double[][] segmentResult;
 
   public LineGenerator(
       int noiseInterpolationPoints,
@@ -34,8 +32,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     this.lineInterpolationPoints =
         correctInterpolationPointsForCircularity(
             lineInterpolationPoints, lineLength, "line length");
-    this.noiseSegmentLength = computeNoiseSegmentLength(lineLength);
-    this.segmentResult = new double[noiseSegmentLength][lineLength];
     this.circularResolution = this.lineInterpolationPoints / (double) this.lineLength;
     if (isCircular) {
       perlin = new PerlinNoise(3, randomSeed);
@@ -90,27 +86,15 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   @Override
-  public int getNoiseSegmentLength() {
-    return noiseSegmentLength;
+  protected double[] getNewContainer(){
+    return new double[lineLength];
   }
 
   @Override
-  protected double[][] generateNextSegment() {
-    for (var i = 0; i < noiseSegmentLength; i++) {
-      currentPosition++;
-      processNoiseDomain(currentPosition, segmentResult[i]);
-    }
-    return segmentResult;
-  }
-
-  private int computeNoiseSegmentLength(int lineLength) {
-    int computedNoiseSegmentLength =
-        Math.min(MB_10_IN_DOUBLES_SIZE / lineLength, getNoiseInterpolationPoints());
-    if (computedNoiseSegmentLength < 1) {
-      computedNoiseSegmentLength = 1;
-      LOGGER.warn("Creating line generator of more than 10MB in size");
-    }
-    return computedNoiseSegmentLength;
+  protected double[] generateNextSegment(double[] container) {
+    currentPosition++;
+    processNoiseDomain(currentPosition, container);
+    return container;
   }
 
   private void processNoiseDomain(int noiseIndex, double[] lineData) {

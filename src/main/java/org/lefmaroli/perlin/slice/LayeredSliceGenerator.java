@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.slice;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
@@ -10,13 +11,11 @@ public class LayeredSliceGenerator
 
   private final int sliceWidth;
   private final int sliceHeight;
-  private final double[][] container;
 
   protected LayeredSliceGenerator(List<SliceNoiseGenerator> sliceNoiseGenerators) {
     super(sliceNoiseGenerators);
     this.sliceWidth = sliceNoiseGenerators.get(0).getSliceWidth();
     this.sliceHeight = sliceNoiseGenerators.get(0).getSliceHeight();
-    this.container = new double[getSliceWidth()][getSliceHeight()];
     assertAllLayersHaveSameSize(sliceNoiseGenerators);
   }
 
@@ -61,7 +60,15 @@ public class LayeredSliceGenerator
   }
 
   @Override
-  protected double[][] getContainer() {
+  protected double[][] getNewContainer() {
+    return new double[getSliceWidth()][getSliceHeight()];
+  }
+
+  @Override
+  protected double[][] resetContainer(double[][] container){
+    for (double[] rows : container) {
+      Arrays.fill(rows, 0.0);
+    }
     return container;
   }
 

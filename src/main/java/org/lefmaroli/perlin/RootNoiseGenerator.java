@@ -1,6 +1,5 @@
 package org.lefmaroli.perlin;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +9,8 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
 
   protected final long randomSeed;
   private final Queue<C> generated = new LinkedList<>();
+  private final Queue<C> containers = new LinkedList<>();
+  private int containersCount = 0;
   private final double stepSize;
   private final int noiseInterpolationPoints;
   private final double maxAmplitude;
@@ -33,10 +34,12 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   }
 
   public C getNext() {
-    if (generated.size() - 1 < noiseInterpolationPoints) {
+    if (generated.isEmpty()) {
       addNextNoiseSegmentToQueue();
     }
-    return generated.poll();
+    var container = generated.poll();
+    containers.add(container);
+    return container;
   }
 
   @Override
@@ -63,8 +66,6 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
     return maxAmplitude;
   }
 
-  public abstract int getNoiseSegmentLength();
-
   protected static void assertValidValues(List<String> names, int... values) {
     for (var i = 0; i < values.length; i++) {
       if (values[i] < 0) {
@@ -74,9 +75,17 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
     }
   }
 
-  protected abstract C[] generateNextSegment();
+  protected abstract C generateNextSegment(C container);
+  protected abstract C getNewContainer();
 
   private void addNextNoiseSegmentToQueue() {
-    generated.addAll(Arrays.asList(generateNextSegment()));
+    C container;
+    if(containersCount < 2){
+      containersCount++;
+      container = getNewContainer();
+    }else{
+      container = containers.poll();
+    }
+    generated.add(generateNextSegment(container));
   }
 }

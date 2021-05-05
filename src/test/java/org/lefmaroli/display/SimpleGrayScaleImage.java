@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 public class SimpleGrayScaleImage {
 
@@ -22,6 +23,7 @@ public class SimpleGrayScaleImage {
   private final int pixelScale;
   private final JFrame framedImage;
   private final JLabel label;
+  private final int[][] colors;
   private final int width;
   private final int length;
 
@@ -30,11 +32,11 @@ public class SimpleGrayScaleImage {
     this.width = data.length;
     this.length = data[0].length;
     this.pixelScale = pixelScale;
+    this.colors = new int[width][length];
     image = new BufferedImage(width, length, BufferedImage.TYPE_BYTE_GRAY);
     this.label = new JLabel();
     framedImage = initializeImageFrame(label);
     updateImage(data);
-    framedImage.pack();
   }
 
   public void setVisible() {
@@ -43,15 +45,24 @@ public class SimpleGrayScaleImage {
 
   public void updateImage(double[][] newData) {
     assertNewDataHasSameDimensions(newData);
-    Graphics2D g = (Graphics2D) image.getGraphics();
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < length; j++) {
         int colorIndex = (int) (newData[i][j] * 255);
-        g.setColor(COLORS[colorIndex]);
-        g.fillRect(i, j, pixelScale, pixelScale);
+        colors[i][j] = colorIndex;
       }
     }
-    label.setIcon(new ImageIcon(image));
+    SwingUtilities.invokeLater(
+        () -> {
+          Graphics2D g = (Graphics2D) image.getGraphics();
+          for (int i = 0; i < width; i++) {
+            for (int j = 0; j < length; j++) {
+              g.setColor(COLORS[colors[i][j]]);
+              g.fillRect(i, j, pixelScale, pixelScale);
+            }
+          }
+          label.setIcon(new ImageIcon(image));
+          framedImage.pack();
+        });
   }
 
   private static void assertDataIsRectangular(double[][] data) {

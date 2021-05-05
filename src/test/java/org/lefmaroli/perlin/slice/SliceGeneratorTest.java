@@ -408,7 +408,8 @@ public class SliceGeneratorTest {
             "randomBoundsYCount",
             "previousBounds",
             "currentBounds",
-            "segmentResult",
+            "containers",
+            "containersCount",
             "line",
             "noiseSegmentLength",
             "currentPosInNoiseInterpolation",
@@ -512,7 +513,7 @@ public class SliceGeneratorTest {
                   label);
             },
             5,
-            30,
+            15,
             TimeUnit.MILLISECONDS);
 
     ses.schedule(
@@ -563,7 +564,7 @@ public class SliceGeneratorTest {
               image.updateImage(patched);
             },
             5,
-            60,
+            15,
             TimeUnit.MILLISECONDS);
 
     int testDurationInMs = 15;
@@ -586,8 +587,8 @@ public class SliceGeneratorTest {
             noiseInterpolationPoints,
             widthInterpolationPoints,
             heightInterpolationPoints,
-            sliceWidth,
-            sliceHeight,
+            500,
+            500,
             1.0,
             System.currentTimeMillis(),
             false);
@@ -598,13 +599,13 @@ public class SliceGeneratorTest {
     ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
     ScheduledFuture<?> scheduledFuture =
         ses.scheduleAtFixedRate(
-            () -> image.updateImage(generator.getNext()), 5, 60, TimeUnit.MILLISECONDS);
+            () -> image.updateImage(generator.getNext()), 5, 15, TimeUnit.MILLISECONDS);
 
     int testDurationInMs = 15;
     ses.schedule(
         () -> {
           scheduledFuture.cancel(true);
-          ses.shutdown();
+          ses.shutdownNow();
         },
         testDurationInMs,
         TimeUnit.SECONDS);
