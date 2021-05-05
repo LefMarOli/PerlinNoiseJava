@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class PointGeneratorTest {
 
-  private static final int interpolationPoints = 50;
+  private static final int interpolationPoints = 51;
   private static final int expectedCount = 500;
   private final long randomSeed = System.currentTimeMillis();
   private PointGenerator defaultGenerator;
@@ -38,11 +38,11 @@ public class PointGeneratorTest {
 
   @Test
   public void testValuesBounded() {
-    for (int i = 0; i < expectedCount; i++) {
+    for (int i = 0; i < 1000000; i++) {
       Double pointNoiseData = defaultGenerator.getNext();
       assertNotNull(pointNoiseData);
-      assertTrue(pointNoiseData < 1.0);
-      assertTrue(pointNoiseData > 0.0);
+      assertTrue("Value is greater than 1.0:" + pointNoiseData,pointNoiseData < 1.0);
+      assertTrue("Value is lower than 0.0:" + pointNoiseData, pointNoiseData > 0.0);
     }
   }
 
@@ -68,9 +68,18 @@ public class PointGeneratorTest {
 
   @Test
   public void testCreateSamePoints() {
-    PointGenerator sameLayer = new PointGenerator(50, 1.0, randomSeed);
+    PointGenerator sameLayer = new PointGenerator(interpolationPoints, 1.0, randomSeed);
     for (int i = 0; i < expectedCount; i++) {
       assertEquals(defaultGenerator.getNext(), sameLayer.getNext(), 0.0);
+    }
+  }
+
+  @Test
+  public void testCreateDifferentPointsForDifferentSeed(){
+    PointGenerator sameLayer = new PointGenerator(interpolationPoints, 1.0, randomSeed + 1);
+    for (int i = 0; i < expectedCount; i++) {
+      Double val = defaultGenerator.getNext();
+      assertNotEquals("Values are equal for i: " + i + ", value: " + val, val, sameLayer.getNext());
     }
   }
 

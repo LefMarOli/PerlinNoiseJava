@@ -9,7 +9,7 @@ public class PerlinNoisePerformanceTest {
 
   @Before
   public void setup() {
-    perlinNoise = new PerlinNoise(1);
+    perlinNoise = new PerlinNoise(1, System.currentTimeMillis());
   }
 
   @Test(timeout = 20)

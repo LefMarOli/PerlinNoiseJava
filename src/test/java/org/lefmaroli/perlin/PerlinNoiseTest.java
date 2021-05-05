@@ -6,21 +6,23 @@ import org.junit.Test;
 
 public class PerlinNoiseTest {
 
+  private long randomSeed = System.currentTimeMillis();
+
   @Test(expected = IllegalArgumentException.class)
   public void testWrongNumberOfIndices() {
-    PerlinNoise perlinNoise = new PerlinNoise(2);
+    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     perlinNoise.getFor(0.5);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testWrongNumberOfIndices2() {
-    PerlinNoise perlinNoise = new PerlinNoise(2);
+    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     perlinNoise.getFor(0.5, 0.3, 15.4);
   }
 
   @Test
   public void testValueBounded1D() {
-    PerlinNoise perlinNoise = new PerlinNoise(1);
+    PerlinNoise perlinNoise = new PerlinNoise(1, randomSeed);
     int numIterations = 10000;
     double value;
     for (int i = 0; i < numIterations; i++) {
@@ -32,7 +34,7 @@ public class PerlinNoiseTest {
 
   @Test
   public void testValueBounded2D() {
-    PerlinNoise perlinNoise = new PerlinNoise(2);
+    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     int numIterations = 1000;
     double value;
     for (int i = 0; i < numIterations; i++) {
@@ -46,7 +48,7 @@ public class PerlinNoiseTest {
 
   @Test
   public void testValueBounded3D() {
-    PerlinNoise perlinNoise = new PerlinNoise(3);
+    PerlinNoise perlinNoise = new PerlinNoise(3, randomSeed);
     int numIterations = 100;
     double value;
     for (int i = 0; i < numIterations; i++) {
@@ -62,7 +64,7 @@ public class PerlinNoiseTest {
 
   @Test
   public void testValueBounded4D() {
-    PerlinNoise perlinNoise = new PerlinNoise(4);
+    PerlinNoise perlinNoise = new PerlinNoise(4, randomSeed);
     int numIterations = 10;
     double value;
     for (int i = 0; i < numIterations; i++) {

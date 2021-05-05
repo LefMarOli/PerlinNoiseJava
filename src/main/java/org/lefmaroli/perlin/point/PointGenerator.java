@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin.point;
 
 import java.util.Objects;
+import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
@@ -12,15 +13,16 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
   private static final int MAX_NUMBER_INTERPOLATION_POINTS = 500;
   private final int noiseSegmentLength;
   private final Double[] results;
-  private int currentPosition = 0;
+  private double currentPosition;
   private final PerlinNoise perlin;
   private final double[] perlinData = new double[1];
 
   public PointGenerator(int interpolationPoints, double maxAmplitude, long randomSeed) {
     super(interpolationPoints, maxAmplitude, randomSeed);
     this.noiseSegmentLength = Math.min(interpolationPoints, MAX_NUMBER_INTERPOLATION_POINTS);
+    this.currentPosition = new Random(randomSeed).nextDouble();
     results = new Double[noiseSegmentLength];
-    perlin = new PerlinNoise(1);
+    perlin = new PerlinNoise(1, randomSeed);
     LOGGER.debug("Created new {}", this);
   }
 
@@ -60,7 +62,7 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
   @Override
   protected Double[] generateNextSegment() {
     for (var i = 0; i < noiseSegmentLength; i++) {
-      currentPosition++;
+      currentPosition += 1;
       perlinData[0] = currentPosition * getStepSize();
       results[i] = perlin.getFor(perlinData) * getMaxAmplitude();
     }

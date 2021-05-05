@@ -16,10 +16,11 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 public class PerlinNoiseVisualizeTests {
 
   private static final Logger LOGGER = LogManager.getLogger(PerlinNoiseVisualizeTests.class);
+  private final long randomSeed = System.currentTimeMillis();
 
   @Test
   public void test1D() {
-    PerlinNoise perlin = new PerlinNoise(1);
+    PerlinNoise perlin = new PerlinNoise(1, randomSeed);
     int size = 1024;
     double[] values = new double[size];
     double stepSize = 0.05;
@@ -38,7 +39,7 @@ public class PerlinNoiseVisualizeTests {
 
   @Test
   public void test1D_2() {
-    PerlinNoise perlin = new PerlinNoise(2);
+    PerlinNoise perlin = new PerlinNoise(2, randomSeed);
     int size = 1024;
     double[] values = new double[size];
     double stepSize = 0.05;
@@ -57,7 +58,7 @@ public class PerlinNoiseVisualizeTests {
 
   @Test
   public void test2D() throws InterruptedException {
-    PerlinNoise perlinNoise = new PerlinNoise(2);
+    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     int size = 500;
     double[] values = new double[size];
     double stepSizeX = 0.01;
@@ -119,7 +120,7 @@ public class PerlinNoiseVisualizeTests {
 
   @Test
   public void getNextLines() {
-    PerlinNoise perlinNoise = new PerlinNoise(2);
+    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     final int size = 500;
     double[][] values = new double[size][size];
     double stepSize = 0.01;
@@ -159,7 +160,7 @@ public class PerlinNoiseVisualizeTests {
 
   @Test
   public void getNextSlice() throws InterruptedException {
-    PerlinNoise perlinNoise = new PerlinNoise(3);
+    PerlinNoise perlinNoise = new PerlinNoise(3, randomSeed);
     final int size = 500;
     double[][] values = new double[size][size];
     double stepSize = 0.01;

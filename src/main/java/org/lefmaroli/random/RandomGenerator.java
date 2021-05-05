@@ -29,7 +29,7 @@ public class RandomGenerator {
     for (var i = 0; i < NUMBER_OF_TEMPLATES; i++) {
       var vectorMultiD = new VectorMultiD(0);
       if (dimensions == 1) {
-        double value = randomGenerator.nextDouble() * (max - min + 1) + min;
+        double value = randomGenerator.nextDouble() * (max - min) + min;
         templates[i] = new VectorMultiD(value);
       } else {
         var length = 0.0;

@@ -1,8 +1,7 @@
 package org.lefmaroli.perlin;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ConcurrentHashMap;
 import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.random.RandomGenerator;
@@ -11,34 +10,25 @@ import org.lefmaroli.vector.VectorMultiD;
 public class PerlinNoise {
 
   private static final double MAX_VALUE_VECTOR_PRODUCT = Math.sqrt(2.0) / 2.0;
-  private static final Map<Integer, AtomicBoolean> IS_INITIALIZED_MAP = new HashMap<>(5);
-  private static final Map<Integer, VectorMultiD[]> BOUNDS_MAP = new HashMap<>(1);
+  private static final Map<Long, Map<Integer, VectorMultiD[]>> BOUNDS_MAP = new ConcurrentHashMap<>(1);
 
-  static {
-    for (int i = 1; i <= 5; i++) {
-      IS_INITIALIZED_MAP.put(i, new AtomicBoolean(false));
-    }
-  }
-
-  public static void initializeBoundsForDimension(int dimension) {
-    initializeBoundsForDimension(dimension, System.currentTimeMillis());
-  }
-
-  public static void initializeBoundsForDimension(int dimension, long seed) {
-    // Initialize bounds
-    if (!IS_INITIALIZED_MAP.containsKey(dimension)) {
+  private static void initializeBoundsForSeedAndDimension(int dimension, long seed) {
+    if(dimension > 5){
       throw new IllegalArgumentException(
           "Dimension " + dimension + " not supported, max dimension is 5");
     }
-    if (!IS_INITIALIZED_MAP.get(dimension).compareAndExchange(false, true)) {
+    BOUNDS_MAP.putIfAbsent(seed, new ConcurrentHashMap<>(1));
+    Map<Integer, VectorMultiD[]> dimensionToBoundsMap = BOUNDS_MAP.get(seed);
+    dimensionToBoundsMap.computeIfAbsent(dimension, dim -> {
       int numberOfBoundsPerDimension = findNumberOfBoundsForDim(dimension);
       var numberOfBounds = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, dimension);
-      BOUNDS_MAP.put(dimension, new VectorMultiD[numberOfBounds]);
+      var bounds = new VectorMultiD[numberOfBounds];
       var generator = new RandomGenerator(seed);
       for (var i = 0; i < numberOfBounds; i++) {
-        BOUNDS_MAP.get(dimension)[i] = generator.getRandomUnitVectorOfDim(dimension);
+        bounds[i] = generator.getRandomUnitVectorOfDim(dimension);
       }
-    }
+      return bounds;
+    });
   }
 
   private static int findNumberOfBoundsForDim(int dim) {
@@ -67,9 +57,11 @@ public class PerlinNoise {
   private final int[] indicesArray;
   private final double[] cornerDistanceArray;
   private final int dimension;
+  private final long randomSeed;
 
-  public PerlinNoise(int dimension) {
+  public PerlinNoise(int dimension, long randomSeed) {
     this.dimension = dimension;
+    this.randomSeed = randomSeed;
     distancesArray = new double[dimension];
     cornerMatrix = CornerMatrix.getForDimension(dimension);
     indexIntegerParts = new int[dimension];
@@ -80,7 +72,7 @@ public class PerlinNoise {
     for (var i = 0; i < dimension; i++) {
       boundsIndicesMultipliers[i] = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, i);
     }
-    PerlinNoise.initializeBoundsForDimension(dimension);
+    PerlinNoise.initializeBoundsForSeedAndDimension(dimension, randomSeed);
   }
 
   public double getFor(double... coordinates) {
@@ -97,7 +89,7 @@ public class PerlinNoise {
 
     double interpolated = Interpolation.linearWithFade(cornerMatrix, distancesArray);
     if (dimension == 1) {
-      return (interpolated + 1.0) / 2.0;
+      return interpolated + 0.5;
     }
     double adjusted = adjustInRange(interpolated);
     if (adjusted > 1.0) {
@@ -115,7 +107,7 @@ public class PerlinNoise {
           distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
       if (currentDimension == 1) {
         int boundIndex = getBoundIndexFromIndices();
-        VectorMultiD currentBound = BOUNDS_MAP.get(dimension)[boundIndex];
+        VectorMultiD currentBound = BOUNDS_MAP.get(randomSeed).get(dimension)[boundIndex];
         double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
         cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
       } else {
