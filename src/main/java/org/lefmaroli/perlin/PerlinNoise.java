@@ -10,25 +10,29 @@ import org.lefmaroli.vector.VectorMultiD;
 public class PerlinNoise {
 
   private static final double MAX_VALUE_VECTOR_PRODUCT = Math.sqrt(2.0) / 2.0;
-  private static final Map<Long, Map<Integer, VectorMultiD[]>> BOUNDS_MAP = new ConcurrentHashMap<>(1);
+  private static final Map<Long, Map<Integer, VectorMultiD[]>> BOUNDS_MAP =
+      new ConcurrentHashMap<>(1);
 
   private static void initializeBoundsForSeedAndDimension(int dimension, long seed) {
-    if(dimension > 5){
+    if (dimension > 5) {
       throw new IllegalArgumentException(
           "Dimension " + dimension + " not supported, max dimension is 5");
     }
     BOUNDS_MAP.putIfAbsent(seed, new ConcurrentHashMap<>(1));
     Map<Integer, VectorMultiD[]> dimensionToBoundsMap = BOUNDS_MAP.get(seed);
-    dimensionToBoundsMap.computeIfAbsent(dimension, dim -> {
-      int numberOfBoundsPerDimension = findNumberOfBoundsForDim(dimension);
-      var numberOfBounds = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, dimension);
-      var bounds = new VectorMultiD[numberOfBounds];
-      var generator = new RandomGenerator(seed);
-      for (var i = 0; i < numberOfBounds; i++) {
-        bounds[i] = generator.getRandomUnitVectorOfDim(dimension);
-      }
-      return bounds;
-    });
+    dimensionToBoundsMap.computeIfAbsent(
+        dimension,
+        dim -> {
+          int numberOfBoundsPerDimension = findNumberOfBoundsForDim(dimension);
+          var numberOfBounds =
+              getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, dimension);
+          var bounds = new VectorMultiD[numberOfBounds];
+          var generator = new RandomGenerator(seed);
+          for (var i = 0; i < numberOfBounds; i++) {
+            bounds[i] = generator.getRandomUnitVectorOfDim(dimension);
+          }
+          return bounds;
+        });
   }
 
   private static int findNumberOfBoundsForDim(int dim) {

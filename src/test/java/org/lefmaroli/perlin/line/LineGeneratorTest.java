@@ -19,7 +19,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
-import org.lefmaroli.perlin.point.PointGenerator;
 
 public class LineGeneratorTest {
 
@@ -151,10 +150,11 @@ public class LineGeneratorTest {
   }
 
   @Test
-  public void testCreateDifferentPointsForDifferentSeed(){
+  public void testCreateDifferentPointsForDifferentSeed() {
     long randomSeed = System.currentTimeMillis();
     LineGenerator layer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed, isCircular);
-    LineGenerator sameLayer = new LineGenerator(50, 50, lineLength, 1.0, randomSeed + 1, isCircular);
+    LineGenerator sameLayer =
+        new LineGenerator(50, 50, lineLength, 1.0, randomSeed + 1, isCircular);
     double[] nextSegment1 = layer.getNext();
     double[] nextSegment2 = sameLayer.getNext();
     assertEquals(nextSegment1.length, nextSegment2.length, 0);

@@ -41,7 +41,7 @@ public class PointGeneratorTest {
     for (int i = 0; i < 1000000; i++) {
       Double pointNoiseData = defaultGenerator.getNext();
       assertNotNull(pointNoiseData);
-      assertTrue("Value is greater than 1.0:" + pointNoiseData,pointNoiseData < 1.0);
+      assertTrue("Value is greater than 1.0:" + pointNoiseData, pointNoiseData < 1.0);
       assertTrue("Value is lower than 0.0:" + pointNoiseData, pointNoiseData > 0.0);
     }
   }
@@ -75,7 +75,7 @@ public class PointGeneratorTest {
   }
 
   @Test
-  public void testCreateDifferentPointsForDifferentSeed(){
+  public void testCreateDifferentPointsForDifferentSeed() {
     PointGenerator sameLayer = new PointGenerator(interpolationPoints, 1.0, randomSeed + 1);
     for (int i = 0; i < expectedCount; i++) {
       Double val = defaultGenerator.getNext();
