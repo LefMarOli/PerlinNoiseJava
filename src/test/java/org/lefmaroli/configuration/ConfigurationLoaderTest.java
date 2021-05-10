@@ -18,8 +18,10 @@ public class ConfigurationLoaderTest {
 
   private static String ENV;
   @Parameter() public String envVar;
+
   @Parameter(1)
   public Class<? extends Exception> expectedException;
+
   @Parameter(2)
   public String testTitle;
 
