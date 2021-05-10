@@ -18,9 +18,8 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class LineNoiseGeneratorBuilderTest {
 
-  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
-
   private static final int lineLength = 800;
+  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
   @Test
   public void testBuildNoiseLineNotNull() throws NoiseBuilderException {

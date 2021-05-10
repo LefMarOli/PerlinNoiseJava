@@ -10,9 +10,9 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   protected final long randomSeed;
   private final Queue<C> generated = new LinkedList<>();
   private final Queue<C> containers = new LinkedList<>();
-  private int containersCount = 0;
   private final double noiseStepSize;
   private final double maxAmplitude;
+  private int containersCount = 0;
 
   protected RootNoiseGenerator(double noiseStepSize, double maxAmplitude, long randomSeed) {
     if (noiseStepSize < 0.0) {
@@ -21,6 +21,15 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
     this.noiseStepSize = noiseStepSize;
     this.maxAmplitude = maxAmplitude;
     this.randomSeed = randomSeed;
+  }
+
+  protected static void assertValidValues(List<String> names, double... values) {
+    for (var i = 0; i < values.length; i++) {
+      if (values[i] < 0.0) {
+        throw new IllegalArgumentException(
+            String.format("%s must be greater than 0", names.get(i)));
+      }
+    }
   }
 
   public double getNoiseStepSize() {
@@ -58,15 +67,6 @@ public abstract class RootNoiseGenerator<C> implements INoiseGenerator<C> {
   @Override
   public double getMaxAmplitude() {
     return maxAmplitude;
-  }
-
-  protected static void assertValidValues(List<String> names, double... values) {
-    for (var i = 0; i < values.length; i++) {
-      if (values[i] < 0.0) {
-        throw new IllegalArgumentException(
-            String.format("%s must be greater than 0", names.get(i)));
-      }
-    }
   }
 
   protected abstract C generateNextSegment(C container);

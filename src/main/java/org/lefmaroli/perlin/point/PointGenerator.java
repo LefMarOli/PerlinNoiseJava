@@ -10,9 +10,9 @@ import org.lefmaroli.perlin.RootNoiseGenerator;
 public class PointGenerator extends RootNoiseGenerator<Double> implements PointNoiseGenerator {
 
   private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
-  private double currentPosition;
   private final PerlinNoise perlin;
   private final double[] perlinData = new double[1];
+  private double currentPosition;
 
   public PointGenerator(double noiseStepSize, double maxAmplitude, long randomSeed) {
     super(noiseStepSize, maxAmplitude, randomSeed);

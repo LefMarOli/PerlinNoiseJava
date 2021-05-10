@@ -6,15 +6,15 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
-import org.lefmaroli.perlin.exceptions.StepSizeException;
 import org.lefmaroli.perlin.exceptions.NoStepSizeException;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.exceptions.NoiseLayerException;
+import org.lefmaroli.perlin.exceptions.StepSizeException;
 
 public abstract class NoiseBuilder<
     N, L extends INoiseGenerator<N>, B extends NoiseBuilder<N, L, B>> {
   private static final NumberGenerator<Double> DEFAULT_STEP_SIZE_GENERATOR =
-      new DoubleGenerator(1.0/64, 0.5);
+      new DoubleGenerator(1.0 / 64, 0.5);
   private final int dimensions;
   private final List<NumberGenerator<Double>> stepSizeGeneratorsByDimension;
   protected int numberOfLayers = 5;
@@ -25,27 +25,23 @@ public abstract class NoiseBuilder<
     this.dimensions = dimensions;
     this.stepSizeGeneratorsByDimension = new ArrayList<>(dimensions);
     for (var i = 0; i < dimensions; i++) {
-      this.stepSizeGeneratorsByDimension.add(
-          DEFAULT_STEP_SIZE_GENERATOR.getCopy());
+      this.stepSizeGeneratorsByDimension.add(DEFAULT_STEP_SIZE_GENERATOR.getCopy());
     }
   }
 
-  private static void assertStepSizeForAll(List<Double> stepSizes)
-      throws StepSizeException {
+  private static void assertStepSizeForAll(List<Double> stepSizes) throws StepSizeException {
     for (Double stepSize : stepSizes) {
       assertStepSize(stepSize);
     }
   }
 
-  private static void assertStepSize(double stepSize)
-      throws StepSizeException {
+  private static void assertStepSize(double stepSize) throws StepSizeException {
     if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {
       throw new NoStepSizeException();
     }
   }
 
-  public B withNoiseStepSizeGenerator(
-      NumberGenerator<Double> stepSizeGenerator) {
+  public B withNoiseStepSizeGenerator(NumberGenerator<Double> stepSizeGenerator) {
     setStepSizeGeneratorForDimension(1, stepSizeGenerator);
     return self();
   }
@@ -100,15 +96,13 @@ public abstract class NoiseBuilder<
   protected abstract B self();
 
   protected abstract L buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed)
-      throws NoiseBuilderException;
+      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws NoiseBuilderException;
 
   protected abstract L buildMultipleNoiseLayer(List<L> layers) throws NoiseBuilderException;
 
   private void resetNumberGenerators() {
     amplitudeGenerator.reset();
-    for (NumberGenerator<Double> stepSizeGenerator :
-        stepSizeGeneratorsByDimension) {
+    for (NumberGenerator<Double> stepSizeGenerator : stepSizeGeneratorsByDimension) {
       stepSizeGenerator.reset();
     }
   }

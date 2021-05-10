@@ -9,15 +9,14 @@ import org.lefmaroli.perlin.PerlinNoise;
 public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGenerator {
 
   private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
-  private static final List<String> parameterNames =
-      List.of("Line step size", "Line length");
+  private static final List<String> parameterNames = List.of("Line step size", "Line length");
 
   private final double lineStepSize;
   private final int lineLength;
-  private int currentPosition = 0;
   private final double circularResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
+  private int currentPosition = 0;
 
   public LineGenerator(
       double noiseStepSize,
@@ -29,8 +28,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
     assertValidValues(parameterNames, lineStepSize, lineLength);
     this.lineLength = lineLength;
-    this.lineStepSize =
-        correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
+    this.lineStepSize = correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
     this.circularResolution = 1.0 / (this.lineStepSize * this.lineLength);
     if (isCircular) {
       perlin = new PerlinNoise(3, randomSeed);

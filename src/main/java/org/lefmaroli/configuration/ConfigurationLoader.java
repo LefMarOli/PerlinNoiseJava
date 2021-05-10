@@ -15,12 +15,12 @@ public class ConfigurationLoader {
   private static final Properties appProperties = new Properties();
   private static final Logger LOGGER = LogManager.getLogger(ConfigurationLoader.class);
 
+  private ConfigurationLoader() {}
+
   public static String getEnv() {
     retrieveEnvironmentTarget();
     return appProperties.getProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
   }
-
-  private ConfigurationLoader() {}
 
   public static void clear() {
     appProperties.clear();

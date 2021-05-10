@@ -20,8 +20,7 @@ public class LineNoiseGeneratorBuilder
     return (LineNoiseGenerator) super.build();
   }
 
-  LineNoiseGeneratorBuilder withLineStepSizeGenerator(
-      NumberGenerator<Double> numberGenerator) {
+  LineNoiseGeneratorBuilder withLineStepSizeGenerator(NumberGenerator<Double> numberGenerator) {
     setStepSizeGeneratorForDimension(2, numberGenerator);
     return this;
   }
@@ -35,12 +34,7 @@ public class LineNoiseGeneratorBuilder
   protected LineNoiseGenerator buildSingleNoiseLayer(
       List<Double> stepSizes, double layerAmplitude, long randomSeed) {
     return new LineGenerator(
-        stepSizes.get(0),
-        stepSizes.get(1),
-        lineLength,
-        layerAmplitude,
-        randomSeed,
-        isCircular());
+        stepSizes.get(0), stepSizes.get(1), lineLength, layerAmplitude, randomSeed, isCircular());
   }
 
   @Override

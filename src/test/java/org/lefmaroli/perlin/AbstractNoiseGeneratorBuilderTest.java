@@ -16,8 +16,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     assertNotNull(noisePointBuilder.withRandomSeed(0L));
     assertNotNull(noisePointBuilder.withNumberOfLayers(5));
     assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-    assertNotNull(
-        noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
+    assertNotNull(noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -48,8 +47,7 @@ public class AbstractNoiseGeneratorBuilderTest {
   public void testWrongImplementationOfBuilderClass() {
     int dimensions = 5;
     new WrongSubClassImplementationMock(dimensions)
-        .setStepSizeGeneratorForDimension(
-            dimensions + 1, new DoubleGenerator(1, 2.0));
+        .setStepSizeGeneratorForDimension(dimensions + 1, new DoubleGenerator(1, 2.0));
   }
 
   private static class MockNoiseGenerator implements INoiseGenerator<Double> {

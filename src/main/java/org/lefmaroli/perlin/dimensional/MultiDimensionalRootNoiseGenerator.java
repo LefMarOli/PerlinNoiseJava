@@ -46,8 +46,7 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
       var newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
       LogManager.getLogger(this.getClass())
           .warn(
-              "Modified required step size for {} from {} to {} to respect"
-                  + " circularity.",
+              "Modified required step size for {} from {} to {} to respect" + " circularity.",
               dimensionName,
               stepSize,
               1.0 / newInterpolationPoints);

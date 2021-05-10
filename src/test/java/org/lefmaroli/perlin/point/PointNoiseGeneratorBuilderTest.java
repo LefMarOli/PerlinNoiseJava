@@ -36,7 +36,7 @@ public class PointNoiseGeneratorBuilderTest {
         new PointNoiseGeneratorBuilder()
             .withNumberOfLayers(10)
             .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0/50, 0.5))
+            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
 

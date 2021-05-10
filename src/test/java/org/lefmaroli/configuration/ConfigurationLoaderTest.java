@@ -16,15 +16,12 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class ConfigurationLoaderTest {
 
+  private static String ENV;
   @Parameter() public String envVar;
-
   @Parameter(1)
   public Class<? extends Exception> expectedException;
-
   @Parameter(2)
   public String testTitle;
-
-  private static String ENV;
 
   @BeforeClass
   public static void init() {
@@ -35,18 +32,6 @@ public class ConfigurationLoaderTest {
   @AfterClass
   public static void cleanUp() {
     System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, ENV);
-  }
-
-  @Before
-  public void setup() {
-    System.clearProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
-    ConfigurationLoader.clear();
-  }
-
-  @After
-  public void tearDown() {
-    System.clearProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
-    ConfigurationLoader.clear();
   }
 
   @Parameters(name = "{index}: {2}")
@@ -76,6 +61,18 @@ public class ConfigurationLoaderTest {
             "Class instantiation exception"
           },
         });
+  }
+
+  @Before
+  public void setup() {
+    System.clearProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+    ConfigurationLoader.clear();
+  }
+
+  @After
+  public void tearDown() {
+    System.clearProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
+    ConfigurationLoader.clear();
   }
 
   @Test

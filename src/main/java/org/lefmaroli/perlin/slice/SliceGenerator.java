@@ -13,20 +13,16 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private static final Logger LOGGER = LogManager.getLogger(SliceGenerator.class);
 
   private static final List<String> parameterNames =
-      List.of(
-          "Width step size",
-          "Slice width",
-          "Height step size",
-          "Slice height");
+      List.of("Width step size", "Slice width", "Height step size", "Slice height");
   private final double widthStepSize;
   private final double heightStepSize;
   private final int sliceWidth;
   private final int sliceHeight;
-  private int currentPosInNoiseInterpolation = 0;
   private final double circularWidthResolution;
   private final double circularHeightResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
+  private int currentPosInNoiseInterpolation = 0;
 
   SliceGenerator(
       double noiseStepSize,
@@ -38,14 +34,10 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       long randomSeed,
       boolean isCircular) {
     super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
-    assertValidValues(
-        parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
-    this.widthStepSize =
-        correctStepSizeForCircularity(
-            widthStepSize, sliceWidth, "slice width");
+    assertValidValues(parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
+    this.widthStepSize = correctStepSizeForCircularity(widthStepSize, sliceWidth, "slice width");
     this.heightStepSize =
-        correctStepSizeForCircularity(
-            heightStepSize, sliceHeight, "slice height");
+        correctStepSizeForCircularity(heightStepSize, sliceHeight, "slice height");
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
     this.circularWidthResolution = 1.0 / (this.widthStepSize * this.sliceWidth);
@@ -82,12 +74,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
 
   @Override
   public int hashCode() {
-    return Objects.hash(
-        super.hashCode(),
-        widthStepSize,
-        heightStepSize,
-        sliceWidth,
-        sliceHeight);
+    return Objects.hash(super.hashCode(), widthStepSize, heightStepSize, sliceWidth, sliceHeight);
   }
 
   @Override

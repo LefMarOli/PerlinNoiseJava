@@ -280,7 +280,7 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameNoiseInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseStepSize + 1.0/6,
+            noiseStepSize + 1.0 / 6,
             widthStepSize,
             heightStepSize,
             sliceWidth,
@@ -296,7 +296,7 @@ public class SliceGeneratorTest {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
-            widthStepSize + 1.0/9,
+            widthStepSize + 1.0 / 9,
             heightStepSize,
             sliceWidth,
             sliceHeight,
@@ -312,7 +312,7 @@ public class SliceGeneratorTest {
         new SliceGenerator(
             noiseStepSize,
             widthStepSize,
-            heightStepSize + 1.0/15,
+            heightStepSize + 1.0 / 15,
             sliceWidth,
             sliceHeight,
             maxAmplitude,

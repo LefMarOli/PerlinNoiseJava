@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class PointGeneratorTest {
 
-  private static final double noiseStepSize = 1.0/51;
+  private static final double noiseStepSize = 1.0 / 51;
   private static final int expectedCount = 500;
   private final long randomSeed = System.currentTimeMillis();
   private PointGenerator defaultGenerator;
@@ -50,8 +50,7 @@ public class PointGeneratorTest {
   public void testValuesMultipliedByFactor() {
     Random random = new Random(System.currentTimeMillis());
     double amplitudeFactor = random.nextDouble() * 100;
-    PointGenerator amplifiedLayer =
-        new PointGenerator(noiseStepSize, amplitudeFactor, randomSeed);
+    PointGenerator amplifiedLayer = new PointGenerator(noiseStepSize, amplitudeFactor, randomSeed);
 
     Double[] values = new Double[expectedCount];
     Double[] actualAmplifiedValues = new Double[expectedCount];
@@ -90,36 +89,36 @@ public class PointGeneratorTest {
 
   @Test
   public void testEquals() {
-    PointGenerator layer = new PointGenerator(1.0/5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(1.0/5, 1.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 0L);
     assertEquals(layer, layer2);
   }
 
   @Test
   public void testNotEqualNotSameSeed() {
-    PointGenerator layer = new PointGenerator(1.0/5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(1.0/5, 1.0, 1L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 1L);
     assertNotEquals(layer, layer2);
   }
 
   @Test
   public void testNotEqualNotSameAmplitude() {
-    PointGenerator layer = new PointGenerator(1.0/5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(1.0/5, 2.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 2.0, 0L);
     assertNotEquals(layer, layer2);
   }
 
   @Test
   public void testNotEqualNotSameNoiseStepSize() {
-    PointGenerator layer = new PointGenerator(1.0/ 5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(1.0/ 6, 1.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 6, 1.0, 0L);
     assertNotEquals(layer, layer2);
   }
 
   @Test
   public void testHashCode() {
-    PointGenerator layer = new PointGenerator(1.0/ 5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(1.0/ 5, 1.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 0L);
     assertEquals(layer, layer2);
     assertEquals(layer.hashCode(), layer2.hashCode());
   }

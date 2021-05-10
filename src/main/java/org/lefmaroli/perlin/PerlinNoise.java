@@ -12,6 +12,30 @@ public class PerlinNoise {
   private static final double MAX_VALUE_VECTOR_PRODUCT = Math.sqrt(2.0) / 2.0;
   private static final Map<Long, Map<Integer, VectorMultiD[]>> BOUNDS_MAP =
       new ConcurrentHashMap<>(1);
+  private final int numberOfBoundsPerDimension;
+  private final int[] boundsIndicesMultipliers;
+  private final double[] distancesArray;
+  private final CornerMatrix cornerMatrix;
+  private final int[] indexIntegerParts;
+  private final int[] indicesArray;
+  private final double[] cornerDistanceArray;
+  private final int dimension;
+  private final Long randomSeed;
+  public PerlinNoise(int dimension, long randomSeed) {
+    this.dimension = dimension;
+    this.randomSeed = randomSeed;
+    distancesArray = new double[dimension];
+    cornerMatrix = CornerMatrix.getForDimension(dimension);
+    indexIntegerParts = new int[dimension];
+    indicesArray = new int[dimension];
+    cornerDistanceArray = new double[dimension];
+    numberOfBoundsPerDimension = PerlinNoise.findNumberOfBoundsForDim(dimension);
+    boundsIndicesMultipliers = new int[dimension];
+    for (var i = 0; i < dimension; i++) {
+      boundsIndicesMultipliers[i] = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, i);
+    }
+    PerlinNoise.initializeBoundsForSeedAndDimension(dimension, randomSeed);
+  }
 
   private static void initializeBoundsForSeedAndDimension(int dimension, long seed) {
     if (dimension > 5) {
@@ -49,34 +73,16 @@ public class PerlinNoise {
     return ((interpolated / MAX_VALUE_VECTOR_PRODUCT) + 1.0) / 2.0;
   }
 
-  protected int getIndexBound(int intPart) {
-    return intPart & (numberOfBoundsPerDimension - 1);
+  private static int getIntMultipliedByItselfNTimes(int number, int times) {
+    var result = 1;
+    for (var i = 0; i < times; i++) {
+      result *= number;
+    }
+    return result;
   }
 
-  private final int numberOfBoundsPerDimension;
-  private final int[] boundsIndicesMultipliers;
-  private final double[] distancesArray;
-  private final CornerMatrix cornerMatrix;
-  private final int[] indexIntegerParts;
-  private final int[] indicesArray;
-  private final double[] cornerDistanceArray;
-  private final int dimension;
-  private final Long randomSeed;
-
-  public PerlinNoise(int dimension, long randomSeed) {
-    this.dimension = dimension;
-    this.randomSeed = randomSeed;
-    distancesArray = new double[dimension];
-    cornerMatrix = CornerMatrix.getForDimension(dimension);
-    indexIntegerParts = new int[dimension];
-    indicesArray = new int[dimension];
-    cornerDistanceArray = new double[dimension];
-    numberOfBoundsPerDimension = PerlinNoise.findNumberOfBoundsForDim(dimension);
-    boundsIndicesMultipliers = new int[dimension];
-    for (var i = 0; i < dimension; i++) {
-      boundsIndicesMultipliers[i] = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, i);
-    }
-    PerlinNoise.initializeBoundsForSeedAndDimension(dimension, randomSeed);
+  protected int getIndexBound(int intPart) {
+    return intPart & (numberOfBoundsPerDimension - 1);
   }
 
   public double getFor(double... coordinates) {
@@ -127,13 +133,5 @@ public class PerlinNoise {
           getIndexBound(indexIntegerParts[i] + indicesArray[i]) * boundsIndicesMultipliers[i];
     }
     return boundIndex;
-  }
-
-  private static int getIntMultipliedByItselfNTimes(int number, int times) {
-    var result = 1;
-    for (var i = 0; i < times; i++) {
-      result *= number;
-    }
-    return result;
   }
 }

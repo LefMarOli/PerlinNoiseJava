@@ -14,10 +14,9 @@ import org.lefmaroli.perlin.line.LineNoiseGeneratorBuilderTest;
 
 public class SliceNoiseGeneratorBuilderTest {
 
-  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
-
   private static final int sliceWidth = 400;
   private static final int sliceHeight = 400;
+  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
   @Test
   public void testBuildNoiseSliceNotNull() throws NoiseBuilderException {
