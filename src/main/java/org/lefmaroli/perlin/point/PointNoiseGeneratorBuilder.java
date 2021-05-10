@@ -23,8 +23,8 @@ public class PointNoiseGeneratorBuilder
 
   @Override
   protected PointNoiseGenerator buildSingleNoiseLayer(
-      List<Integer> interpolationPoints, double layerAmplitude, long randomSeed) {
-    return new PointGenerator(interpolationPoints.get(0), layerAmplitude, randomSeed);
+      List<Double> stepSizes, double layerAmplitude, long randomSeed) {
+    return new PointGenerator(stepSizes.get(0), layerAmplitude, randomSeed);
   }
 
   @Override

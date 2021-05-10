@@ -25,9 +25,9 @@ public class LayeredSliceGeneratorTest {
   private static final double maxAmplitude = 1.75;
   private static final int defaultSliceWidth = 500;
   private static final int defaultSliceHeight = 500;
+  private static final boolean isCircularDefault = false;
   private LayeredSliceGenerator defaultGenerator;
   private List<SliceNoiseGenerator> layers;
-  private static final boolean isCircularDefault = false;
 
   @Before
   public void setup() {
@@ -183,7 +183,8 @@ public class LayeredSliceGeneratorTest {
   public void testMixCircularity() {
     List<SliceNoiseGenerator> otherLayers = layers;
     otherLayers.add(
-        new SliceGenerator(8, 8, 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
+        new SliceGenerator(
+            1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
     assertFalse(otherGenerator.isCircular());
   }
@@ -192,11 +193,14 @@ public class LayeredSliceGeneratorTest {
   public void testCircular() {
     List<SliceNoiseGenerator> otherLayers = new ArrayList<>(3);
     otherLayers.add(
-        new SliceGenerator(8, 8, 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
+        new SliceGenerator(
+            1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
     otherLayers.add(
-        new SliceGenerator(16, 16, 16, defaultSliceWidth, defaultSliceHeight, 0.05, 2L, true));
+        new SliceGenerator(
+            1.0 / 16, 1.0 / 16, 1.0 / 16, defaultSliceWidth, defaultSliceHeight, 0.05, 2L, true));
     otherLayers.add(
-        new SliceGenerator(25, 25, 25, defaultSliceWidth, defaultSliceHeight, 0.005, 1L, true));
+        new SliceGenerator(
+            1.0 / 25, 1.0 / 25, 1.0 / 25, defaultSliceWidth, defaultSliceHeight, 0.005, 1L, true));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
     assertTrue(otherGenerator.isCircular());
   }
@@ -207,9 +211,9 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> newLayers = new ArrayList<>(3);
     newLayers.add(
         new SliceGenerator(
-            10,
-            20,
-            60,
+            1.0 / 10,
+            1.0 / 20,
+            1.0 / 60,
             defaultSliceWidth,
             defaultSliceHeight,
             1.0,
@@ -217,9 +221,9 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     newLayers.add(
         new SliceGenerator(
-            20,
-            120,
-            30,
+            1.0 / 20,
+            1.0 / 120,
+            1.0 / 30,
             defaultSliceWidth,
             defaultSliceHeight,
             0.8,
@@ -227,9 +231,9 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     newLayers.add(
         new SliceGenerator(
-            15,
-            50,
-            50,
+            1.0 / 15,
+            1.0 / 50,
+            1.0 / 50,
             defaultSliceWidth,
             defaultSliceHeight,
             0.25,

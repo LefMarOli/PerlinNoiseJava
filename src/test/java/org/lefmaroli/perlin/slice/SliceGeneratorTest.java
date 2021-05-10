@@ -22,9 +22,9 @@ import org.lefmaroli.display.SimpleGrayScaleImage;
 
 public class SliceGeneratorTest {
 
-  private static final int noiseInterpolationPoints = 150;
-  private static final int widthInterpolationPoints = 50;
-  private static final int heightInterpolationPoints = 80;
+  private static final double noiseStepSize = 1.0 / 150.0;
+  private static final double widthStepSize = 1.0 / 50;
+  private static final double heightStepSize = 1.0 / 80;
   private static final int sliceWidth = 100;
   private static final int sliceHeight = 150;
   private static final double maxAmplitude = 1.0;
@@ -36,9 +36,9 @@ public class SliceGeneratorTest {
   public void setup() {
     defaultGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -47,11 +47,11 @@ public class SliceGeneratorTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidNoiseInterpolationPoints() {
+  public void testCreateInvalidNoiseStepSize() {
     new SliceGenerator(
         -5,
-        widthInterpolationPoints,
-        heightInterpolationPoints,
+        widthStepSize,
+        heightStepSize,
         sliceWidth,
         sliceHeight,
         maxAmplitude,
@@ -60,11 +60,11 @@ public class SliceGeneratorTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidWidthInterpolationPoints() {
+  public void testCreateInvalidWidthStepSize() {
     new SliceGenerator(
-        noiseInterpolationPoints,
+        noiseStepSize,
         -4,
-        heightInterpolationPoints,
+        heightStepSize,
         sliceWidth,
         sliceHeight,
         maxAmplitude,
@@ -73,10 +73,10 @@ public class SliceGeneratorTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidHeightInterpolationPoints() {
+  public void testCreateInvalidHeightStepSize() {
     new SliceGenerator(
-        noiseInterpolationPoints,
-        widthInterpolationPoints,
+        noiseStepSize,
+        widthStepSize,
         -5,
         sliceWidth,
         sliceHeight,
@@ -88,9 +88,9 @@ public class SliceGeneratorTest {
   @Test(expected = IllegalArgumentException.class)
   public void testCreateInvalidSliceWidth() {
     new SliceGenerator(
-        noiseInterpolationPoints,
-        widthInterpolationPoints,
-        heightInterpolationPoints,
+        noiseStepSize,
+        widthStepSize,
+        heightStepSize,
         -9,
         sliceHeight,
         maxAmplitude,
@@ -101,9 +101,9 @@ public class SliceGeneratorTest {
   @Test(expected = IllegalArgumentException.class)
   public void testCreateInvalidSliceHeight() {
     new SliceGenerator(
-        noiseInterpolationPoints,
-        widthInterpolationPoints,
-        heightInterpolationPoints,
+        noiseStepSize,
+        widthStepSize,
+        heightStepSize,
         sliceWidth,
         -7,
         maxAmplitude,
@@ -121,18 +121,18 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testGetNoiseInterpolationPoints() {
-    assertEquals(1.0 / noiseInterpolationPoints, defaultGenerator.getStepSize(), 1E-9);
+  public void testGetNoiseStepSize() {
+    assertEquals(noiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-9);
   }
 
   @Test
-  public void testGetWidthInterpolationPoints() {
-    assertEquals(widthInterpolationPoints, defaultGenerator.getWidthInterpolationPoints());
+  public void testGetWidthStepSize() {
+    assertEquals(widthStepSize, defaultGenerator.getWidthStepSize(), 1E-9);
   }
 
   @Test
-  public void testGetHeightInterpolationPoints() {
-    assertEquals(heightInterpolationPoints, defaultGenerator.getHeightInterpolationPoints());
+  public void testGetHeightStepSize() {
+    assertEquals(heightStepSize, defaultGenerator.getHeightStepSize(), 1E-9);
   }
 
   @Test
@@ -154,9 +154,9 @@ public class SliceGeneratorTest {
   public void testHugeSlice() {
     SliceGenerator sliceGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             10000,
             10000,
             maxAmplitude,
@@ -182,9 +182,9 @@ public class SliceGeneratorTest {
     double newMaxAmplitude = random.nextDouble() * 100;
     SliceGenerator amplifiedLayer =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             newMaxAmplitude,
@@ -211,9 +211,9 @@ public class SliceGeneratorTest {
   public void testCreateSameGeneratedSlices() {
     SliceGenerator same =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -235,9 +235,9 @@ public class SliceGeneratorTest {
   public void testCreateDifferentGeneratedSlicesForDifferentRandomSeed() {
     SliceGenerator diffRandSeed =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -264,9 +264,9 @@ public class SliceGeneratorTest {
   public void testEquals() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -280,9 +280,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameNoiseInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints + 6,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize + 1.0 / 6,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -295,9 +295,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameWidthInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints + 9,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize + 1.0 / 9,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -310,9 +310,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameHeightInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints + 15,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize + 1.0 / 15,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -325,9 +325,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameSliceWidth() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth + 5,
             sliceHeight,
             maxAmplitude,
@@ -340,9 +340,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameSliceHeight() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight + 6,
             maxAmplitude,
@@ -355,9 +355,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameMaxAmplitude() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude * 1.5,
@@ -370,9 +370,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameRandomSeed() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -385,9 +385,9 @@ public class SliceGeneratorTest {
   public void testNotEqualsNotSameCircularity() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             maxAmplitude,
@@ -427,9 +427,9 @@ public class SliceGeneratorTest {
   public void testCircularBounds() {
     SliceGenerator generator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             1.0,
@@ -442,7 +442,7 @@ public class SliceGeneratorTest {
     for (int i = 0; i < firstLine.length; i++) {
       double mu = secondLine[i] - firstLine[i];
       double otherMu = firstLine[i] - lastLine[i];
-      assertEquals(mu, otherMu, 1.0 / widthInterpolationPoints);
+      assertEquals(mu, otherMu, widthStepSize);
     }
 
     double[] firstColumn = new double[generator.getSliceWidth()];
@@ -456,7 +456,7 @@ public class SliceGeneratorTest {
     for (int i = 0; i < firstColumn.length; i++) {
       double mu = secondColumn[i] - firstColumn[i];
       double otherMu = firstColumn[i] - lastColumn[i];
-      assertEquals(mu, otherMu, 1.0 / heightInterpolationPoints);
+      assertEquals(mu, otherMu, heightStepSize);
     }
   }
 
@@ -465,9 +465,9 @@ public class SliceGeneratorTest {
   public void visualizeLine() {
     SliceGenerator generator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             1.0,
@@ -532,9 +532,9 @@ public class SliceGeneratorTest {
   public void testCircularity() {
     SliceGenerator generator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             sliceWidth,
             sliceHeight,
             1.0,
@@ -567,7 +567,7 @@ public class SliceGeneratorTest {
             15,
             TimeUnit.MILLISECONDS);
 
-    int testDurationInMs = 15;
+    int testDurationInMs = 500;
     ses.schedule(
         () -> {
           scheduledFuture.cancel(true);
@@ -584,9 +584,9 @@ public class SliceGeneratorTest {
   public void testVisualizeMorphingImage() {
     SliceGenerator generator =
         new SliceGenerator(
-            noiseInterpolationPoints,
-            widthInterpolationPoints,
-            heightInterpolationPoints,
+            noiseStepSize,
+            widthStepSize,
+            heightStepSize,
             500,
             500,
             1.0,

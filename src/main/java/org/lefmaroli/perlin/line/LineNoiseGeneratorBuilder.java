@@ -20,9 +20,8 @@ public class LineNoiseGeneratorBuilder
     return (LineNoiseGenerator) super.build();
   }
 
-  LineNoiseGeneratorBuilder withLineInterpolationPointCountGenerator(
-      NumberGenerator<Integer> numberGenerator) {
-    setInterpolationPointCountGeneratorForDimension(2, numberGenerator);
+  LineNoiseGeneratorBuilder withLineStepSizeGenerator(NumberGenerator<Double> numberGenerator) {
+    setStepSizeGeneratorForDimension(2, numberGenerator);
     return this;
   }
 
@@ -33,14 +32,9 @@ public class LineNoiseGeneratorBuilder
 
   @Override
   protected LineNoiseGenerator buildSingleNoiseLayer(
-      List<Integer> interpolationPoints, double layerAmplitude, long randomSeed) {
+      List<Double> stepSizes, double layerAmplitude, long randomSeed) {
     return new LineGenerator(
-        interpolationPoints.get(1),
-        interpolationPoints.get(0),
-        lineLength,
-        layerAmplitude,
-        randomSeed,
-        isCircular());
+        stepSizes.get(0), stepSizes.get(1), lineLength, layerAmplitude, randomSeed, isCircular());
   }
 
   @Override

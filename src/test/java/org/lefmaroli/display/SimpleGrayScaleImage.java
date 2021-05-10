@@ -39,6 +39,18 @@ public class SimpleGrayScaleImage {
     updateImage(data);
   }
 
+  private static void assertDataIsRectangular(double[][] data) {
+    if (data.length < 1) {
+      throw new IllegalArgumentException("Provided data is empty");
+    }
+    int rowLength = data[0].length;
+    for (double[] row : data) {
+      if (row.length != rowLength) {
+        throw new IllegalArgumentException("Provided data doesn't have same length across rows");
+      }
+    }
+  }
+
   public void setVisible() {
     this.framedImage.setVisible(true);
   }
@@ -63,18 +75,6 @@ public class SimpleGrayScaleImage {
           label.setIcon(new ImageIcon(image));
           framedImage.pack();
         });
-  }
-
-  private static void assertDataIsRectangular(double[][] data) {
-    if (data.length < 1) {
-      throw new IllegalArgumentException("Provided data is empty");
-    }
-    int rowLength = data[0].length;
-    for (double[] row : data) {
-      if (row.length != rowLength) {
-        throw new IllegalArgumentException("Provided data doesn't have same length across rows");
-      }
-    }
   }
 
   private void assertNewDataHasSameDimensions(double[][] data) {

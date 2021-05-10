@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import org.junit.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class AbstractNoiseGeneratorBuilderTest {
@@ -17,24 +16,7 @@ public class AbstractNoiseGeneratorBuilderTest {
     assertNotNull(noisePointBuilder.withRandomSeed(0L));
     assertNotNull(noisePointBuilder.withNumberOfLayers(5));
     assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-    assertNotNull(
-        noisePointBuilder.withNoiseInterpolationPointGenerator(new IntegerGenerator(1, 1.0)));
-  }
-
-  @Test(expected = NoiseBuilderException.class)
-  public void testToFewInterpolationPoints() throws NoiseBuilderException {
-    new MockNoiseBuilder()
-        .withNoiseInterpolationPointGenerator(new IntegerGenerator(1, 0.5))
-        .withNumberOfLayers(5)
-        .build();
-  }
-
-  @Test(expected = NoiseBuilderException.class)
-  public void testTooManyInterpolationPoints() throws NoiseBuilderException {
-    new MockNoiseBuilder()
-        .withNoiseInterpolationPointGenerator(new IntegerGenerator(1, 5000))
-        .withNumberOfLayers(15)
-        .build();
+    assertNotNull(noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -54,10 +36,10 @@ public class AbstractNoiseGeneratorBuilderTest {
   }
 
   @Test(expected = NoiseBuilderException.class)
-  public void testCreateSingleLayerWithNoInterpolationPoints() throws NoiseBuilderException {
+  public void testCreateSingleLayerWithNoStepSize() throws NoiseBuilderException {
     new MockNoiseBuilder()
         .withNumberOfLayers(1)
-        .withNoiseInterpolationPointGenerator(new IntegerGenerator(0, 500))
+        .withNoiseStepSizeGenerator(new DoubleGenerator(0, 500))
         .build();
   }
 
@@ -65,8 +47,7 @@ public class AbstractNoiseGeneratorBuilderTest {
   public void testWrongImplementationOfBuilderClass() {
     int dimensions = 5;
     new WrongSubClassImplementationMock(dimensions)
-        .setInterpolationPointCountGeneratorForDimension(
-            dimensions + 1, new IntegerGenerator(1, 0.5));
+        .setStepSizeGeneratorForDimension(dimensions + 1, new DoubleGenerator(1, 2.0));
   }
 
   private static class MockNoiseGenerator implements INoiseGenerator<Double> {
@@ -113,7 +94,7 @@ public class AbstractNoiseGeneratorBuilderTest {
 
     @Override
     protected MockNoiseGenerator buildSingleNoiseLayer(
-        List<Integer> interpolationPoints, double layerAmplitude, long randomSeed) {
+        List<Double> interpolationPoints, double layerAmplitude, long randomSeed) {
       return new MockNoiseGeneratorLayer();
     }
 
@@ -137,7 +118,7 @@ public class AbstractNoiseGeneratorBuilderTest {
 
     @Override
     protected MockNoiseGenerator buildSingleNoiseLayer(
-        List<Integer> interpolationPoints, double layerAmplitude, long randomSeed) {
+        List<Double> interpolationPoints, double layerAmplitude, long randomSeed) {
       return null;
     }
 

@@ -14,14 +14,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class LineNoiseGeneratorBuilderTest {
 
-  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
-
   private static final int lineLength = 800;
+  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
   @Test
   public void testBuildNoiseLineNotNull() throws NoiseBuilderException {
@@ -41,13 +39,14 @@ public class LineNoiseGeneratorBuilderTest {
   @Ignore("Skipped, only used to visualize results")
   @Test
   public void getNextLines() throws NoiseBuilderException {
-    IntegerGenerator lineInterpolationPointCountGenerator = new IntegerGenerator(500, 0.9);
-    IntegerGenerator noiseInterpolationPointCountGenerator = new IntegerGenerator(80, 0.5);
+    DoubleGenerator lineInterpolationPointCountGenerator =
+        new DoubleGenerator(1.0 / 500, 1.0 / 0.9);
+    DoubleGenerator noiseInterpolationPointCountGenerator = new DoubleGenerator(1.0 / 80, 2.0);
     int lineLength = 200;
     LineNoiseGenerator generator =
         new LineNoiseGeneratorBuilder(lineLength)
-            .withLineInterpolationPointCountGenerator(lineInterpolationPointCountGenerator)
-            .withNoiseInterpolationPointGenerator(noiseInterpolationPointCountGenerator)
+            .withLineStepSizeGenerator(lineInterpolationPointCountGenerator)
+            .withNoiseStepSizeGenerator(noiseInterpolationPointCountGenerator)
             .withNumberOfLayers(4)
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
             .build();
@@ -96,8 +95,8 @@ public class LineNoiseGeneratorBuilderTest {
         new LineNoiseGeneratorBuilder(1000)
             .withNumberOfLayers(10)
             .withRandomSeed(0L)
-            .withNoiseInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
-            .withLineInterpolationPointCountGenerator(new IntegerGenerator(50, 2.0))
+            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+            .withLineStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
 

@@ -24,14 +24,14 @@ public class SliceNoiseGeneratorBuilder
   }
 
   public SliceNoiseGeneratorBuilder withWidthInterpolationPointGenerator(
-      NumberGenerator<Integer> numberGenerator) {
-    setInterpolationPointCountGeneratorForDimension(2, numberGenerator);
+      NumberGenerator<Double> numberGenerator) {
+    setStepSizeGeneratorForDimension(2, numberGenerator);
     return this;
   }
 
   public SliceNoiseGeneratorBuilder withHeightInterpolationPointGenerator(
-      NumberGenerator<Integer> numberGenerator) {
-    setInterpolationPointCountGeneratorForDimension(3, numberGenerator);
+      NumberGenerator<Double> numberGenerator) {
+    setStepSizeGeneratorForDimension(3, numberGenerator);
     return this;
   }
 
@@ -42,11 +42,11 @@ public class SliceNoiseGeneratorBuilder
 
   @Override
   protected SliceNoiseGenerator buildSingleNoiseLayer(
-      List<Integer> interpolationPoints, double layerAmplitude, long randomSeed) {
+      List<Double> stepSizes, double layerAmplitude, long randomSeed) {
     return new SliceGenerator(
-        interpolationPoints.get(0),
-        interpolationPoints.get(1),
-        interpolationPoints.get(2),
+        stepSizes.get(0),
+        stepSizes.get(1),
+        stepSizes.get(2),
         sliceWidth,
         sliceHeight,
         layerAmplitude,

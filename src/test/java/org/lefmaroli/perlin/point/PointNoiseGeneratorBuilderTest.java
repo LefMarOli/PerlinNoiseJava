@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class PointNoiseGeneratorBuilderTest {
@@ -37,7 +36,7 @@ public class PointNoiseGeneratorBuilderTest {
         new PointNoiseGeneratorBuilder()
             .withNumberOfLayers(10)
             .withRandomSeed(0L)
-            .withNoiseInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
+            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
 

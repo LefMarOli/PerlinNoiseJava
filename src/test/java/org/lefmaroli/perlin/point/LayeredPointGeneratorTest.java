@@ -14,9 +14,9 @@ import org.junit.Test;
 
 public class LayeredPointGeneratorTest {
 
+  private static final double maxAmplitude = 1.75;
   private LayeredPointGenerator defaultGenerator;
   private List<PointNoiseGenerator> layers;
-  private static final double maxAmplitude = 1.75;
 
   @Before
   public void setup() {

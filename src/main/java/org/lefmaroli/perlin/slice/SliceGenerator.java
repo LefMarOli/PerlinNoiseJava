@@ -13,43 +13,35 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private static final Logger LOGGER = LogManager.getLogger(SliceGenerator.class);
 
   private static final List<String> parameterNames =
-      List.of(
-          "Width interpolation points",
-          "Slice width",
-          "Height interpolation points",
-          "Slice height");
-  private final int widthInterpolationPoints;
-  private final int heightInterpolationPoints;
+      List.of("Width step size", "Slice width", "Height step size", "Slice height");
+  private final double widthStepSize;
+  private final double heightStepSize;
   private final int sliceWidth;
   private final int sliceHeight;
-  private int currentPosInNoiseInterpolation = 0;
   private final double circularWidthResolution;
   private final double circularHeightResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
+  private int currentPosInNoiseInterpolation = 0;
 
   SliceGenerator(
-      int noiseInterpolationPoints,
-      int widthInterpolationPoint,
-      int heightInterpolationPoint,
+      double noiseStepSize,
+      double widthStepSize,
+      double heightStepSize,
       int sliceWidth,
       int sliceHeight,
       double maxAmplitude,
       long randomSeed,
       boolean isCircular) {
-    super(noiseInterpolationPoints, maxAmplitude, randomSeed, isCircular);
-    assertValidValues(
-        parameterNames, widthInterpolationPoint, heightInterpolationPoint, sliceWidth, sliceHeight);
-    this.widthInterpolationPoints =
-        correctInterpolationPointsForCircularity(
-            widthInterpolationPoint, sliceWidth, "slice width");
-    this.heightInterpolationPoints =
-        correctInterpolationPointsForCircularity(
-            heightInterpolationPoint, sliceHeight, "slice height");
+    super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
+    assertValidValues(parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
+    this.widthStepSize = correctStepSizeForCircularity(widthStepSize, sliceWidth, "slice width");
+    this.heightStepSize =
+        correctStepSizeForCircularity(heightStepSize, sliceHeight, "slice height");
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
-    this.circularWidthResolution = this.widthInterpolationPoints / (double) this.sliceWidth;
-    this.circularHeightResolution = this.heightInterpolationPoints / (double) this.sliceHeight;
+    this.circularWidthResolution = 1.0 / (this.widthStepSize * this.sliceWidth);
+    this.circularHeightResolution = 1.0 / (this.heightStepSize * this.sliceHeight);
     if (isCircular) {
       perlin = new PerlinNoise(5, randomSeed);
       perlinData = new double[5];
@@ -60,12 +52,12 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     LOGGER.debug("Create new {}", this);
   }
 
-  public int getWidthInterpolationPoints() {
-    return widthInterpolationPoints;
+  public double getWidthStepSize() {
+    return widthStepSize;
   }
 
-  public int getHeightInterpolationPoints() {
-    return heightInterpolationPoints;
+  public double getHeightStepSize() {
+    return heightStepSize;
   }
 
   @Override
@@ -74,31 +66,26 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
     SliceGenerator that = (SliceGenerator) o;
-    return widthInterpolationPoints == that.widthInterpolationPoints
-        && heightInterpolationPoints == that.heightInterpolationPoints
+    return widthStepSize == that.widthStepSize
+        && heightStepSize == that.heightStepSize
         && sliceWidth == that.sliceWidth
         && sliceHeight == that.sliceHeight;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(
-        super.hashCode(),
-        widthInterpolationPoints,
-        heightInterpolationPoints,
-        sliceWidth,
-        sliceHeight);
+    return Objects.hash(super.hashCode(), widthStepSize, heightStepSize, sliceWidth, sliceHeight);
   }
 
   @Override
   public String toString() {
     return "SliceGenerator{"
-        + "noiseInterpolationPoints="
-        + getNoiseInterpolationPoints()
-        + ", widthInterpolationPoints="
-        + widthInterpolationPoints
-        + ", heightInterpolationPoints="
-        + heightInterpolationPoints
+        + "noiseStepSize="
+        + getNoiseStepSize()
+        + ", widthStepSize="
+        + widthStepSize
+        + ", heightStepSize="
+        + heightStepSize
         + ", sliceWidth="
         + sliceWidth
         + ", sliceHeight="
@@ -135,7 +122,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   private void processNoiseDomain(int noiseIndex, double[][] slice) {
-    double noiseDist = (double) (noiseIndex) * getStepSize();
+    double noiseDist = (double) (noiseIndex) * getNoiseStepSize();
     for (var widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
       processSliceWidthDomain(noiseDist, widthIndex, slice[widthIndex]);
     }
@@ -144,9 +131,9 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private void processSliceWidthDomain(double noiseDist, int widthIndex, double[] line) {
     double widthDist;
     if (isCircular()) {
-      widthDist = widthIndex / (double) sliceWidth * 2 * Math.PI;
+      widthDist = widthIndex * widthStepSize * 2 * Math.PI;
     } else {
-      widthDist = (double) (widthIndex) / (widthInterpolationPoints);
+      widthDist = widthIndex * widthStepSize;
     }
     for (var heightIndex = 0; heightIndex < sliceHeight; heightIndex++) {
       line[heightIndex] = processSliceHeightDomain(noiseDist, widthDist, heightIndex);
@@ -158,12 +145,12 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     if (isCircular()) {
       perlinData[1] = (Math.cos(widthDist) * circularWidthResolution) + circularWidthResolution;
       perlinData[2] = (Math.sin(widthDist) * circularWidthResolution) + circularWidthResolution;
-      double heightDist = heightIndex / (double) sliceHeight * 2 * Math.PI;
+      double heightDist = heightIndex * heightStepSize * 2 * Math.PI;
       perlinData[3] = (Math.cos(heightDist) * circularHeightResolution) + circularHeightResolution;
       perlinData[4] = (Math.sin(heightDist) * circularHeightResolution) + circularHeightResolution;
     } else {
       perlinData[1] = widthDist;
-      perlinData[2] = (double) (heightIndex) / (heightInterpolationPoints);
+      perlinData[2] = heightIndex * heightStepSize;
     }
     return perlin.getFor(perlinData) * getMaxAmplitude();
   }

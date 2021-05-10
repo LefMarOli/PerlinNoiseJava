@@ -5,49 +5,44 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
-import org.lefmaroli.perlin.exceptions.InterpolationPointException;
-import org.lefmaroli.perlin.exceptions.NoInterpolationPointException;
+import org.lefmaroli.perlin.exceptions.NoStepSizeException;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.exceptions.NoiseLayerException;
+import org.lefmaroli.perlin.exceptions.StepSizeException;
 
 public abstract class NoiseBuilder<
     N, L extends INoiseGenerator<N>, B extends NoiseBuilder<N, L, B>> {
-  private static final NumberGenerator<Integer> DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR =
-      new IntegerGenerator(64, 0.5);
+  private static final NumberGenerator<Double> DEFAULT_STEP_SIZE_GENERATOR =
+      new DoubleGenerator(1.0 / 64, 0.5);
   private final int dimensions;
-  private final List<NumberGenerator<Integer>> interpolationPointCountGenerators;
+  private final List<NumberGenerator<Double>> stepSizeGeneratorsByDimension;
   protected int numberOfLayers = 5;
   protected long randomSeed = System.currentTimeMillis();
   private NumberGenerator<Double> amplitudeGenerator = new DoubleGenerator(1.0, 0.5);
 
   protected NoiseBuilder(int dimensions) {
     this.dimensions = dimensions;
-    this.interpolationPointCountGenerators = new ArrayList<>(dimensions);
+    this.stepSizeGeneratorsByDimension = new ArrayList<>(dimensions);
     for (var i = 0; i < dimensions; i++) {
-      this.interpolationPointCountGenerators.add(
-          DEFAULT_INTERPOLATION_POINT_COUNT_GENERATOR.getCopy());
+      this.stepSizeGeneratorsByDimension.add(DEFAULT_STEP_SIZE_GENERATOR.getCopy());
     }
   }
 
-  private static void assertInterpolationPointsCountForAll(List<Integer> interpolationPoints)
-      throws InterpolationPointException {
-    for (Integer interpolationPoint : interpolationPoints) {
-      assertInterpolationPointsCount(interpolationPoint);
+  private static void assertStepSizeForAll(List<Double> stepSizes) throws StepSizeException {
+    for (Double stepSize : stepSizes) {
+      assertStepSize(stepSize);
     }
   }
 
-  private static void assertInterpolationPointsCount(int interpolationPoints)
-      throws InterpolationPointException {
-    if (interpolationPoints < 1) {
-      throw new NoInterpolationPointException();
+  private static void assertStepSize(double stepSize) throws StepSizeException {
+    if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {
+      throw new NoStepSizeException();
     }
   }
 
-  public B withNoiseInterpolationPointGenerator(
-      NumberGenerator<Integer> interpolationPointCountGenerator) {
-    setInterpolationPointCountGeneratorForDimension(1, interpolationPointCountGenerator);
+  public B withNoiseStepSizeGenerator(NumberGenerator<Double> stepSizeGenerator) {
+    setStepSizeGeneratorForDimension(1, stepSizeGenerator);
     return self();
   }
 
@@ -74,8 +69,8 @@ public abstract class NoiseBuilder<
     if (numberOfLayers == 1) {
       try {
         return buildSingleNoiseLayer(
-            getNextInterpolationPointCount(), amplitudeGenerator.getNext(), randomSeed);
-      } catch (InterpolationPointException e) {
+            getNextStepSizesForEachDimension(), amplitudeGenerator.getNext(), randomSeed);
+      } catch (StepSizeException e) {
         throw new NoiseBuilderException(e);
       }
     } else {
@@ -83,8 +78,8 @@ public abstract class NoiseBuilder<
     }
   }
 
-  protected void setInterpolationPointCountGeneratorForDimension(
-      int dimension, NumberGenerator<Integer> interpolationPointCountGenerator) {
+  protected void setStepSizeGeneratorForDimension(
+      int dimension, NumberGenerator<Double> stepSizeGenerator) {
     if (dimension > this.dimensions) {
       String dimensionRange = this.dimensions == 1 ? "1" : "1-" + this.dimensions;
       throw new IllegalArgumentException(
@@ -94,23 +89,21 @@ public abstract class NoiseBuilder<
               + dimensionRange
               + "] dimensions for this builder.");
     } else {
-      this.interpolationPointCountGenerators.set(dimension - 1, interpolationPointCountGenerator);
+      this.stepSizeGeneratorsByDimension.set(dimension - 1, stepSizeGenerator);
     }
   }
 
   protected abstract B self();
 
   protected abstract L buildSingleNoiseLayer(
-      List<Integer> interpolationPoints, double layerAmplitude, long randomSeed)
-      throws NoiseBuilderException;
+      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws NoiseBuilderException;
 
   protected abstract L buildMultipleNoiseLayer(List<L> layers) throws NoiseBuilderException;
 
   private void resetNumberGenerators() {
     amplitudeGenerator.reset();
-    for (NumberGenerator<Integer> interpolationPointCountGenerator :
-        interpolationPointCountGenerators) {
-      interpolationPointCountGenerator.reset();
+    for (NumberGenerator<Double> stepSizeGenerator : stepSizeGeneratorsByDimension) {
+      stepSizeGenerator.reset();
     }
   }
 
@@ -130,24 +123,24 @@ public abstract class NoiseBuilder<
 
   private L generateNoiseLayer(int layerNumber, long randomSeed)
       throws NoiseLayerException, NoiseBuilderException {
-    List<Integer> interpolationPoints = getInterpolationPointsForLayer(layerNumber);
-    return buildSingleNoiseLayer(interpolationPoints, amplitudeGenerator.getNext(), randomSeed);
+    List<Double> stepSizesForLayer = getStepSizesForLayer(layerNumber);
+    return buildSingleNoiseLayer(stepSizesForLayer, amplitudeGenerator.getNext(), randomSeed);
   }
 
-  private List<Integer> getInterpolationPointsForLayer(int layerNumber) throws NoiseLayerException {
+  private List<Double> getStepSizesForLayer(int layerNumber) throws NoiseLayerException {
     try {
-      return getNextInterpolationPointCount();
-    } catch (InterpolationPointException e) {
+      return getNextStepSizesForEachDimension();
+    } catch (StepSizeException e) {
       throw new NoiseLayerException.Builder(numberOfLayers, layerNumber).setCause(e).build();
     }
   }
 
-  private List<Integer> getNextInterpolationPointCount() throws InterpolationPointException {
-    List<Integer> interpolationPoints =
-        interpolationPointCountGenerators.stream()
+  private List<Double> getNextStepSizesForEachDimension() throws StepSizeException {
+    List<Double> stepSizes =
+        stepSizeGeneratorsByDimension.stream()
             .map(NumberGenerator::getNext)
             .collect(Collectors.toList());
-    assertInterpolationPointsCountForAll(interpolationPoints);
-    return interpolationPoints;
+    assertStepSizeForAll(stepSizes);
+    return stepSizes;
   }
 }

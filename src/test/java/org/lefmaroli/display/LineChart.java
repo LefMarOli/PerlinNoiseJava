@@ -35,6 +35,14 @@ public class LineChart {
     this.framedChart = getFramedChart();
   }
 
+  private static void setGridLines(XYPlot plot) {
+    plot.setRangeGridlinesVisible(true);
+    plot.setRangeGridlinePaint(Color.BLACK);
+
+    plot.setDomainGridlinesVisible(true);
+    plot.setDomainGridlinePaint(Color.BLACK);
+  }
+
   public void addEquidistantDataSeries(double[] dataSeries, String dataSeriesLabel) {
     List<Double> input = new ArrayList<>(dataSeries.length);
     for (double data : dataSeries) {
@@ -99,13 +107,5 @@ public class LineChart {
     plot.setRenderer(renderer);
     plot.setBackgroundPaint(Color.white);
     setGridLines(plot);
-  }
-
-  private static void setGridLines(XYPlot plot) {
-    plot.setRangeGridlinesVisible(true);
-    plot.setRangeGridlinePaint(Color.BLACK);
-
-    plot.setDomainGridlinesVisible(true);
-    plot.setDomainGridlinePaint(Color.BLACK);
   }
 }

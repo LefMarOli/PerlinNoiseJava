@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class PointGeneratorTest {
 
-  private static final int interpolationPoints = 51;
+  private static final double noiseStepSize = 1.0 / 51;
   private static final int expectedCount = 500;
   private final long randomSeed = System.currentTimeMillis();
   private PointGenerator defaultGenerator;
@@ -28,7 +28,7 @@ public class PointGeneratorTest {
 
   @Before
   public void setup() {
-    defaultGenerator = new PointGenerator(interpolationPoints, 1.0, randomSeed);
+    defaultGenerator = new PointGenerator(noiseStepSize, 1.0, randomSeed);
   }
 
   @Test
@@ -50,8 +50,7 @@ public class PointGeneratorTest {
   public void testValuesMultipliedByFactor() {
     Random random = new Random(System.currentTimeMillis());
     double amplitudeFactor = random.nextDouble() * 100;
-    PointGenerator amplifiedLayer =
-        new PointGenerator(interpolationPoints, amplitudeFactor, randomSeed);
+    PointGenerator amplifiedLayer = new PointGenerator(noiseStepSize, amplitudeFactor, randomSeed);
 
     Double[] values = new Double[expectedCount];
     Double[] actualAmplifiedValues = new Double[expectedCount];
@@ -68,7 +67,7 @@ public class PointGeneratorTest {
 
   @Test
   public void testCreateSamePoints() {
-    PointGenerator sameLayer = new PointGenerator(interpolationPoints, 1.0, randomSeed);
+    PointGenerator sameLayer = new PointGenerator(noiseStepSize, 1.0, randomSeed);
     for (int i = 0; i < expectedCount; i++) {
       assertEquals(defaultGenerator.getNext(), sameLayer.getNext(), 0.0);
     }
@@ -76,7 +75,7 @@ public class PointGeneratorTest {
 
   @Test
   public void testCreateDifferentPointsForDifferentSeed() {
-    PointGenerator sameLayer = new PointGenerator(interpolationPoints, 1.0, randomSeed + 1);
+    PointGenerator sameLayer = new PointGenerator(noiseStepSize, 1.0, randomSeed + 1);
     for (int i = 0; i < expectedCount; i++) {
       Double val = defaultGenerator.getNext();
       assertNotEquals("Values are equal for i: " + i + ", value: " + val, val, sameLayer.getNext());
@@ -90,36 +89,36 @@ public class PointGeneratorTest {
 
   @Test
   public void testEquals() {
-    PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(5, 1.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 0L);
     assertEquals(layer, layer2);
   }
 
   @Test
   public void testNotEqualNotSameSeed() {
-    PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(5, 1.0, 1L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 1L);
     assertNotEquals(layer, layer2);
   }
 
   @Test
   public void testNotEqualNotSameAmplitude() {
-    PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(5, 2.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 2.0, 0L);
     assertNotEquals(layer, layer2);
   }
 
   @Test
-  public void testNotEqualNotSameInterpolationPoints() {
-    PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(6, 1.0, 0L);
+  public void testNotEqualNotSameNoiseStepSize() {
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 6, 1.0, 0L);
     assertNotEquals(layer, layer2);
   }
 
   @Test
   public void testHashCode() {
-    PointGenerator layer = new PointGenerator(5, 1.0, 0L);
-    PointGenerator layer2 = new PointGenerator(5, 1.0, 0L);
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 0L);
     assertEquals(layer, layer2);
     assertEquals(layer.hashCode(), layer2.hashCode());
   }
@@ -142,7 +141,7 @@ public class PointGeneratorTest {
   }
 
   @Test
-  public void getInterpolationPointsCount() {
-    assertEquals(1.0 / interpolationPoints, defaultGenerator.getStepSize(), 1E-9);
+  public void getNoiseStepSize() {
+    assertEquals(noiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-9);
   }
 }
