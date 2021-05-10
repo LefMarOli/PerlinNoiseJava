@@ -14,8 +14,8 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
   private final boolean isCircular;
 
   protected MultiDimensionalRootNoiseGenerator(
-      int noiseInterpolationPoints, double maxAmplitude, long randomSeed, boolean isCircular) {
-    super(noiseInterpolationPoints, maxAmplitude, randomSeed);
+      double noiseStepSize, double maxAmplitude, long randomSeed, boolean isCircular) {
+    super(noiseStepSize, maxAmplitude, randomSeed);
     this.isCircular = isCircular;
   }
 
@@ -38,21 +38,22 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
     return Objects.hash(super.hashCode(), isCircular);
   }
 
-  protected int correctInterpolationPointsForCircularity(
-      int interpolationPoints, int dimensionLength, String dimensionName) {
+  protected double correctStepSizeForCircularity(
+      double stepSize, int dimensionLength, String dimensionName) {
     if (isCircular) {
+      var interpolationPoints = (int) (1.0 / stepSize);
       var toEvaluate = Math.min(interpolationPoints, dimensionLength);
       var newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
       LogManager.getLogger(this.getClass())
           .warn(
-              "Modified required interpolation point count for {} from {} to {} to respect"
+              "Modified required step size for {} from {} to {} to respect"
                   + " circularity.",
               dimensionName,
-              interpolationPoints,
-              newInterpolationPoints);
-      return newInterpolationPoints;
+              stepSize,
+              1.0 / newInterpolationPoints);
+      return 1.0 / newInterpolationPoints;
     } else {
-      return interpolationPoints;
+      return stepSize;
     }
   }
 }

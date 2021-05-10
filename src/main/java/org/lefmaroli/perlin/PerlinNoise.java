@@ -61,7 +61,7 @@ public class PerlinNoise {
   private final int[] indicesArray;
   private final double[] cornerDistanceArray;
   private final int dimension;
-  private final long randomSeed;
+  private final Long randomSeed;
 
   public PerlinNoise(int dimension, long randomSeed) {
     this.dimension = dimension;

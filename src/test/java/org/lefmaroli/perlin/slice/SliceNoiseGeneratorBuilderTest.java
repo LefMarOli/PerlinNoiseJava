@@ -9,7 +9,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.factorgenerator.IntegerGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.line.LineNoiseGeneratorBuilderTest;
 
@@ -40,14 +39,14 @@ public class SliceNoiseGeneratorBuilderTest {
   @Ignore("Skipped, only used to visualize results")
   @Test
   public void getNextSlices() throws NoiseBuilderException, InterruptedException {
-    IntegerGenerator widthInterpolationPointGenerator = new IntegerGenerator(128, 0.9);
-    IntegerGenerator heightInterpolationPointGenerator = new IntegerGenerator(128, 0.7);
-    IntegerGenerator noiseInterpolationPointGenerator = new IntegerGenerator(128, 0.5);
+    DoubleGenerator widthInterpolationPointGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.9);
+    DoubleGenerator heightInterpolationPointGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.7);
+    DoubleGenerator noiseInterpolationPointGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.5);
     SliceNoiseGenerator generator =
         new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
             .withWidthInterpolationPointGenerator(widthInterpolationPointGenerator)
             .withHeightInterpolationPointGenerator(heightInterpolationPointGenerator)
-            .withNoiseInterpolationPointGenerator(noiseInterpolationPointGenerator)
+            .withNoiseStepSizeGenerator(noiseInterpolationPointGenerator)
             .withNumberOfLayers(4)
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.95))
             .build();
@@ -73,9 +72,9 @@ public class SliceNoiseGeneratorBuilderTest {
         new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
             .withNumberOfLayers(10)
             .withRandomSeed(0L)
-            .withNoiseInterpolationPointGenerator(new IntegerGenerator(1000, 0.5))
-            .withWidthInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
-            .withHeightInterpolationPointGenerator(new IntegerGenerator(50, 2.0))
+            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
 

@@ -10,9 +10,9 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
   private static final List<String> parameterNames =
-      List.of("Line interpolation points", "Line length");
+      List.of("Line step size", "Line length");
 
-  private final int lineInterpolationPoints;
+  private final double lineStepSize;
   private final int lineLength;
   private int currentPosition = 0;
   private final double circularResolution;
@@ -20,19 +20,18 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private final double[] perlinData;
 
   public LineGenerator(
-      int noiseInterpolationPoints,
-      int lineInterpolationPoints,
+      double noiseStepSize,
+      double lineStepSize,
       int lineLength,
       double maxAmplitude,
       long randomSeed,
       boolean isCircular) {
-    super(noiseInterpolationPoints, maxAmplitude, randomSeed, isCircular);
-    assertValidValues(parameterNames, lineInterpolationPoints, lineLength);
+    super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
+    assertValidValues(parameterNames, lineStepSize, lineLength);
     this.lineLength = lineLength;
-    this.lineInterpolationPoints =
-        correctInterpolationPointsForCircularity(
-            lineInterpolationPoints, lineLength, "line length");
-    this.circularResolution = this.lineInterpolationPoints / (double) this.lineLength;
+    this.lineStepSize =
+        correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
+    this.circularResolution = 1.0 / (this.lineStepSize * this.lineLength);
     if (isCircular) {
       perlin = new PerlinNoise(3, randomSeed);
       perlinData = new double[3];
@@ -54,21 +53,21 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
     LineGenerator that = (LineGenerator) o;
-    return lineInterpolationPoints == that.lineInterpolationPoints && lineLength == that.lineLength;
+    return lineStepSize == that.lineStepSize && lineLength == that.lineLength;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), lineInterpolationPoints, lineLength);
+    return Objects.hash(super.hashCode(), lineStepSize, lineLength);
   }
 
   @Override
   public String toString() {
     return "LineGenerator{"
-        + "noiseInterpolationPoints="
-        + getNoiseInterpolationPoints()
-        + ", lineInterpolationPoints="
-        + lineInterpolationPoints
+        + "noiseStepSize="
+        + getNoiseStepSize()
+        + ", lineStepSize="
+        + lineStepSize
         + ", lineLength="
         + lineLength
         + ", maxAmplitude="
@@ -81,8 +80,8 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   @Override
-  public int getLineInterpolationPointsCount() {
-    return lineInterpolationPoints;
+  public double getLineStepSize() {
+    return lineStepSize;
   }
 
   @Override
@@ -98,7 +97,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   }
 
   private void processNoiseDomain(int noiseIndex, double[] lineData) {
-    double noiseDist = (double) (noiseIndex) * getStepSize();
+    double noiseDist = (double) (noiseIndex) * getNoiseStepSize();
     for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
       lineData[lineIndex] = processLineDomain(noiseDist, lineIndex);
     }
@@ -107,11 +106,11 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private double processLineDomain(double noiseDist, int lineIndex) {
     perlinData[0] = noiseDist;
     if (isCircular()) {
-      double angle = lineIndex / (double) lineLength * 2 * Math.PI;
+      double angle = lineIndex * lineStepSize * 2 * Math.PI;
       perlinData[1] = (Math.cos(angle) * circularResolution) + circularResolution;
       perlinData[2] = (Math.sin(angle) * circularResolution) + circularResolution;
     } else {
-      perlinData[1] = lineIndex / (double) lineInterpolationPoints;
+      perlinData[1] = lineIndex * lineStepSize;
     }
     return perlin.getFor(perlinData) * getMaxAmplitude();
   }
