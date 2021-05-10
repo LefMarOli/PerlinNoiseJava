@@ -169,7 +169,8 @@ public class LayeredSliceGeneratorTest {
     ToStringVerifier.forClass(LayeredSliceGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
-        .withIgnoredFields("scheduler", "jitterStrategy", "logger", "container")
+        .withIgnoredFields(
+            "scheduler", "jitterStrategy", "logger", "containers", "generated", "containersCount")
         .verify();
   }
 
