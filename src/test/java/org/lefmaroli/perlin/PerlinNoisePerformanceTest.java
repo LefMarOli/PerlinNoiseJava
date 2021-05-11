@@ -171,7 +171,7 @@ public class PerlinNoisePerformanceTest {
     } finally {
       service.shutdown();
       try {
-        boolean areTasksDone = service.awaitTermination(60, TimeUnit.SECONDS);
+        boolean areTasksDone = service.awaitTermination(65, TimeUnit.SECONDS);
         if (!areTasksDone) {
           logger.error("Tasks were not completed within the delay");
         }
