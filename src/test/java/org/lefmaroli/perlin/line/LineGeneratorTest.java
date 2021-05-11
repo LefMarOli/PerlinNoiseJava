@@ -385,9 +385,9 @@ public class LineGeneratorTest {
         testDuration,
         TimeUnit.SECONDS);
 
-    try{
+    try {
       waitAtMost(testDuration + 1, TimeUnit.SECONDS).until(ses::isShutdown);
-    }finally{
+    } finally {
       ses.shutdownNow();
     }
   }

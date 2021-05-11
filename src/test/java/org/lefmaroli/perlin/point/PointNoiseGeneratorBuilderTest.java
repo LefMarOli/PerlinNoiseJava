@@ -5,9 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
 public class PointNoiseGeneratorBuilderTest {
