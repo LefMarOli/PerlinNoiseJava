@@ -5,6 +5,7 @@ import static org.awaitility.Awaitility.waitAtMost;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +50,15 @@ public class PerlinNoisePerformanceTest {
       waitAtMost(Duration.ofMillis(80)).until(isDone::get);
     } finally {
       service.shutdown();
+      try {
+        boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
+        if(!areTasksDone){
+          logger.error("Tasks were not completed within the delay");
+        }
+      } catch (InterruptedException e) {
+        logger.error("Awaiting task termination was interrupted");
+        Thread.currentThread().interrupt();
+      }
     }
   }
 
@@ -79,6 +89,15 @@ public class PerlinNoisePerformanceTest {
       waitAtMost(Duration.ofMillis(170)).until(isDone::get);
     } finally {
       service.shutdown();
+      try {
+        boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
+        if(!areTasksDone){
+          logger.error("Tasks were not completed within the delay");
+        }
+      } catch (InterruptedException e) {
+        logger.error("Awaiting task termination was interrupted");
+        Thread.currentThread().interrupt();
+      }
     }
   }
 
@@ -110,6 +129,15 @@ public class PerlinNoisePerformanceTest {
       waitAtMost(Duration.ofMillis(700)).until(isDone::get);
     } finally {
       service.shutdown();
+      try {
+        boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
+        if(!areTasksDone){
+          logger.error("Tasks were not completed within the delay");
+        }
+      } catch (InterruptedException e) {
+        logger.error("Awaiting task termination was interrupted");
+        Thread.currentThread().interrupt();
+      }
     }
   }
 
@@ -142,6 +170,15 @@ public class PerlinNoisePerformanceTest {
       waitAtMost(Duration.ofMillis(2200)).until(isDone::get);
     } finally {
       service.shutdown();
+      try {
+        boolean areTasksDone = service.awaitTermination(100, TimeUnit.SECONDS);
+        if(!areTasksDone){
+          logger.error("Tasks were not completed within the delay");
+        }
+      } catch (InterruptedException e) {
+        logger.error("Awaiting task termination was interrupted");
+        Thread.currentThread().interrupt();
+      }
     }
   }
 }

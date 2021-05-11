@@ -272,7 +272,7 @@ public class LineGeneratorTest {
     int lineLength = 2000000;
     LineGenerator otherGenerator =
         new LineGenerator(
-            defaultNoiseStepSize, defaultLineStepSize, 2000000, 1.0, randomSeed, false);
+            defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, false);
     double[] nextLine = otherGenerator.getNext();
     assertEquals(lineLength, nextLine.length);
   }
