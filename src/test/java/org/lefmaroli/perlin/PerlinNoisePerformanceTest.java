@@ -52,7 +52,7 @@ public class PerlinNoisePerformanceTest {
       service.shutdown();
       try {
         boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
-        if(!areTasksDone){
+        if (!areTasksDone) {
           logger.error("Tasks were not completed within the delay");
         }
       } catch (InterruptedException e) {
@@ -91,7 +91,7 @@ public class PerlinNoisePerformanceTest {
       service.shutdown();
       try {
         boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
-        if(!areTasksDone){
+        if (!areTasksDone) {
           logger.error("Tasks were not completed within the delay");
         }
       } catch (InterruptedException e) {
@@ -131,7 +131,7 @@ public class PerlinNoisePerformanceTest {
       service.shutdown();
       try {
         boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
-        if(!areTasksDone){
+        if (!areTasksDone) {
           logger.error("Tasks were not completed within the delay");
         }
       } catch (InterruptedException e) {
@@ -172,7 +172,7 @@ public class PerlinNoisePerformanceTest {
       service.shutdown();
       try {
         boolean areTasksDone = service.awaitTermination(100, TimeUnit.SECONDS);
-        if(!areTasksDone){
+        if (!areTasksDone) {
           logger.error("Tasks were not completed within the delay");
         }
       } catch (InterruptedException e) {
