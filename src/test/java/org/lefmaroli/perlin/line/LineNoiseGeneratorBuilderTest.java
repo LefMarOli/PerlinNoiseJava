@@ -19,7 +19,6 @@ import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 public class LineNoiseGeneratorBuilderTest {
 
   private static final int lineLength = 800;
-  Logger logger = LogManager.getLogger(LineNoiseGeneratorBuilderTest.class);
 
   @Test
   public void testBuildNoiseLineNotNull() throws NoiseBuilderException {
@@ -86,32 +85,5 @@ public class LineNoiseGeneratorBuilderTest {
         TimeUnit.SECONDS);
 
     waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
-  }
-
-  @Ignore
-  @Test
-  public void benchmarkPerformance() throws NoiseBuilderException {
-    LineNoiseGenerator noiseGenerator =
-        new LineNoiseGeneratorBuilder(1000)
-            .withNumberOfLayers(10)
-            .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withLineStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
-            .build();
-
-    double duration = 0.0;
-    int numberOfIterations = 5 * 5000;
-    for (int i = 0; i < numberOfIterations; i++) {
-      long start = System.currentTimeMillis();
-      noiseGenerator.getNext();
-      long end = System.currentTimeMillis();
-      duration += end - start;
-      logger.info("Finished iteration " + i);
-    }
-    duration /= numberOfIterations;
-
-    logger.info("Mean duration: " + duration);
-    // Current performance is 482.6
   }
 }

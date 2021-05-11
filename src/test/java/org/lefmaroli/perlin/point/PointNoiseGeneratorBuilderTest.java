@@ -28,29 +28,4 @@ public class PointNoiseGeneratorBuilderTest {
     assertNotNull(noisePointGenerator2);
     assertEquals(noisePointGenerator, noisePointGenerator2);
   }
-
-  @Ignore
-  @Test
-  public void benchmarkPerformance() throws NoiseBuilderException {
-    PointNoiseGenerator noiseGenerator =
-        new PointNoiseGeneratorBuilder()
-            .withNumberOfLayers(10)
-            .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
-            .build();
-
-    double duration = 0.0;
-    int numberOfIterations = 1000 * 5000;
-    for (int i = 0; i < numberOfIterations; i++) {
-      long start = System.currentTimeMillis();
-      noiseGenerator.getNext();
-      long end = System.currentTimeMillis();
-      duration += end - start;
-    }
-    duration /= numberOfIterations;
-
-    logger.info("Mean duration: " + duration);
-    // Current performance: 1.012
-  }
 }

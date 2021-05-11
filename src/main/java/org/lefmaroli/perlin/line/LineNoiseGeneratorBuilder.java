@@ -10,7 +10,7 @@ public class LineNoiseGeneratorBuilder
 
   private final int lineLength;
 
-  LineNoiseGeneratorBuilder(int lineLength) {
+  public LineNoiseGeneratorBuilder(int lineLength) {
     super(2);
     this.lineLength = lineLength;
   }
@@ -20,7 +20,8 @@ public class LineNoiseGeneratorBuilder
     return (LineNoiseGenerator) super.build();
   }
 
-  LineNoiseGeneratorBuilder withLineStepSizeGenerator(NumberGenerator<Double> numberGenerator) {
+  public LineNoiseGeneratorBuilder withLineStepSizeGenerator(
+      NumberGenerator<Double> numberGenerator) {
     setStepSizeGeneratorForDimension(2, numberGenerator);
     return this;
   }

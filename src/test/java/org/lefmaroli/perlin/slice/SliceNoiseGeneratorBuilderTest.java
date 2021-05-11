@@ -63,32 +63,4 @@ public class SliceNoiseGeneratorBuilderTest {
       }
     }
   }
-
-  @Ignore
-  @Test
-  public void benchmarkPerformance() throws NoiseBuilderException {
-    SliceNoiseGenerator noiseGenerator =
-        new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
-            .withNumberOfLayers(10)
-            .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
-            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
-            .build();
-
-    double duration = 0.0;
-    int numberOfIterations = 5 * 10;
-    for (int i = 0; i < numberOfIterations; i++) {
-      long start = System.currentTimeMillis();
-      noiseGenerator.getNext();
-      long end = System.currentTimeMillis();
-      duration += end - start;
-      logger.info("Finished iteration " + i);
-    }
-    duration /= numberOfIterations;
-
-    logger.info("Mean duration: " + duration);
-    // Current performance is 482.6
-  }
 }

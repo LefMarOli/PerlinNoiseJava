@@ -376,15 +376,19 @@ public class LineGeneratorTest {
             30,
             TimeUnit.MILLISECONDS);
 
-    int testDurationInMs = 15;
+    int testDuration = 15;
     ses.schedule(
         () -> {
           scheduledFuture.cancel(true);
           ses.shutdown();
         },
-        testDurationInMs,
+        testDuration,
         TimeUnit.SECONDS);
 
-    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
+    try{
+      waitAtMost(testDuration + 1, TimeUnit.SECONDS).until(ses::isShutdown);
+    }finally{
+      ses.shutdownNow();
+    }
   }
 }
