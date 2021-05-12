@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
@@ -21,6 +22,7 @@ import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
 import org.lefmaroli.perlin.slice.SliceNoiseGenerator;
 import org.lefmaroli.perlin.slice.SliceNoiseGeneratorBuilder;
 
+@Ignore
 public class PerlinNoisePerformanceTest {
 
   Logger logger = LogManager.getLogger(PerlinNoisePerformanceTest.class);
@@ -62,7 +64,7 @@ public class PerlinNoisePerformanceTest {
   public void benchmarkCorePerformance() {
     PerlinNoise perlinNoise = new PerlinNoise(1, System.currentTimeMillis());
     testPerformance(
-        1000000,
+        100000,
         (i) -> perlinNoise.getFor(i * 0.005),
         Duration.ofMillis(80),
         "PerlinNoise core benchmark");
@@ -78,7 +80,7 @@ public class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(170), "PointGenerator benchmark");
+        50000, (i) -> noiseGenerator.getNext(), Duration.ofMillis(170), "PointGenerator benchmark");
   }
 
   @Test
@@ -92,7 +94,7 @@ public class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        50000, (i) -> noiseGenerator.getNext(), Duration.ofMillis(700), "LineGenerator benchmark");
+        500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(700), "LineGenerator benchmark");
   }
 
   @Test
