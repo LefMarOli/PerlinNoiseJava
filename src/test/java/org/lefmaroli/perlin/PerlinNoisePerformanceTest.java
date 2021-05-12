@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
@@ -22,10 +21,9 @@ import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
 import org.lefmaroli.perlin.slice.SliceNoiseGenerator;
 import org.lefmaroli.perlin.slice.SliceNoiseGeneratorBuilder;
 
-@Ignore
 public class PerlinNoisePerformanceTest {
 
-  Logger logger = LogManager.getLogger(PerlinNoisePerformanceTest.class);
+  private final Logger logger = LogManager.getLogger(PerlinNoisePerformanceTest.class);
 
   private void testPerformance(
       int numIterations, Consumer<Integer> c, Duration maxTestDuration, String testTitle) {
@@ -74,34 +72,34 @@ public class PerlinNoisePerformanceTest {
   public void benchmarkPointGeneratorPerformance() throws NoiseBuilderException {
     PointNoiseGenerator noiseGenerator =
         new PointNoiseGeneratorBuilder()
-            .withNumberOfLayers(10)
+            .withNumberOfLayers(3)
             .withRandomSeed(0L)
             .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        50000, (i) -> noiseGenerator.getNext(), Duration.ofMillis(170), "PointGenerator benchmark");
+        100000, (i) -> noiseGenerator.getNext(), Duration.ofMillis(170), "PointGenerator benchmark");
   }
 
   @Test
   public void benchmarkLineGeneratorPerformance() throws NoiseBuilderException {
     LineNoiseGenerator noiseGenerator =
-        new LineNoiseGeneratorBuilder(1000)
-            .withNumberOfLayers(10)
+        new LineNoiseGeneratorBuilder(200)
+            .withNumberOfLayers(3)
             .withRandomSeed(0L)
             .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withLineStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(700), "LineGenerator benchmark");
+        5000, (i) -> noiseGenerator.getNext(), Duration.ofMillis(500), "LineGenerator benchmark");
   }
 
   @Test
   public void benchmarkSliceGeneratorPerformance() throws NoiseBuilderException {
     SliceNoiseGenerator noiseGenerator =
-        new SliceNoiseGeneratorBuilder(400, 400)
-            .withNumberOfLayers(10)
+        new SliceNoiseGeneratorBuilder(100, 100)
+            .withNumberOfLayers(3)
             .withRandomSeed(0L)
             .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
             .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
@@ -109,6 +107,6 @@ public class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        5, (i) -> noiseGenerator.getNext(), Duration.ofMillis(2200), "SliceGenerator benchmark");
+        50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(700), "SliceGenerator benchmark");
   }
 }
