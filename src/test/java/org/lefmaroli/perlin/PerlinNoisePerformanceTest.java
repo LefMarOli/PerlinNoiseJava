@@ -80,7 +80,7 @@ public class PerlinNoisePerformanceTest {
     testPerformance(
         100000,
         (i) -> noiseGenerator.getNext(),
-        Duration.ofMillis(170),
+        Duration.ofMillis(300),
         "PointGenerator benchmark");
   }
 
@@ -110,6 +110,6 @@ public class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(700), "SliceGenerator benchmark");
+        50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
   }
 }
