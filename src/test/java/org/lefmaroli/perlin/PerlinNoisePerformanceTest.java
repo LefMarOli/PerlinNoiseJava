@@ -50,8 +50,7 @@ public class PerlinNoisePerformanceTest {
         boolean areTasksDone = service.awaitTermination(10, TimeUnit.SECONDS);
         if (!areTasksDone) {
           logger.error("Tasks were not completed within the delay");
-        }else
-          logger.debug("ExecutorService shutdown complete");
+        } else logger.debug("ExecutorService shutdown complete");
       } catch (InterruptedException e) {
         logger.error("Awaiting task termination was interrupted");
         Thread.currentThread().interrupt();
