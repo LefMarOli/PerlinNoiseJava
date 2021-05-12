@@ -78,7 +78,10 @@ public class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        100000, (i) -> noiseGenerator.getNext(), Duration.ofMillis(170), "PointGenerator benchmark");
+        100000,
+        (i) -> noiseGenerator.getNext(),
+        Duration.ofMillis(170),
+        "PointGenerator benchmark");
   }
 
   @Test
