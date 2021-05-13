@@ -92,8 +92,8 @@ public class PerlinNoiseTest {
     }
 
     for (int i = 0; i < size - 2; i++) {
-      double mu = values[i] - values[i+1];
-      double nextMu = values[i+1] - values[i+2];
+      double mu = values[i] - values[i + 1];
+      double nextMu = values[i + 1] - values[i + 2];
       assertEquals(mu, nextMu, stepSize);
     }
   }

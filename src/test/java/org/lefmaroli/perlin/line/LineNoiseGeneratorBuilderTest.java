@@ -67,41 +67,45 @@ public class LineNoiseGeneratorBuilderTest {
     for (int i = 0; i < numLayers; i++) {
       double layerMaxVal = amplitudeGenerator.getNext();
       maxValue += layerMaxVal;
-      maxLineDiff += lineStepSizeGenerator.getNext()/layerMaxVal;
-      maxNoiseDiff += noiseStepSizeGenerator.getNext()/layerMaxVal;
+      maxLineDiff += lineStepSizeGenerator.getNext() / layerMaxVal;
+      maxNoiseDiff += noiseStepSizeGenerator.getNext() / layerMaxVal;
     }
-    maxLineDiff/=maxValue;
+    maxLineDiff /= maxValue;
     maxLineDiff = Interpolation.getMaxStepWithFadeForStep(maxLineDiff);
-    maxNoiseDiff/=maxValue;
+    maxNoiseDiff /= maxValue;
     maxNoiseDiff = Interpolation.getMaxStepWithFadeForStep(maxNoiseDiff);
     LogManager.getLogger(this.getClass()).info("MaxLineDiff:" + maxLineDiff);
     LogManager.getLogger(this.getClass()).info("MaxNoiseDiff:" + maxNoiseDiff);
     final double lineDiff = maxLineDiff;
     final double noiseDiff = maxNoiseDiff;
 
-    ScheduledUpdater.updateAtRateForDuration(()->{
-      for (int i = 0; i < requestedLines - 1; i++) {
-        System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
-      }
-      if(Thread.interrupted()){
-        return;
-      }
-      double[] nextLine = generator.getNext();
-      System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
-      im.updateImage(image);
+    ScheduledUpdater.updateAtRateForDuration(
+        () -> {
+          for (int i = 0; i < requestedLines - 1; i++) {
+            System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
+          }
+          if (Thread.interrupted()) {
+            return;
+          }
+          double[] nextLine = generator.getNext();
+          System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
+          im.updateImage(image);
 
-      for (int i = 0; i < lineLength - 1; i++) {
-        double first = nextLine[i];
-        double second = nextLine[i + 1];
-        assertEquals("Values differ more than " + lineDiff, first, second, lineDiff);
-      }
+          for (int i = 0; i < lineLength - 1; i++) {
+            double first = nextLine[i];
+            double second = nextLine[i + 1];
+            assertEquals("Values differ more than " + lineDiff, first, second, lineDiff);
+          }
 
-      for (int i = 0; i < lineLength; i++) {
-        double first = image[image.length - 1][i];
-        double second = image[image.length - 2][i];
-        assertEquals("Values differ more than " + noiseDiff, first, second, noiseDiff);
-      }
-
-    }, 30, TimeUnit.MILLISECONDS, 15, TimeUnit.SECONDS);
+          for (int i = 0; i < lineLength; i++) {
+            double first = image[image.length - 1][i];
+            double second = image[image.length - 2][i];
+            assertEquals("Values differ more than " + noiseDiff, first, second, noiseDiff);
+          }
+        },
+        30,
+        TimeUnit.MILLISECONDS,
+        15,
+        TimeUnit.SECONDS);
   }
 }

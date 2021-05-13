@@ -27,9 +27,9 @@ public class LayeredSliceGeneratorTest {
     layers = new ArrayList<>(3);
     layers.add(
         new SliceGenerator(
-            1.0/100,
-            1.0/100,
-            1.0/100,
+            1.0 / 100,
+            1.0 / 100,
+            1.0 / 100,
             defaultSliceWidth,
             defaultSliceHeight,
             1.0,
@@ -37,9 +37,9 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     layers.add(
         new SliceGenerator(
-            1.0/50,
-            1.0/50,
-            1.0/50,
+            1.0 / 50,
+            1.0 / 50,
+            1.0 / 50,
             defaultSliceWidth,
             defaultSliceHeight,
             0.5,
@@ -47,9 +47,9 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     layers.add(
         new SliceGenerator(
-            1.0/25,
-            1.0/25,
-            1.0/25,
+            1.0 / 25,
+            1.0 / 25,
+            1.0 / 25,
             defaultSliceWidth,
             defaultSliceHeight,
             0.25,
@@ -73,9 +73,9 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> newLayerSet = layers;
     newLayerSet.add(
         new SliceGenerator(
-            1.0/256,
-            1.0/256,
-            1.0/256,
+            1.0 / 256,
+            1.0 / 256,
+            1.0 / 256,
             defaultSliceWidth + 5,
             defaultSliceHeight,
             0.1225,
@@ -89,9 +89,9 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> newLayerSet = layers;
     newLayerSet.add(
         new SliceGenerator(
-            1.0/256,
-            1.0/256,
-            1.0/256,
+            1.0 / 256,
+            1.0 / 256,
+            1.0 / 256,
             defaultSliceWidth,
             defaultSliceHeight - 9,
             0.1225,
@@ -142,7 +142,14 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> otherLayers = layers;
     otherLayers.add(
         new SliceGenerator(
-            1.0/8, 1.0/8, 1.0/8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, isCircularDefault));
+            1.0 / 8,
+            1.0 / 8,
+            1.0 / 8,
+            defaultSliceWidth,
+            defaultSliceHeight,
+            0.1,
+            5L,
+            isCircularDefault));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
     assertNotEquals(defaultGenerator, otherGenerator);
   }
