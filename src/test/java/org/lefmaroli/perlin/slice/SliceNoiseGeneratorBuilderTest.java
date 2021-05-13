@@ -66,13 +66,13 @@ public class SliceNoiseGeneratorBuilderTest {
     for (int i = 0; i < numLayers; i++) {
       double layerMaxVal = amplitudeGenerator.getNext();
       maxValue += layerMaxVal;
-      maxWidthDiff += widthStepSizeGenerator.getNext()/layerMaxVal;
-      maxHeightDiff += heightStepSizeGenerator.getNext()/layerMaxVal;
-      maxNoiseDiff += noiseStepSizeGenerator.getNext()/layerMaxVal;
+      maxWidthDiff += widthStepSizeGenerator.getNext() / layerMaxVal;
+      maxHeightDiff += heightStepSizeGenerator.getNext() / layerMaxVal;
+      maxNoiseDiff += noiseStepSizeGenerator.getNext() / layerMaxVal;
     }
-    maxWidthDiff/=maxValue;
-    maxHeightDiff/=maxValue;
-    maxNoiseDiff/=maxValue;
+    maxWidthDiff /= maxValue;
+    maxHeightDiff /= maxValue;
+    maxNoiseDiff /= maxValue;
     LogManager.getLogger(this.getClass()).info("MaxWidthDiff:" + maxWidthDiff);
     LogManager.getLogger(this.getClass()).info("MaxHeightDiff:" + maxHeightDiff);
     LogManager.getLogger(this.getClass()).info("MaxNoiseDiff:" + maxNoiseDiff);
@@ -95,14 +95,14 @@ public class SliceNoiseGeneratorBuilderTest {
           for (int i = 0; i < sliceWidth - 1; i++) {
             for (int j = 0; j < sliceHeight; j++) {
               double first = next[i][j];
-              double second = next[i+1][j];
+              double second = next[i + 1][j];
               assertEquals(first, second, widthDiff);
             }
           }
           for (int i = 0; i < sliceWidth; i++) {
             for (int j = 0; j < sliceHeight - 1; j++) {
               double first = next[i][j];
-              double second = next[i][j+1];
+              double second = next[i][j + 1];
               assertEquals(first, second, heightDiff);
             }
           }

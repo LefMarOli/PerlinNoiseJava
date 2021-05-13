@@ -23,22 +23,25 @@ public class ScheduledUpdater {
     AtomicBoolean isDone = new AtomicBoolean(false);
     AtomicBoolean hasErrors = new AtomicBoolean(false);
     AtomicReference<Throwable> error = new AtomicReference<>();
-    ses.scheduleAtFixedRate(()->{
-      try{
-        r.run();
-      }catch (Throwable t){
-        hasErrors.set(true);
-        error.set(t);
-        throw t;
-      }
-    }, 0, rate, rateUnit);
+    ses.scheduleAtFixedRate(
+        () -> {
+          try {
+            r.run();
+          } catch (Throwable t) {
+            hasErrors.set(true);
+            error.set(t);
+            throw t;
+          }
+        },
+        0,
+        rate,
+        rateUnit);
     ses.schedule(() -> isDone.set(true), duration, durationUnit);
     try {
       Awaitility.setDefaultPollInterval(Duration.ofMillis(10));
-      waitAtMost(duration + 1, durationUnit).until(()-> (isDone.get() || hasErrors.get()));
+      waitAtMost(duration + 1, durationUnit).until(() -> (isDone.get() || hasErrors.get()));
       assertFalse("Test did not complete without errors:" + error.get(), hasErrors.get());
-    }
-    finally{
+    } finally {
       ses.shutdownNow();
       try {
         boolean areTasksDone = ses.awaitTermination(10, TimeUnit.SECONDS);

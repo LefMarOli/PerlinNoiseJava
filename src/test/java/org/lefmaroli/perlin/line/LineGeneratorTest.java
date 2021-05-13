@@ -280,15 +280,18 @@ public class LineGeneratorTest {
     double[] line = otherGenerator.getNext();
     double firstValue = line[0];
     double secondValue = line[1];
-    assertEquals(firstValue, secondValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
+    assertEquals(
+        firstValue, secondValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
     double lastValue = line[otherGenerator.getLineLength() - 1];
-    assertEquals(firstValue, lastValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
+    assertEquals(
+        firstValue, lastValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
   }
 
   @Test
   public void testSmoothVisuals() {
     LineGenerator generator =
-        new LineGenerator(defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, true);
+        new LineGenerator(
+            defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, true);
     int requested = 200;
 
     final double[][] image = new double[requested][lineLength * 2];

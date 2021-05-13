@@ -463,17 +463,12 @@ public class SliceGeneratorTest {
   public void testCircularity() {
     SliceGenerator generator =
         new SliceGenerator(
-            noiseStepSize,
-            1/50.0,
-            1/250.0,
-            150,
-            150,
-            1.0,
-            System.currentTimeMillis(),
-            true);
+            noiseStepSize, 1 / 50.0, 1 / 250.0, 150, 150, 1.0, System.currentTimeMillis(), true);
     double[][] slices = generator.getNext();
     int patchFactor = 2;
-    double[][] patched = new double[generator.getSliceWidth() * patchFactor][generator.getSliceHeight() * patchFactor];
+    double[][] patched =
+        new double[generator.getSliceWidth() * patchFactor]
+            [generator.getSliceHeight() * patchFactor];
     for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
       for (int j = 0; j < generator.getSliceHeight() * patchFactor; j++) {
         patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
@@ -482,15 +477,21 @@ public class SliceGeneratorTest {
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 5);
     image.setVisible();
 
-    final double[][] previous = new double[generator.getSliceWidth() * patchFactor][generator.getSliceHeight() * patchFactor];
+    final double[][] previous =
+        new double[generator.getSliceWidth() * patchFactor]
+            [generator.getSliceHeight() * patchFactor];
     for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
       System.arraycopy(patched[i], 0, previous[i], 0, generator.getSliceHeight() * patchFactor);
     }
 
-    final double maxNoiseRate = Interpolation.getMaxStepWithFadeForStep(generator.getNoiseStepSize());
-    final double maxWidthRate = Interpolation.getMaxStepWithFadeForStep(generator.getWidthStepSize());
-    final double maxHeightRate = Interpolation.getMaxStepWithFadeForStep(generator.getHeightStepSize());
-    final double maxHeightWidthRate = Math.sqrt((maxWidthRate*maxWidthRate) + (maxHeightRate*maxHeightRate));
+    final double maxNoiseRate =
+        Interpolation.getMaxStepWithFadeForStep(generator.getNoiseStepSize());
+    final double maxWidthRate =
+        Interpolation.getMaxStepWithFadeForStep(generator.getWidthStepSize());
+    final double maxHeightRate =
+        Interpolation.getMaxStepWithFadeForStep(generator.getHeightStepSize());
+    final double maxHeightWidthRate =
+        Math.sqrt((maxWidthRate * maxWidthRate) + (maxHeightRate * maxHeightRate));
     LogManager.getLogger(this.getClass()).info("MaxNoiseRate:" + maxNoiseRate);
     LogManager.getLogger(this.getClass()).info("MaxWidthRate:" + maxHeightWidthRate);
     LogManager.getLogger(this.getClass()).info("MaxHeightRate:" + maxHeightWidthRate);
@@ -508,38 +509,43 @@ public class SliceGeneratorTest {
             }
           }
           image.updateImage(patched);
-//          for (int i = 0; i < patched.length - 1; i++) {
-//            for (int j = 0; j < patched[i].length; j++) {
-//              double first = patched[i][j];
-//              double second = patched[i + 1][j];
-//              assertEquals(
-//                  "Values differ more than " + maxWidthRate + " for width:" + Math.abs(first - second),
-//                  first,
-//                  second,
-//                  maxWidthRate);
-//            }
-//          }
+          //          for (int i = 0; i < patched.length - 1; i++) {
+          //            for (int j = 0; j < patched[i].length; j++) {
+          //              double first = patched[i][j];
+          //              double second = patched[i + 1][j];
+          //              assertEquals(
+          //                  "Values differ more than " + maxWidthRate + " for width:" +
+          // Math.abs(first - second),
+          //                  first,
+          //                  second,
+          //                  maxWidthRate);
+          //            }
+          //          }
           if (Thread.interrupted()) {
             return;
           }
-//          for (double[] rows : patched) {
-//            for (int j = 0; j < rows.length - 1; j++) {
-//              double first = rows[j];
-//              double second = rows[j + 1];
-//              assertEquals(
-//                  "Values differ more than " + maxHeightWidthRate + " for height:" + Math
-//                      .abs(first - second),
-//                  first,
-//                  second,
-//                  maxHeightWidthRate);
-//            }
-//          }
+          //          for (double[] rows : patched) {
+          //            for (int j = 0; j < rows.length - 1; j++) {
+          //              double first = rows[j];
+          //              double second = rows[j + 1];
+          //              assertEquals(
+          //                  "Values differ more than " + maxHeightWidthRate + " for height:" +
+          // Math
+          //                      .abs(first - second),
+          //                  first,
+          //                  second,
+          //                  maxHeightWidthRate);
+          //            }
+          //          }
           for (int i = 0; i < patched.length; i++) {
             for (int j = 0; j < patched[i].length; j++) {
               double first = previous[i][j];
               double second = patched[i][j];
               assertEquals(
-                  "Values differ more than " + maxNoiseRate + " for noise:" + Math.abs(first - second),
+                  "Values differ more than "
+                      + maxNoiseRate
+                      + " for noise:"
+                      + Math.abs(first - second),
                   first,
                   second,
                   maxNoiseRate);
@@ -595,7 +601,10 @@ public class SliceGeneratorTest {
               double first = next[i][j];
               double second = next[i + 1][j];
               assertEquals(
-                  "Values differ more than " + maxWidthRate + " for width:" + Math.abs(first - second),
+                  "Values differ more than "
+                      + maxWidthRate
+                      + " for width:"
+                      + Math.abs(first - second),
                   first,
                   second,
                   maxWidthRate);
@@ -609,7 +618,10 @@ public class SliceGeneratorTest {
               double first = next[i][j];
               double second = next[i][j + 1];
               assertEquals(
-                  "Values differ more than " + maxHeightRate + " for height:" + Math.abs(first - second),
+                  "Values differ more than "
+                      + maxHeightRate
+                      + " for height:"
+                      + Math.abs(first - second),
                   first,
                   second,
                   maxHeightRate);
@@ -620,7 +632,10 @@ public class SliceGeneratorTest {
               double first = previous[i][j];
               double second = next[i][j];
               assertEquals(
-                  "Values differ more than " + maxNoiseRate + " for noise:" + Math.abs(first - second),
+                  "Values differ more than "
+                      + maxNoiseRate
+                      + " for noise:"
+                      + Math.abs(first - second),
                   first,
                   second,
                   maxNoiseRate);
