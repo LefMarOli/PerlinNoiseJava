@@ -1,12 +1,13 @@
 package org.lefmaroli.perlin;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 public class PerlinNoiseTest {
 
-  private long randomSeed = System.currentTimeMillis();
+  private final long randomSeed = System.currentTimeMillis();
 
   @Test(expected = IllegalArgumentException.class)
   public void testWrongNumberOfIndices() {
@@ -77,6 +78,23 @@ public class PerlinNoiseTest {
           }
         }
       }
+    }
+  }
+
+  @Test
+  public void testValuesContinuity() {
+    PerlinNoise perlin = new PerlinNoise(1, randomSeed);
+    int size = 1024;
+    double[] values = new double[size];
+    double stepSize = 0.00001;
+    for (int i = 0; i < values.length; i++) {
+      values[i] = perlin.getFor(i * stepSize);
+    }
+
+    for (int i = 0; i < size - 2; i++) {
+      double mu = values[i] - values[i+1];
+      double nextMu = values[i+1] - values[i+2];
+      assertEquals(mu, nextMu, stepSize);
     }
   }
 }

@@ -18,8 +18,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private final double heightStepSize;
   private final int sliceWidth;
   private final int sliceHeight;
-  private final double circularWidthResolution;
-  private final double circularHeightResolution;
+  private final double res;
   private final PerlinNoise perlin;
   private final double[] perlinData;
   private int currentPosInNoiseInterpolation = 0;
@@ -40,11 +39,15 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
         correctStepSizeForCircularity(heightStepSize, sliceHeight, "slice height");
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
-    this.circularWidthResolution = 1.0 / (this.widthStepSize * this.sliceWidth);
-    this.circularHeightResolution = 1.0 / (this.heightStepSize * this.sliceHeight);
+    double circularWidthResolution = 1.0 / (this.widthStepSize * this.sliceWidth);
+    double circularHeightResolution = 1.0 / (this.heightStepSize * this.sliceHeight);
+    this.res =
+        Math.sqrt(
+            circularWidthResolution * circularWidthResolution
+                + circularHeightResolution * circularHeightResolution);
     if (isCircular) {
-      perlin = new PerlinNoise(5, randomSeed);
-      perlinData = new double[5];
+      perlin = new PerlinNoise(4, randomSeed);
+      perlinData = new double[4];
     } else {
       perlin = new PerlinNoise(3, randomSeed);
       perlinData = new double[3];
@@ -143,11 +146,11 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private double processSliceHeightDomain(double noiseDist, double widthDist, int heightIndex) {
     perlinData[0] = noiseDist;
     if (isCircular()) {
-      perlinData[1] = (Math.cos(widthDist) * circularWidthResolution) + circularWidthResolution;
-      perlinData[2] = (Math.sin(widthDist) * circularWidthResolution) + circularWidthResolution;
       double heightDist = heightIndex * heightStepSize * 2 * Math.PI;
-      perlinData[3] = (Math.cos(heightDist) * circularHeightResolution) + circularHeightResolution;
-      perlinData[4] = (Math.sin(heightDist) * circularHeightResolution) + circularHeightResolution;
+      double cosHeight = Math.cos(heightDist);
+      perlinData[1] = ((Math.sin(widthDist) * cosHeight) + 1.0) / 2.0 * res;
+      perlinData[2] = ((Math.cos(widthDist) * cosHeight) + 1.0) / 2.0 * res;
+      perlinData[3] = ((Math.sin(heightDist)) + 1.0) / 2.0 * res;
     } else {
       perlinData[1] = widthDist;
       perlinData[2] = heightIndex * heightStepSize;

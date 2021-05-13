@@ -19,44 +19,6 @@ public class PerlinNoiseVisualizeTests {
   private final long randomSeed = System.currentTimeMillis();
 
   @Test
-  public void test1D() {
-    PerlinNoise perlin = new PerlinNoise(1, randomSeed);
-    int size = 1024;
-    double[] values = new double[size];
-    double stepSize = 0.05;
-    for (int i = 0; i < values.length; i++) {
-      values[i] = perlin.getFor(i * stepSize);
-    }
-
-    LineChart chart = new LineChart("Test", "length", "values");
-    String label = "line";
-    chart.addEquidistantDataSeries(values, label);
-    chart.setVisible();
-    chart.setYAxisRange(0.0, 1.0);
-    while (true)
-      ;
-  }
-
-  @Test
-  public void test1D_2() {
-    PerlinNoise perlin = new PerlinNoise(2, randomSeed);
-    int size = 1024;
-    double[] values = new double[size];
-    double stepSize = 0.05;
-    for (int i = 0; i < values.length; i++) {
-      values[i] = perlin.getFor(i * stepSize, 0);
-    }
-
-    LineChart chart = new LineChart("Test", "length", "values");
-    String label = "line";
-    chart.addEquidistantDataSeries(values, label);
-    chart.setVisible();
-    chart.setYAxisRange(0.0, 1.0);
-    while (true)
-      ;
-  }
-
-  @Test
   public void test2D() throws InterruptedException {
     PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     int size = 500;
@@ -68,24 +30,12 @@ public class PerlinNoiseVisualizeTests {
     }
     int currentXIndex = 0;
 
-    double min = Double.MAX_VALUE;
-    double max = Double.MIN_VALUE;
-    for (double v : values) {
-      if (v < min) {
-        min = v;
-      }
-      if (v > max) {
-        max = v;
-      }
-    }
-
-    LOGGER.debug("Min: " + min + ", Max: " + max);
-
     LineChart chart = new LineChart("Test", "length", "values");
     String label = "line";
     chart.addEquidistantDataSeries(values, label);
     chart.setVisible();
     chart.setYAxisRange(0.0, 1.0);
+
     long previousTime = System.currentTimeMillis();
     while (true) {
       if (System.currentTimeMillis() - previousTime > 5) {
@@ -94,14 +44,6 @@ public class PerlinNoiseVisualizeTests {
         for (int i = 0; i < size; i++) {
           double newValue = perlinNoise.getFor(currentXIndex * stepSizeX, i * stepSizeY);
           values[i] = newValue;
-          if (newValue > max) {
-            max = newValue;
-            LOGGER.debug("New max: " + max);
-          }
-          if (newValue < min) {
-            min = newValue;
-            LOGGER.debug("New min: " + min);
-          }
         }
         EventQueue.invokeLater(
             () ->

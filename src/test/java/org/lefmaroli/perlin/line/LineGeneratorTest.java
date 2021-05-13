@@ -1,6 +1,5 @@
 package org.lefmaroli.perlin.line;
 
-import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,16 +8,12 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import javax.swing.SwingUtilities;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.interpolation.Interpolation;
+import org.lefmaroli.utils.ScheduledUpdater;
 
 public class LineGeneratorTest {
 
@@ -285,17 +280,15 @@ public class LineGeneratorTest {
     double[] line = otherGenerator.getNext();
     double firstValue = line[0];
     double secondValue = line[1];
-    double mu = secondValue - firstValue;
+    assertEquals(firstValue, secondValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
     double lastValue = line[otherGenerator.getLineLength() - 1];
-    double otherMu = firstValue - lastValue;
-    assertEquals(mu, otherMu, defaultLineStepSize);
+    assertEquals(firstValue, lastValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
   }
 
-  @Ignore("Fake test to visualize data, doesn't assert anything")
   @Test
-  public void getNextLines() {
+  public void testSmoothVisuals() {
     LineGenerator generator =
-        new LineGenerator(1.0 / 25, 1.0 / 90, lineLength, 1.0, randomSeed, true);
+        new LineGenerator(defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, true);
     int requested = 200;
 
     final double[][] image = new double[requested][lineLength * 2];
@@ -310,85 +303,42 @@ public class LineGeneratorTest {
     SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
     im.setVisible();
 
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> scheduledFuture =
-        ses.scheduleAtFixedRate(
-            () -> {
-              double[] newline = generator.getNext();
-              for (int j = 0; j < requested - 1; j++) {
-                for (int k = 0; k < newline.length; k++) {
-                  image[j][k] = image[j + 1][k];
-                  image[j][k + lineLength] = image[j + 1][k + lineLength];
-                }
-              }
-              for (int i = 0; i < newline.length; i++) {
-                image[image.length - 1][i] = newline[i];
-                image[image.length - 1][i + lineLength] = newline[i];
-              }
-              im.updateImage(image);
-            },
-            1,
-            30,
-            TimeUnit.MILLISECONDS);
+    double maxLineStep = Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize);
+    double maxNoiseStep = Interpolation.getMaxStepWithFadeForStep(defaultNoiseStepSize);
 
-    int testDurationInMs = 15;
-    ses.schedule(
+    ScheduledUpdater.updateAtRateForDuration(
         () -> {
-          scheduledFuture.cancel(true);
-          ses.shutdown();
+          double[] newline = generator.getNext();
+          if (Thread.interrupted()) {
+            return;
+          }
+          for (int j = 0; j < requested - 1; j++) {
+            for (int k = 0; k < newline.length; k++) {
+              image[j][k] = image[j + 1][k];
+              image[j][k + lineLength] = image[j + 1][k + lineLength];
+            }
+          }
+          for (int i = 0; i < newline.length; i++) {
+            image[image.length - 1][i] = newline[i];
+            image[image.length - 1][i + lineLength] = newline[i];
+          }
+          im.updateImage(image);
+
+          for (int i = 0; i < (lineLength * 2) - 1; i++) {
+            double first = image[image.length - 1][i];
+            double second = image[image.length - 1][i + 1];
+            assertEquals("Values differ more than " + maxLineStep, first, second, maxLineStep);
+          }
+
+          for (int i = 0; i < lineLength * 2; i++) {
+            double first = image[image.length - 1][i];
+            double second = image[image.length - 2][i];
+            assertEquals("Values differ more than " + maxNoiseStep, first, second, maxNoiseStep);
+          }
         },
-        testDurationInMs,
+        30,
+        TimeUnit.MILLISECONDS,
+        15,
         TimeUnit.SECONDS);
-
-    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
-  }
-
-  @Ignore("Fake test to visualize data, doesn't assert anything")
-  @Test
-  public void testMorphingLine() {
-    // Transform into testable test like circular bounds
-    LineGenerator layer2D =
-        new LineGenerator(
-            defaultNoiseStepSize, 1.0 / 100, lineLength, 1.0, System.currentTimeMillis(), true);
-    double[] line = layer2D.getNext();
-    LineChart chart = new LineChart("Morphing line", "length", "values");
-    String label = "line";
-    chart.addEquidistantDataSeries(line, label);
-    chart.setVisible();
-    chart.setYAxisRange(0.0, 1.0);
-
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> scheduledFuture =
-        ses.scheduleAtFixedRate(
-            () -> {
-              double[] newline = layer2D.getNext();
-              SwingUtilities.invokeLater(
-                  () ->
-                      chart.updateDataSeries(
-                          dataSeries -> {
-                            for (int i = 0; i < newline.length; i++) {
-                              dataSeries.updateByIndex(i, newline[i]);
-                            }
-                          },
-                          label));
-            },
-            5,
-            30,
-            TimeUnit.MILLISECONDS);
-
-    int testDuration = 15;
-    ses.schedule(
-        () -> {
-          scheduledFuture.cancel(true);
-          ses.shutdown();
-        },
-        testDuration,
-        TimeUnit.SECONDS);
-
-    try {
-      waitAtMost(testDuration + 1, TimeUnit.SECONDS).until(ses::isShutdown);
-    } finally {
-      ses.shutdownNow();
-    }
   }
 }

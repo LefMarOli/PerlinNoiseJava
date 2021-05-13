@@ -1,6 +1,5 @@
 package org.lefmaroli.perlin.slice;
 
-import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,23 +9,22 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.interpolation.Interpolation;
+import org.lefmaroli.utils.ScheduledUpdater;
 
 public class SliceGeneratorTest {
 
-  private static final double noiseStepSize = 1.0 / 150.0;
-  private static final double widthStepSize = 1.0 / 50;
-  private static final double heightStepSize = 1.0 / 80;
-  private static final int sliceWidth = 100;
-  private static final int sliceHeight = 150;
+  private static final double noiseStepSize = 1.0 / 10.0;
+  private static final double widthStepSize = 1.0 / 100;
+  private static final double heightStepSize = 1.0 / 200;
+  private static final int sliceWidth = 50;
+  private static final int sliceHeight = 75;
   private static final double maxAmplitude = 1.0;
   private static final boolean isCircular = false;
   private final long randomSeed = System.currentTimeMillis();
@@ -462,133 +460,112 @@ public class SliceGeneratorTest {
 
   @Ignore("Skipped, only used to visualize results")
   @Test
-  public void visualizeLine() {
-    SliceGenerator generator =
-        new SliceGenerator(
-            noiseStepSize,
-            widthStepSize,
-            heightStepSize,
-            sliceWidth,
-            sliceHeight,
-            1.0,
-            System.currentTimeMillis(),
-            true);
-    double[][] slices = generator.getNext();
-    double[][] patched = new double[generator.getSliceWidth() * 3][generator.getSliceHeight() * 3];
-    for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-      for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
-        patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
-      }
-    }
-    LineChart chart = new LineChart("Morphing line", "length", "values");
-    String label = "line";
-    double[] ySlice = new double[generator.getSliceWidth() * 3];
-    for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-      ySlice[i] = patched[i][25];
-    }
-    chart.addEquidistantDataSeries(ySlice, label);
-    chart.setVisible();
-    chart.setYAxisRange(0.0, 1.0);
-
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> scheduledFuture =
-        ses.scheduleAtFixedRate(
-            () -> {
-              double[][] newSlices = generator.getNext();
-              for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-                for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
-                  patched[i][j] =
-                      newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
-                }
-              }
-              for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-                ySlice[i] = patched[i][25];
-              }
-              chart.updateDataSeries(
-                  dataSeries -> {
-                    for (int i = 0; i < ySlice.length; i++) {
-                      dataSeries.updateByIndex(i, ySlice[i]);
-                    }
-                  },
-                  label);
-            },
-            5,
-            15,
-            TimeUnit.MILLISECONDS);
-
-    ses.schedule(
-        () -> {
-          scheduledFuture.cancel(true);
-          ses.shutdown();
-        },
-        15,
-        TimeUnit.SECONDS);
-
-    waitAtMost(17, TimeUnit.SECONDS).until(ses::isShutdown);
-  }
-
-  @Ignore("Skipped, only used to visualize results")
-  @Test
   public void testCircularity() {
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize,
-            widthStepSize,
-            heightStepSize,
-            sliceWidth,
-            sliceHeight,
+            1/50.0,
+            1/250.0,
+            150,
+            150,
             1.0,
             System.currentTimeMillis(),
             true);
     double[][] slices = generator.getNext();
-    double[][] patched = new double[generator.getSliceWidth() * 3][generator.getSliceHeight() * 3];
-    for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-      for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
+    int patchFactor = 2;
+    double[][] patched = new double[generator.getSliceWidth() * patchFactor][generator.getSliceHeight() * patchFactor];
+    for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
+      for (int j = 0; j < generator.getSliceHeight() * patchFactor; j++) {
         patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
       }
     }
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 5);
     image.setVisible();
 
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> scheduledFuture =
-        ses.scheduleAtFixedRate(
-            () -> {
-              double[][] newSlices = generator.getNext();
-              for (int i = 0; i < generator.getSliceWidth() * 3; i++) {
-                for (int j = 0; j < generator.getSliceHeight() * 3; j++) {
-                  patched[i][j] =
-                      newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
-                }
-              }
-              image.updateImage(patched);
-            },
-            5,
-            15,
-            TimeUnit.MILLISECONDS);
+    final double[][] previous = new double[generator.getSliceWidth() * patchFactor][generator.getSliceHeight() * patchFactor];
+    for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
+      System.arraycopy(patched[i], 0, previous[i], 0, generator.getSliceHeight() * patchFactor);
+    }
 
-    int testDurationInMs = 500;
-    ses.schedule(
+    final double maxNoiseRate = Interpolation.getMaxStepWithFadeForStep(generator.getNoiseStepSize());
+    final double maxWidthRate = Interpolation.getMaxStepWithFadeForStep(generator.getWidthStepSize());
+    final double maxHeightRate = Interpolation.getMaxStepWithFadeForStep(generator.getHeightStepSize());
+    final double maxHeightWidthRate = Math.sqrt((maxWidthRate*maxWidthRate) + (maxHeightRate*maxHeightRate));
+    LogManager.getLogger(this.getClass()).info("MaxNoiseRate:" + maxNoiseRate);
+    LogManager.getLogger(this.getClass()).info("MaxWidthRate:" + maxHeightWidthRate);
+    LogManager.getLogger(this.getClass()).info("MaxHeightRate:" + maxHeightWidthRate);
+
+    ScheduledUpdater.updateAtRateForDuration(
         () -> {
-          scheduledFuture.cancel(true);
-          ses.shutdown();
+          double[][] newSlices = generator.getNext();
+          if (Thread.interrupted()) {
+            return;
+          }
+          for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
+            for (int j = 0; j < generator.getSliceHeight() * patchFactor; j++) {
+              patched[i][j] =
+                  newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+            }
+          }
+          image.updateImage(patched);
+//          for (int i = 0; i < patched.length - 1; i++) {
+//            for (int j = 0; j < patched[i].length; j++) {
+//              double first = patched[i][j];
+//              double second = patched[i + 1][j];
+//              assertEquals(
+//                  "Values differ more than " + maxWidthRate + " for width:" + Math.abs(first - second),
+//                  first,
+//                  second,
+//                  maxWidthRate);
+//            }
+//          }
+          if (Thread.interrupted()) {
+            return;
+          }
+//          for (double[] rows : patched) {
+//            for (int j = 0; j < rows.length - 1; j++) {
+//              double first = rows[j];
+//              double second = rows[j + 1];
+//              assertEquals(
+//                  "Values differ more than " + maxHeightWidthRate + " for height:" + Math
+//                      .abs(first - second),
+//                  first,
+//                  second,
+//                  maxHeightWidthRate);
+//            }
+//          }
+          for (int i = 0; i < patched.length; i++) {
+            for (int j = 0; j < patched[i].length; j++) {
+              double first = previous[i][j];
+              double second = patched[i][j];
+              assertEquals(
+                  "Values differ more than " + maxNoiseRate + " for noise:" + Math.abs(first - second),
+                  first,
+                  second,
+                  maxNoiseRate);
+            }
+          }
+          for (int i = 0; i < patched.length; i++) {
+            System.arraycopy(patched[i], 0, previous[i], 0, patched[i].length);
+          }
         },
-        testDurationInMs,
+        200,
+        TimeUnit.MILLISECONDS,
+        200,
         TimeUnit.SECONDS);
-
-    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 
-  @Ignore("Skipped, only used to visualize results")
   @Test
   public void testVisualizeMorphingImage() {
+    int sliceWidth = 200;
+    int sliceHeight = 200;
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize,
             widthStepSize,
             heightStepSize,
-            500,
-            500,
+            sliceWidth,
+            sliceHeight,
             1.0,
             System.currentTimeMillis(),
             false);
@@ -596,20 +573,66 @@ public class SliceGeneratorTest {
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
 
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> scheduledFuture =
-        ses.scheduleAtFixedRate(
-            () -> image.updateImage(generator.getNext()), 5, 15, TimeUnit.MILLISECONDS);
+    final double[][] previous = new double[sliceWidth][sliceHeight];
+    for (int i = 0; i < sliceWidth; i++) {
+      System.arraycopy(slice[i], 0, previous[i], 0, sliceHeight);
+    }
 
-    int testDurationInMs = 15;
-    ses.schedule(
+    final double maxNoiseRate = Interpolation.getMaxStepWithFadeForStep(noiseStepSize);
+    final double maxWidthRate = Interpolation.getMaxStepWithFadeForStep(widthStepSize);
+    final double maxHeightRate = Interpolation.getMaxStepWithFadeForStep(heightStepSize);
+
+    ScheduledUpdater.updateAtRateForDuration(
         () -> {
-          scheduledFuture.cancel(true);
-          ses.shutdownNow();
-        },
-        testDurationInMs,
-        TimeUnit.SECONDS);
+          double[][] next = generator.getNext();
+          if (Thread.interrupted()) {
+            return;
+          }
+          image.updateImage(next);
 
-    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
+          for (int i = 0; i < sliceWidth - 1; i++) {
+            for (int j = 0; j < sliceHeight; j++) {
+              double first = next[i][j];
+              double second = next[i + 1][j];
+              assertEquals(
+                  "Values differ more than " + maxWidthRate + " for width:" + Math.abs(first - second),
+                  first,
+                  second,
+                  maxWidthRate);
+            }
+          }
+          if (Thread.interrupted()) {
+            return;
+          }
+          for (int i = 0; i < sliceWidth; i++) {
+            for (int j = 0; j < sliceHeight - 1; j++) {
+              double first = next[i][j];
+              double second = next[i][j + 1];
+              assertEquals(
+                  "Values differ more than " + maxHeightRate + " for height:" + Math.abs(first - second),
+                  first,
+                  second,
+                  maxHeightRate);
+            }
+          }
+          for (int i = 0; i < sliceWidth; i++) {
+            for (int j = 0; j < sliceHeight; j++) {
+              double first = previous[i][j];
+              double second = next[i][j];
+              assertEquals(
+                  "Values differ more than " + maxNoiseRate + " for noise:" + Math.abs(first - second),
+                  first,
+                  second,
+                  maxNoiseRate);
+            }
+          }
+          for (int i = 0; i < sliceWidth; i++) {
+            System.arraycopy(next[i], 0, previous[i], 0, sliceHeight);
+          }
+        },
+        100,
+        TimeUnit.MILLISECONDS,
+        15,
+        TimeUnit.SECONDS);
   }
 }

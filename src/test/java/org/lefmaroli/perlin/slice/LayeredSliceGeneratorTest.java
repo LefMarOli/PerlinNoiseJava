@@ -1,6 +1,5 @@
 package org.lefmaroli.perlin.slice;
 
-import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -11,20 +10,14 @@ import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.lefmaroli.display.SimpleGrayScaleImage;
 
 public class LayeredSliceGeneratorTest {
 
   private static final double maxAmplitude = 1.75;
-  private static final int defaultSliceWidth = 500;
-  private static final int defaultSliceHeight = 500;
+  private static final int defaultSliceWidth = 200;
+  private static final int defaultSliceHeight = 200;
   private static final boolean isCircularDefault = false;
   private LayeredSliceGenerator defaultGenerator;
   private List<SliceNoiseGenerator> layers;
@@ -34,9 +27,9 @@ public class LayeredSliceGeneratorTest {
     layers = new ArrayList<>(3);
     layers.add(
         new SliceGenerator(
-            100,
-            100,
-            100,
+            1.0/100,
+            1.0/100,
+            1.0/100,
             defaultSliceWidth,
             defaultSliceHeight,
             1.0,
@@ -44,9 +37,9 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     layers.add(
         new SliceGenerator(
-            50,
-            50,
-            50,
+            1.0/50,
+            1.0/50,
+            1.0/50,
             defaultSliceWidth,
             defaultSliceHeight,
             0.5,
@@ -54,9 +47,9 @@ public class LayeredSliceGeneratorTest {
             isCircularDefault));
     layers.add(
         new SliceGenerator(
-            25,
-            25,
-            25,
+            1.0/25,
+            1.0/25,
+            1.0/25,
             defaultSliceWidth,
             defaultSliceHeight,
             0.25,
@@ -80,9 +73,9 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> newLayerSet = layers;
     newLayerSet.add(
         new SliceGenerator(
-            256,
-            256,
-            256,
+            1.0/256,
+            1.0/256,
+            1.0/256,
             defaultSliceWidth + 5,
             defaultSliceHeight,
             0.1225,
@@ -96,9 +89,9 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> newLayerSet = layers;
     newLayerSet.add(
         new SliceGenerator(
-            256,
-            256,
-            256,
+            1.0/256,
+            1.0/256,
+            1.0/256,
             defaultSliceWidth,
             defaultSliceHeight - 9,
             0.1225,
@@ -149,7 +142,7 @@ public class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> otherLayers = layers;
     otherLayers.add(
         new SliceGenerator(
-            8, 8, 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, isCircularDefault));
+            1.0/8, 1.0/8, 1.0/8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, isCircularDefault));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
     assertNotEquals(defaultGenerator, otherGenerator);
   }
@@ -203,67 +196,5 @@ public class LayeredSliceGeneratorTest {
             1.0 / 25, 1.0 / 25, 1.0 / 25, defaultSliceWidth, defaultSliceHeight, 0.005, 1L, true));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
     assertTrue(otherGenerator.isCircular());
-  }
-
-  @Ignore("Skipped, only used to visualize results")
-  @Test
-  public void visualize() {
-    List<SliceNoiseGenerator> newLayers = new ArrayList<>(3);
-    newLayers.add(
-        new SliceGenerator(
-            1.0 / 10,
-            1.0 / 20,
-            1.0 / 60,
-            defaultSliceWidth,
-            defaultSliceHeight,
-            1.0,
-            System.currentTimeMillis(),
-            isCircularDefault));
-    newLayers.add(
-        new SliceGenerator(
-            1.0 / 20,
-            1.0 / 120,
-            1.0 / 30,
-            defaultSliceWidth,
-            defaultSliceHeight,
-            0.8,
-            System.currentTimeMillis(),
-            isCircularDefault));
-    newLayers.add(
-        new SliceGenerator(
-            1.0 / 15,
-            1.0 / 50,
-            1.0 / 50,
-            defaultSliceWidth,
-            defaultSliceHeight,
-            0.25,
-            System.currentTimeMillis(),
-            isCircularDefault));
-    SliceNoiseGenerator generator = new LayeredSliceGenerator(newLayers);
-    double[][] slices = generator.getNext();
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slices, 5);
-    image.setVisible();
-
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-    ScheduledFuture<?> scheduledFuture =
-        ses.scheduleAtFixedRate(
-            () -> {
-              double[][] newSlice = generator.getNext();
-              image.updateImage(newSlice);
-            },
-            5,
-            300,
-            TimeUnit.MILLISECONDS);
-
-    int testDurationInMs = 500;
-    ses.schedule(
-        () -> {
-          scheduledFuture.cancel(true);
-          ses.shutdownNow();
-        },
-        testDurationInMs,
-        TimeUnit.SECONDS);
-
-    waitAtMost(testDurationInMs + 1, TimeUnit.SECONDS).until(ses::isShutdown);
   }
 }

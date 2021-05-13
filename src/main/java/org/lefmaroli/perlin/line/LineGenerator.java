@@ -105,8 +105,8 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     perlinData[0] = noiseDist;
     if (isCircular()) {
       double angle = lineIndex * lineStepSize * 2 * Math.PI;
-      perlinData[1] = (Math.cos(angle) * circularResolution) + circularResolution;
-      perlinData[2] = (Math.sin(angle) * circularResolution) + circularResolution;
+      perlinData[1] = (Math.cos(angle) + 1.0) / 2.0 * circularResolution;
+      perlinData[2] = (Math.sin(angle) + 1.0) /2.0 * circularResolution;
     } else {
       perlinData[1] = lineIndex * lineStepSize;
     }
