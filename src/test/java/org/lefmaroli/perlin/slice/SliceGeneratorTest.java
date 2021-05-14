@@ -499,69 +499,70 @@ public class SliceGeneratorTest {
     LogManager.getLogger(this.getClass()).info("MaxWidthRate:" + maxHeightWidthRate);
     LogManager.getLogger(this.getClass()).info("MaxHeightRate:" + maxHeightWidthRate);
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          double[][] newSlices = generator.getNext();
-          if (Thread.interrupted()) {
-            return;
-          }
-          for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
-            for (int j = 0; j < generator.getSliceHeight() * patchFactor; j++) {
-              patched[i][j] =
-                  newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
-            }
-          }
-          image.updateImage(patched);
-          //          for (int i = 0; i < patched.length - 1; i++) {
-          //            for (int j = 0; j < patched[i].length; j++) {
-          //              double first = patched[i][j];
-          //              double second = patched[i + 1][j];
-          //              assertEquals(
-          //                  "Values differ more than " + maxWidthRate + " for width:" +
-          // Math.abs(first - second),
-          //                  first,
-          //                  second,
-          //                  maxWidthRate);
-          //            }
-          //          }
-          if (Thread.interrupted()) {
-            return;
-          }
-          //          for (double[] rows : patched) {
-          //            for (int j = 0; j < rows.length - 1; j++) {
-          //              double first = rows[j];
-          //              double second = rows[j + 1];
-          //              assertEquals(
-          //                  "Values differ more than " + maxHeightWidthRate + " for height:" +
-          // Math
-          //                      .abs(first - second),
-          //                  first,
-          //                  second,
-          //                  maxHeightWidthRate);
-          //            }
-          //          }
-          for (int i = 0; i < patched.length; i++) {
-            for (int j = 0; j < patched[i].length; j++) {
-              double first = previous[i][j];
-              double second = patched[i][j];
-              assertEquals(
-                  "Values differ more than "
-                      + maxNoiseRate
-                      + " for noise:"
-                      + Math.abs(first - second),
-                  first,
-                  second,
-                  maxNoiseRate);
-            }
-          }
-          for (int i = 0; i < patched.length; i++) {
-            System.arraycopy(patched[i], 0, previous[i], 0, patched[i].length);
-          }
-        },
-        200,
-        TimeUnit.MILLISECONDS,
-        200,
-        TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              double[][] newSlices = generator.getNext();
+              if (Thread.interrupted()) {
+                return;
+              }
+              for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
+                for (int j = 0; j < generator.getSliceHeight() * patchFactor; j++) {
+                  patched[i][j] =
+                      newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
+                }
+              }
+              image.updateImage(patched);
+              //          for (int i = 0; i < patched.length - 1; i++) {
+              //            for (int j = 0; j < patched[i].length; j++) {
+              //              double first = patched[i][j];
+              //              double second = patched[i + 1][j];
+              //              assertEquals(
+              //                  "Values differ more than " + maxWidthRate + " for width:" +
+              // Math.abs(first - second),
+              //                  first,
+              //                  second,
+              //                  maxWidthRate);
+              //            }
+              //          }
+              if (Thread.interrupted()) {
+                return;
+              }
+              //          for (double[] rows : patched) {
+              //            for (int j = 0; j < rows.length - 1; j++) {
+              //              double first = rows[j];
+              //              double second = rows[j + 1];
+              //              assertEquals(
+              //                  "Values differ more than " + maxHeightWidthRate + " for height:" +
+              // Math
+              //                      .abs(first - second),
+              //                  first,
+              //                  second,
+              //                  maxHeightWidthRate);
+              //            }
+              //          }
+              for (int i = 0; i < patched.length; i++) {
+                for (int j = 0; j < patched[i].length; j++) {
+                  double first = previous[i][j];
+                  double second = patched[i][j];
+                  assertEquals(
+                      "Values differ more than "
+                          + maxNoiseRate
+                          + " for noise:"
+                          + Math.abs(first - second),
+                      first,
+                      second,
+                      maxNoiseRate);
+                }
+              }
+              for (int i = 0; i < patched.length; i++) {
+                System.arraycopy(patched[i], 0, previous[i], 0, patched[i].length);
+              }
+            },
+            200,
+            TimeUnit.MILLISECONDS,
+            200,
+            TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 
@@ -592,67 +593,68 @@ public class SliceGeneratorTest {
     final double maxWidthRate = Interpolation.getMaxStepWithFadeForStep(widthStepSize);
     final double maxHeightRate = Interpolation.getMaxStepWithFadeForStep(heightStepSize);
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          double[][] next = generator.getNext();
-          if (Thread.interrupted()) {
-            return;
-          }
-          image.updateImage(next);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              double[][] next = generator.getNext();
+              if (Thread.interrupted()) {
+                return;
+              }
+              image.updateImage(next);
 
-          for (int i = 0; i < sliceWidth - 1; i++) {
-            for (int j = 0; j < sliceHeight; j++) {
-              double first = next[i][j];
-              double second = next[i + 1][j];
-              assertEquals(
-                  "Values differ more than "
-                      + maxWidthRate
-                      + " for width:"
-                      + Math.abs(first - second),
-                  first,
-                  second,
-                  maxWidthRate);
-            }
-          }
-          if (Thread.interrupted()) {
-            return;
-          }
-          for (int i = 0; i < sliceWidth; i++) {
-            for (int j = 0; j < sliceHeight - 1; j++) {
-              double first = next[i][j];
-              double second = next[i][j + 1];
-              assertEquals(
-                  "Values differ more than "
-                      + maxHeightRate
-                      + " for height:"
-                      + Math.abs(first - second),
-                  first,
-                  second,
-                  maxHeightRate);
-            }
-          }
-          for (int i = 0; i < sliceWidth; i++) {
-            for (int j = 0; j < sliceHeight; j++) {
-              double first = previous[i][j];
-              double second = next[i][j];
-              assertEquals(
-                  "Values differ more than "
-                      + maxNoiseRate
-                      + " for noise:"
-                      + Math.abs(first - second),
-                  first,
-                  second,
-                  maxNoiseRate);
-            }
-          }
-          for (int i = 0; i < sliceWidth; i++) {
-            System.arraycopy(next[i], 0, previous[i], 0, sliceHeight);
-          }
-        },
-        100,
-        TimeUnit.MILLISECONDS,
-        15,
-        TimeUnit.SECONDS);
+              for (int i = 0; i < sliceWidth - 1; i++) {
+                for (int j = 0; j < sliceHeight; j++) {
+                  double first = next[i][j];
+                  double second = next[i + 1][j];
+                  assertEquals(
+                      "Values differ more than "
+                          + maxWidthRate
+                          + " for width:"
+                          + Math.abs(first - second),
+                      first,
+                      second,
+                      maxWidthRate);
+                }
+              }
+              if (Thread.interrupted()) {
+                return;
+              }
+              for (int i = 0; i < sliceWidth; i++) {
+                for (int j = 0; j < sliceHeight - 1; j++) {
+                  double first = next[i][j];
+                  double second = next[i][j + 1];
+                  assertEquals(
+                      "Values differ more than "
+                          + maxHeightRate
+                          + " for height:"
+                          + Math.abs(first - second),
+                      first,
+                      second,
+                      maxHeightRate);
+                }
+              }
+              for (int i = 0; i < sliceWidth; i++) {
+                for (int j = 0; j < sliceHeight; j++) {
+                  double first = previous[i][j];
+                  double second = next[i][j];
+                  assertEquals(
+                      "Values differ more than "
+                          + maxNoiseRate
+                          + " for noise:"
+                          + Math.abs(first - second),
+                      first,
+                      second,
+                      maxNoiseRate);
+                }
+              }
+              for (int i = 0; i < sliceWidth; i++) {
+                System.arraycopy(next[i], 0, previous[i], 0, sliceHeight);
+              }
+            },
+            100,
+            TimeUnit.MILLISECONDS,
+            15,
+            TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 }

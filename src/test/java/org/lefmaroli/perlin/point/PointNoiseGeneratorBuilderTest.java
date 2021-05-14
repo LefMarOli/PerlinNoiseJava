@@ -67,33 +67,34 @@ public class PointNoiseGeneratorBuilderTest {
     LogManager.getLogger(this.getClass()).info("MaxNoiseDiff:" + maxNoiseDiff);
     final double noiseDiff = maxNoiseDiff;
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          System.arraycopy(line, 1, line, 0, requestedPoints - 1);
-          if (Thread.interrupted()) {
-            return;
-          }
-          line[requestedPoints - 1] = generator.getNext();
-          SwingUtilities.invokeLater(
-              () ->
-                  chart.updateDataSeries(
-                      dataSeries -> {
-                        for (int i = 0; i < line.length; i++) {
-                          dataSeries.updateByIndex(i, line[i]);
-                        }
-                      },
-                      label));
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              System.arraycopy(line, 1, line, 0, requestedPoints - 1);
+              if (Thread.interrupted()) {
+                return;
+              }
+              line[requestedPoints - 1] = generator.getNext();
+              SwingUtilities.invokeLater(
+                  () ->
+                      chart.updateDataSeries(
+                          dataSeries -> {
+                            for (int i = 0; i < line.length; i++) {
+                              dataSeries.updateByIndex(i, line[i]);
+                            }
+                          },
+                          label));
 
-          for (int i = 0; i < requestedPoints - 1; i++) {
-            double first = line[i];
-            double second = line[i + 1];
-            assertEquals("Values differ more than " + noiseDiff, first, second, noiseDiff);
-          }
-        },
-        30,
-        TimeUnit.MILLISECONDS,
-        15,
-        TimeUnit.SECONDS);
+              for (int i = 0; i < requestedPoints - 1; i++) {
+                double first = line[i];
+                double second = line[i + 1];
+                assertEquals("Values differ more than " + noiseDiff, first, second, noiseDiff);
+              }
+            },
+            30,
+            TimeUnit.MILLISECONDS,
+            15,
+            TimeUnit.SECONDS);
     completed.thenRun(chart::dispose);
   }
 }

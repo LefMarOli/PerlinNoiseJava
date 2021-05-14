@@ -310,40 +310,42 @@ public class LineGeneratorTest {
     double maxLineStep = Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize);
     double maxNoiseStep = Interpolation.getMaxStepWithFadeForStep(defaultNoiseStepSize);
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          double[] newline = generator.getNext();
-          if (Thread.interrupted()) {
-            return;
-          }
-          for (int j = 0; j < requested - 1; j++) {
-            for (int k = 0; k < newline.length; k++) {
-              image[j][k] = image[j + 1][k];
-              image[j][k + lineLength] = image[j + 1][k + lineLength];
-            }
-          }
-          for (int i = 0; i < newline.length; i++) {
-            image[image.length - 1][i] = newline[i];
-            image[image.length - 1][i + lineLength] = newline[i];
-          }
-          im.updateImage(image);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              double[] newline = generator.getNext();
+              if (Thread.interrupted()) {
+                return;
+              }
+              for (int j = 0; j < requested - 1; j++) {
+                for (int k = 0; k < newline.length; k++) {
+                  image[j][k] = image[j + 1][k];
+                  image[j][k + lineLength] = image[j + 1][k + lineLength];
+                }
+              }
+              for (int i = 0; i < newline.length; i++) {
+                image[image.length - 1][i] = newline[i];
+                image[image.length - 1][i + lineLength] = newline[i];
+              }
+              im.updateImage(image);
 
-          for (int i = 0; i < (lineLength * 2) - 1; i++) {
-            double first = image[image.length - 1][i];
-            double second = image[image.length - 1][i + 1];
-            assertEquals("Values differ more than " + maxLineStep, first, second, maxLineStep);
-          }
+              for (int i = 0; i < (lineLength * 2) - 1; i++) {
+                double first = image[image.length - 1][i];
+                double second = image[image.length - 1][i + 1];
+                assertEquals("Values differ more than " + maxLineStep, first, second, maxLineStep);
+              }
 
-          for (int i = 0; i < lineLength * 2; i++) {
-            double first = image[image.length - 1][i];
-            double second = image[image.length - 2][i];
-            assertEquals("Values differ more than " + maxNoiseStep, first, second, maxNoiseStep);
-          }
-        },
-        30,
-        TimeUnit.MILLISECONDS,
-        15,
-        TimeUnit.SECONDS);
+              for (int i = 0; i < lineLength * 2; i++) {
+                double first = image[image.length - 1][i];
+                double second = image[image.length - 2][i];
+                assertEquals(
+                    "Values differ more than " + maxNoiseStep, first, second, maxNoiseStep);
+              }
+            },
+            30,
+            TimeUnit.MILLISECONDS,
+            15,
+            TimeUnit.SECONDS);
     completed.thenRun(im::dispose);
   }
 }

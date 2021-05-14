@@ -77,7 +77,7 @@ public class SimpleGrayScaleImage {
         });
   }
 
-  public void dispose(){
+  public void dispose() {
     framedImage.dispose();
   }
 

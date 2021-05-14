@@ -73,16 +73,23 @@ public class PerlinNoiseVisualizeTests {
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(values, 5);
     image.setVisible();
     AtomicInteger currentZIndex = new AtomicInteger(0);
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(()->{
-      int zIndex;
-      zIndex = currentZIndex.incrementAndGet();
-      for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-          values[i][j] = perlinNoise.getFor(i * stepSize, j * stepSizeY, zIndex * stepSizeZ);
-        }
-      }
-      image.updateImage(values);
-    }, 30, TimeUnit.MILLISECONDS, 15, TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              int zIndex;
+              zIndex = currentZIndex.incrementAndGet();
+              for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                  values[i][j] =
+                      perlinNoise.getFor(i * stepSize, j * stepSizeY, zIndex * stepSizeZ);
+                }
+              }
+              image.updateImage(values);
+            },
+            30,
+            TimeUnit.MILLISECONDS,
+            15,
+            TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 }

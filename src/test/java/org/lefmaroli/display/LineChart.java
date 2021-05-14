@@ -74,7 +74,7 @@ public class LineChart {
     chartPanel.getChart().getXYPlot().getRangeAxis().setRange(from, to);
   }
 
-  public void dispose(){
+  public void dispose() {
     framedChart.dispose();
   }
 

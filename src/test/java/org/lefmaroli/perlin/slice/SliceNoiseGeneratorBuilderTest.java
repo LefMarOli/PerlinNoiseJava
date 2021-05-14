@@ -86,42 +86,43 @@ public class SliceNoiseGeneratorBuilderTest {
       System.arraycopy(slice[i], 0, previous[i], 0, sliceHeight);
     }
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          double[][] next = generator.getNext();
-          if (Thread.interrupted()) {
-            return;
-          }
-          image.updateImage(next);
-          for (int i = 0; i < sliceWidth - 1; i++) {
-            for (int j = 0; j < sliceHeight; j++) {
-              double first = next[i][j];
-              double second = next[i + 1][j];
-              assertEquals(first, second, widthDiff);
-            }
-          }
-          for (int i = 0; i < sliceWidth; i++) {
-            for (int j = 0; j < sliceHeight - 1; j++) {
-              double first = next[i][j];
-              double second = next[i][j + 1];
-              assertEquals(first, second, heightDiff);
-            }
-          }
-          for (int i = 0; i < sliceWidth; i++) {
-            for (int j = 0; j < sliceHeight; j++) {
-              double first = previous[i][j];
-              double second = next[i][j];
-              assertEquals(first, second, noiseDiff);
-            }
-          }
-          for (int i = 0; i < sliceWidth; i++) {
-            System.arraycopy(next[i], 0, previous[i], 0, sliceHeight);
-          }
-        },
-        60,
-        TimeUnit.MILLISECONDS,
-        15,
-        TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              double[][] next = generator.getNext();
+              if (Thread.interrupted()) {
+                return;
+              }
+              image.updateImage(next);
+              for (int i = 0; i < sliceWidth - 1; i++) {
+                for (int j = 0; j < sliceHeight; j++) {
+                  double first = next[i][j];
+                  double second = next[i + 1][j];
+                  assertEquals(first, second, widthDiff);
+                }
+              }
+              for (int i = 0; i < sliceWidth; i++) {
+                for (int j = 0; j < sliceHeight - 1; j++) {
+                  double first = next[i][j];
+                  double second = next[i][j + 1];
+                  assertEquals(first, second, heightDiff);
+                }
+              }
+              for (int i = 0; i < sliceWidth; i++) {
+                for (int j = 0; j < sliceHeight; j++) {
+                  double first = previous[i][j];
+                  double second = next[i][j];
+                  assertEquals(first, second, noiseDiff);
+                }
+              }
+              for (int i = 0; i < sliceWidth; i++) {
+                System.arraycopy(next[i], 0, previous[i], 0, sliceHeight);
+              }
+            },
+            60,
+            TimeUnit.MILLISECONDS,
+            15,
+            TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 }
