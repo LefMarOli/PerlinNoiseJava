@@ -35,7 +35,7 @@ public class SliceNoiseGeneratorBuilderTest {
   }
 
   @Test
-  public void testSmoothVisuals() throws NoiseBuilderException {  //NOSONAR
+  public void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
     DoubleGenerator widthStepSizeGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.9);
     DoubleGenerator heightStepSizeGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.7);
     DoubleGenerator noiseStepSizeGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.5);
@@ -55,24 +55,25 @@ public class SliceNoiseGeneratorBuilderTest {
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          double[][] next = generator.getNext();
-          if (Thread.interrupted()) {
-            return;
-          }
-          image.updateImage(next);
-          double[] column = new double[next[0].length];
-          for (double[] row : next) {
-            AssertUtils.valuesContinuousInArray(row);
-            System.arraycopy(row, 0, column, 0, row.length);
-            AssertUtils.valuesContinuousInArray(column);
-          }
-        },
-        60,
-        TimeUnit.MILLISECONDS,
-        5,
-        TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              double[][] next = generator.getNext();
+              if (Thread.interrupted()) {
+                return;
+              }
+              image.updateImage(next);
+              double[] column = new double[next[0].length];
+              for (double[] row : next) {
+                AssertUtils.valuesContinuousInArray(row);
+                System.arraycopy(row, 0, column, 0, row.length);
+                AssertUtils.valuesContinuousInArray(column);
+              }
+            },
+            60,
+            TimeUnit.MILLISECONDS,
+            5,
+            TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 }

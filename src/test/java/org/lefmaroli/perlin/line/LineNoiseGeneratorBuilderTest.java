@@ -33,7 +33,7 @@ public class LineNoiseGeneratorBuilderTest {
   }
 
   @Test
-  public void testSmoothVisuals() throws NoiseBuilderException {  //NOSONAR
+  public void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
     double lineStepSizeInitialValue = 1.0 / 50;
     DoubleGenerator lineStepSizeGenerator =
         new DoubleGenerator(lineStepSizeInitialValue, 1.0 / 0.9);
@@ -58,34 +58,35 @@ public class LineNoiseGeneratorBuilderTest {
     SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
     im.setVisible();
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          for (int i = 0; i < requestedLines - 1; i++) {
-            System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
-          }
-          if (Thread.interrupted()) {
-            return;
-          }
-          double[] nextLine = generator.getNext();
-          System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
-          im.updateImage(image);
-          try {
-            AssertUtils.valuesContinuousInArray(nextLine);
-            double[] row = new double[image.length];
-            for(int i = 0; i < lineLength; i++) {
-              System.arraycopy(image[i], 0, row, 0, image.length);
-              AssertUtils.valuesContinuousInArray(row);
-            }
-          } catch (AssertionError e) {
-            LogManager.getLogger(this.getClass())
-                .error("Error with line smoothness for line generator " + generator, e);
-            throw e;
-          }
-        },
-        30,
-        TimeUnit.MILLISECONDS,
-        5,
-        TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              for (int i = 0; i < requestedLines - 1; i++) {
+                System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
+              }
+              if (Thread.interrupted()) {
+                return;
+              }
+              double[] nextLine = generator.getNext();
+              System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
+              im.updateImage(image);
+              try {
+                AssertUtils.valuesContinuousInArray(nextLine);
+                double[] row = new double[image.length];
+                for (int i = 0; i < lineLength; i++) {
+                  System.arraycopy(image[i], 0, row, 0, image.length);
+                  AssertUtils.valuesContinuousInArray(row);
+                }
+              } catch (AssertionError e) {
+                LogManager.getLogger(this.getClass())
+                    .error("Error with line smoothness for line generator " + generator, e);
+                throw e;
+              }
+            },
+            30,
+            TimeUnit.MILLISECONDS,
+            5,
+            TimeUnit.SECONDS);
     completed.thenRun(im::dispose);
   }
 }

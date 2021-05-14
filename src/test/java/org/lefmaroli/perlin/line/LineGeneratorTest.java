@@ -244,12 +244,7 @@ public class LineGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "perlin",
-            "perlinData",
-            "currentPosition",
-            "generated",
-            "containers",
-            "containersCount")
+            "perlin", "perlinData", "currentPosition", "generated", "containers", "containersCount")
         .verify();
   }
 
@@ -284,7 +279,7 @@ public class LineGeneratorTest {
   }
 
   @Test
-  public void testSmoothVisuals() { //NOSONAR
+  public void testSmoothVisuals() { // NOSONAR
     LineGenerator generator =
         new LineGenerator(1.0 / 50, 1 / 500.0, lineLength, 1.0, randomSeed, true);
     int requested = 200;
@@ -321,7 +316,7 @@ public class LineGeneratorTest {
               try {
                 AssertUtils.valuesContinuousInArray(newline);
                 double[] row = new double[image.length];
-                for(int i = 0; i < lineLength; i++) {
+                for (int i = 0; i < lineLength; i++) {
                   System.arraycopy(image[i], 0, row, 0, image.length);
                   AssertUtils.valuesContinuousInArray(row);
                 }

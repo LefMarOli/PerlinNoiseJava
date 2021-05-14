@@ -15,7 +15,7 @@ public class PerlinNoiseVisualizeTests {
   private final long randomSeed = System.currentTimeMillis();
 
   @Test
-  public void test2D() {  //NOSONAR
+  public void test2D() { // NOSONAR
     PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     int size = 500;
     double[] values = new double[size];
@@ -58,7 +58,7 @@ public class PerlinNoiseVisualizeTests {
   }
 
   @Test
-  public void test3D() {  //NOSONAR
+  public void test3D() { // NOSONAR
     PerlinNoise perlinNoise = new PerlinNoise(3, randomSeed);
     final int size = 200;
     double[][] values = new double[size][size];
@@ -84,7 +84,7 @@ public class PerlinNoiseVisualizeTests {
                       perlinNoise.getFor(i * stepSize, j * stepSizeY, zIndex * stepSizeZ);
                 }
               }
-              if(Thread.interrupted()){
+              if (Thread.interrupted()) {
                 return;
               }
               image.updateImage(values);

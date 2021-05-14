@@ -32,7 +32,7 @@ public class PointNoiseGeneratorBuilderTest {
   }
 
   @Test
-  public void testSmoothVisuals() throws NoiseBuilderException {  //NOSONAR
+  public void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
     DoubleGenerator noiseStepSizeGenerator = new DoubleGenerator(1.0 / 200, 2.0);
     DoubleGenerator amplitudeGenerator = new DoubleGenerator(1.0, 0.95);
     int numLayers = 4;
@@ -53,34 +53,35 @@ public class PointNoiseGeneratorBuilderTest {
     chart.setVisible();
     chart.setYAxisRange(0.0, 1.0);
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          System.arraycopy(line, 1, line, 0, requestedPoints - 1);
-          if (Thread.interrupted()) {
-            return;
-          }
-          line[requestedPoints - 1] = generator.getNext();
-          SwingUtilities.invokeLater(
-              () ->
-                  chart.updateDataSeries(
-                      dataSeries -> {
-                        for (int i = 0; i < line.length; i++) {
-                          dataSeries.updateByIndex(i, line[i]);
-                        }
-                      },
-                      label));
-          try {
-            AssertUtils.valuesContinuousInArray(line);
-          } catch (AssertionError e) {
-            LogManager.getLogger(this.getClass())
-                .error("Error with line smoothness for point generator " + generator, e);
-            throw e;
-          }
-        },
-        30,
-        TimeUnit.MILLISECONDS,
-        5,
-        TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              System.arraycopy(line, 1, line, 0, requestedPoints - 1);
+              if (Thread.interrupted()) {
+                return;
+              }
+              line[requestedPoints - 1] = generator.getNext();
+              SwingUtilities.invokeLater(
+                  () ->
+                      chart.updateDataSeries(
+                          dataSeries -> {
+                            for (int i = 0; i < line.length; i++) {
+                              dataSeries.updateByIndex(i, line[i]);
+                            }
+                          },
+                          label));
+              try {
+                AssertUtils.valuesContinuousInArray(line);
+              } catch (AssertionError e) {
+                LogManager.getLogger(this.getClass())
+                    .error("Error with line smoothness for point generator " + generator, e);
+                throw e;
+              }
+            },
+            30,
+            TimeUnit.MILLISECONDS,
+            5,
+            TimeUnit.SECONDS);
     completed.thenRun(chart::dispose);
   }
 }

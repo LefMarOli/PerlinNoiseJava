@@ -411,7 +411,7 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testSliceCircularity(){
+  public void testSliceCircularity() {
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize,
@@ -423,10 +423,10 @@ public class SliceGeneratorTest {
             System.currentTimeMillis(),
             true);
 
-    int numCyclesInWidth = (int)(generator.getSliceWidth() * generator.getWidthStepSize());
-    int numInterpolationPointsPerCycleInWidth = (int)(1.0 / generator.getWidthStepSize());
-    int numCyclesInHeight = (int)(generator.getSliceHeight() * generator.getHeightStepSize());
-    int numInterpolationPointsPerCycleInHeight = (int)(1.0 / generator.getHeightStepSize());
+    int numCyclesInWidth = (int) (generator.getSliceWidth() * generator.getWidthStepSize());
+    int numInterpolationPointsPerCycleInWidth = (int) (1.0 / generator.getWidthStepSize());
+    int numCyclesInHeight = (int) (generator.getSliceHeight() * generator.getHeightStepSize());
+    int numInterpolationPointsPerCycleInHeight = (int) (1.0 / generator.getHeightStepSize());
 
     for (int i = 0; i < 1000; i++) {
       double[][] slice = generator.getNext();
@@ -435,7 +435,7 @@ public class SliceGeneratorTest {
         for (int j = 0; j < numInterpolationPointsPerCycleInWidth; j++) {
           double ref = slice[j][row];
           for (int k = 1; k < numCyclesInWidth; k++) {
-            assertEquals(ref, slice[k*numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
+            assertEquals(ref, slice[k * numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
           }
         }
       }
@@ -444,7 +444,7 @@ public class SliceGeneratorTest {
         for (int j = 0; j < numInterpolationPointsPerCycleInHeight; j++) {
           double ref = slice[column][j];
           for (int k = 1; k < numCyclesInHeight; k++) {
-            assertEquals(ref, slice[column][k*numInterpolationPointsPerCycleInHeight + j], 1E-12);
+            assertEquals(ref, slice[column][k * numInterpolationPointsPerCycleInHeight + j], 1E-12);
           }
         }
       }
@@ -452,7 +452,7 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testSmoothCircularity() {   //NOSONAR
+  public void testSmoothCircularity() { // NOSONAR
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize, 1 / 200.0, 1 / 250.0, 150, 150, 1.0, System.currentTimeMillis(), true);
@@ -498,7 +498,7 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testSmoothVisuals() {   //NOSONAR
+  public void testSmoothVisuals() { // NOSONAR
     int sliceWidth = 200;
     int sliceHeight = 200;
     SliceGenerator generator =
@@ -515,24 +515,25 @@ public class SliceGeneratorTest {
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
 
-    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
-        () -> {
-          double[][] next = generator.getNext();
-          if (Thread.interrupted()) {
-            return;
-          }
-          image.updateImage(next);
-          double[] column = new double[next[0].length];
-          for (double[] row : next) {
-            AssertUtils.valuesContinuousInArray(row);
-            System.arraycopy(row, 0, column, 0, row.length);
-            AssertUtils.valuesContinuousInArray(column);
-          }
-        },
-        100,
-        TimeUnit.MILLISECONDS,
-        5,
-        TimeUnit.SECONDS);
+    CompletableFuture<Void> completed =
+        ScheduledUpdater.updateAtRateForDuration(
+            () -> {
+              double[][] next = generator.getNext();
+              if (Thread.interrupted()) {
+                return;
+              }
+              image.updateImage(next);
+              double[] column = new double[next[0].length];
+              for (double[] row : next) {
+                AssertUtils.valuesContinuousInArray(row);
+                System.arraycopy(row, 0, column, 0, row.length);
+                AssertUtils.valuesContinuousInArray(column);
+              }
+            },
+            100,
+            TimeUnit.MILLISECONDS,
+            5,
+            TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 }
