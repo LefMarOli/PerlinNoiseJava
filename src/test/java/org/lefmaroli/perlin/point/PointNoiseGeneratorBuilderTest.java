@@ -3,8 +3,10 @@ package org.lefmaroli.perlin.point;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
@@ -47,11 +49,17 @@ public class PointNoiseGeneratorBuilderTest {
     for (int i = 0; i < requestedPoints; i++) {
       line[i] = generator.getNext();
     }
-    LineChart chart = new LineChart("Test", "length", "values");
+
+    AtomicReference<LineChart> chart = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
     String label = "line";
-    chart.addEquidistantDataSeries(line, label);
-    chart.setVisible();
-    chart.setYAxisRange(0.0, 1.0);
+    if (isDisplaySupported) {
+      LineChart c = new LineChart("Test", "length", "values");
+      c.addEquidistantDataSeries(line, label);
+      c.setVisible();
+      c.setYAxisRange(0.0, 1.0);
+      chart.set(c);
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -61,15 +69,19 @@ public class PointNoiseGeneratorBuilderTest {
                 return;
               }
               line[requestedPoints - 1] = generator.getNext();
-              SwingUtilities.invokeLater(
-                  () ->
-                      chart.updateDataSeries(
-                          dataSeries -> {
-                            for (int i = 0; i < line.length; i++) {
-                              dataSeries.updateByIndex(i, line[i]);
-                            }
-                          },
-                          label));
+              if (isDisplaySupported) {
+                SwingUtilities.invokeLater(
+                    () ->
+                        chart
+                            .get()
+                            .updateDataSeries(
+                                dataSeries -> {
+                                  for (int i = 0; i < line.length; i++) {
+                                    dataSeries.updateByIndex(i, line[i]);
+                                  }
+                                },
+                                label));
+              }
               try {
                 AssertUtils.valuesContinuousInArray(line);
               } catch (AssertionError e) {
@@ -82,6 +94,9 @@ public class PointNoiseGeneratorBuilderTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(chart::dispose);
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) chart.get().dispose();
+        });
   }
 }

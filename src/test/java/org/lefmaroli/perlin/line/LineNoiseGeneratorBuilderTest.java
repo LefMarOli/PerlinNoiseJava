@@ -3,8 +3,10 @@ package org.lefmaroli.perlin.line;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
@@ -55,8 +57,13 @@ public class LineNoiseGeneratorBuilderTest {
       double[] nextLine = generator.getNext();
       System.arraycopy(nextLine, 0, image[i], 0, lineLength);
     }
-    SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
-    im.setVisible();
+
+    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    if (isDisplaySupported) {
+      im.set(new SimpleGrayScaleImage(image, 5));
+      im.get().setVisible();
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -69,7 +76,8 @@ public class LineNoiseGeneratorBuilderTest {
               }
               double[] nextLine = generator.getNext();
               System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
-              im.updateImage(image);
+              if(isDisplaySupported)
+                im.get().updateImage(image);
               try {
                 AssertUtils.valuesContinuousInArray(nextLine);
                 double[] row = new double[image.length];
@@ -87,6 +95,10 @@ public class LineNoiseGeneratorBuilderTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(im::dispose);
+    completed.thenRun(()->{
+      if(isDisplaySupported){
+        im.get().dispose();
+      }
+    });
   }
 }

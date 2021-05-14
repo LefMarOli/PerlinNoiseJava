@@ -7,9 +7,11 @@ import static org.junit.Assert.assertTrue;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
+import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -244,7 +246,13 @@ public class LineGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "perlin", "perlinData", "currentPosition", "generated", "containers", "containersCount")
+            "perlin",
+            "perlinData",
+            "currentPosition",
+            "generated",
+            "containers",
+            "containersCount",
+            "lineAngleFactor")
         .verify();
   }
 
@@ -293,8 +301,13 @@ public class LineGeneratorTest {
         image[i][j + lineLength] = line[j];
       }
     }
-    SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
-    im.setVisible();
+
+    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    if (isDisplaySupported) {
+      im.set(new SimpleGrayScaleImage(image, 5));
+      im.get().setVisible();
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -326,12 +339,17 @@ public class LineGeneratorTest {
                 throw e;
               }
 
-              im.updateImage(image);
+              if (isDisplaySupported) im.get().updateImage(image);
             },
             30,
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(im::dispose);
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) {
+            im.get().dispose();
+          }
+        });
   }
 }

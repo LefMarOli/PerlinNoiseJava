@@ -8,9 +8,11 @@ import static org.junit.Assert.assertTrue;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
+import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
@@ -428,7 +430,7 @@ public class SliceGeneratorTest {
     int numCyclesInHeight = (int) (generator.getSliceHeight() * generator.getHeightStepSize());
     int numInterpolationPointsPerCycleInHeight = (int) (1.0 / generator.getHeightStepSize());
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100; i++) {
       double[][] slice = generator.getNext();
 
       for (int row = 0; row < generator.getSliceHeight(); row++) {
@@ -466,8 +468,13 @@ public class SliceGeneratorTest {
         patched[i][j] = slices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
       }
     }
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 5);
-    image.setVisible();
+
+    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    if (isDisplaySupported) {
+      im.set(new SimpleGrayScaleImage(patched, 5));
+      im.get().setVisible();
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -482,7 +489,9 @@ public class SliceGeneratorTest {
                       newSlices[i % generator.getSliceWidth()][j % generator.getSliceHeight()];
                 }
               }
-              image.updateImage(patched);
+              if (isDisplaySupported) {
+                im.get().updateImage(patched);
+              }
               double[] column = new double[newSlices[0].length];
               for (double[] row : newSlices) {
                 AssertUtils.valuesContinuousInArray(row);
@@ -494,7 +503,10 @@ public class SliceGeneratorTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(image::dispose);
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) im.get().dispose();
+        });
   }
 
   @Test
@@ -512,8 +524,13 @@ public class SliceGeneratorTest {
             System.currentTimeMillis(),
             false);
     double[][] slice = generator.getNext();
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
-    image.setVisible();
+
+    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    if (isDisplaySupported) {
+      im.set(new SimpleGrayScaleImage(slice, 5));
+      im.get().setVisible();
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -522,7 +539,9 @@ public class SliceGeneratorTest {
               if (Thread.interrupted()) {
                 return;
               }
-              image.updateImage(next);
+              if (isDisplaySupported) {
+                im.get().updateImage(next);
+              }
               double[] column = new double[next[0].length];
               for (double[] row : next) {
                 AssertUtils.valuesContinuousInArray(row);
@@ -534,6 +553,11 @@ public class SliceGeneratorTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(image::dispose);
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) {
+            im.get().dispose();
+          }
+        });
   }
 }

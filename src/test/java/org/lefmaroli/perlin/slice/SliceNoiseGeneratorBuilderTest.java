@@ -3,8 +3,10 @@ package org.lefmaroli.perlin.slice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
@@ -52,8 +54,13 @@ public class SliceNoiseGeneratorBuilderTest {
             .withAmplitudeGenerator(amplitudeGenerator)
             .build();
     double[][] slice = generator.getNext();
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
-    image.setVisible();
+
+    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    if (isDisplaySupported) {
+      im.set(new SimpleGrayScaleImage(slice, 5));
+      im.get().setVisible();
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -62,7 +69,9 @@ public class SliceNoiseGeneratorBuilderTest {
               if (Thread.interrupted()) {
                 return;
               }
-              image.updateImage(next);
+              if(isDisplaySupported){
+                im.get().updateImage(next);
+              }
               double[] column = new double[next[0].length];
               for (double[] row : next) {
                 AssertUtils.valuesContinuousInArray(row);
@@ -74,6 +83,10 @@ public class SliceNoiseGeneratorBuilderTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(image::dispose);
+    completed.thenRun(()->{
+      if(isDisplaySupported){
+        im.get().dispose();
+      }
+    });
   }
 }

@@ -1,9 +1,11 @@
 package org.lefmaroli.perlin;
 
-import java.awt.EventQueue;
+import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.swing.SwingUtilities;
 import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
@@ -25,11 +27,17 @@ public class PerlinNoiseVisualizeTests {
       values[i] = perlinNoise.getFor(0 * stepSizeX, i * stepSizeY);
     }
     final AtomicInteger currentXIndex = new AtomicInteger(0);
-    LineChart chart = new LineChart("Test", "length", "values");
+
+    AtomicReference<LineChart> chart = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
     String label = "line";
-    chart.addEquidistantDataSeries(values, label);
-    chart.setVisible();
-    chart.setYAxisRange(0.0, 1.0);
+    if (isDisplaySupported) {
+      LineChart c = new LineChart("Test", "length", "values");
+      c.addEquidistantDataSeries(values, label);
+      c.setVisible();
+      c.setYAxisRange(0.0, 1.0);
+      chart.set(c);
+    }
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -39,22 +47,29 @@ public class PerlinNoiseVisualizeTests {
                 double newValue = perlinNoise.getFor(xIndex * stepSizeX, i * stepSizeY);
                 values[i] = newValue;
               }
-              EventQueue.invokeLater(
-                  () ->
-                      chart.updateDataSeries(
-                          dataSeries -> {
-                            for (int i = 0; i < values.length; i++) {
-                              dataSeries.updateByIndex(i, values[i]);
-                            }
-                          },
-                          label));
+              if (isDisplaySupported) {
+                SwingUtilities.invokeLater(
+                    () ->
+                        chart
+                            .get()
+                            .updateDataSeries(
+                                dataSeries -> {
+                                  for (int i = 0; i < values.length; i++) {
+                                    dataSeries.updateByIndex(i, values[i]);
+                                  }
+                                },
+                                label));
+              }
               AssertUtils.valuesContinuousInArray(values);
             },
             30,
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(chart::dispose);
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) chart.get().dispose();
+        });
   }
 
   @Test
@@ -70,8 +85,14 @@ public class PerlinNoiseVisualizeTests {
         values[i][j] = perlinNoise.getFor(i * stepSize, j * stepSizeY, 0);
       }
     }
-    SimpleGrayScaleImage image = new SimpleGrayScaleImage(values, 5);
-    image.setVisible();
+
+    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    if (isDisplaySupported) {
+      im.set(new SimpleGrayScaleImage(values, 5));
+      im.get().setVisible();
+    }
+
     AtomicInteger currentZIndex = new AtomicInteger(0);
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -87,7 +108,9 @@ public class PerlinNoiseVisualizeTests {
               if (Thread.interrupted()) {
                 return;
               }
-              image.updateImage(values);
+              if(isDisplaySupported){
+                im.get().updateImage(values);
+              }
               double[] column = new double[values[0].length];
               for (double[] row : values) {
                 AssertUtils.valuesContinuousInArray(row);
@@ -99,6 +122,10 @@ public class PerlinNoiseVisualizeTests {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(image::dispose);
+    completed.thenRun(()->{
+      if(isDisplaySupported){
+        im.get().dispose();
+      }
+    });
   }
 }
