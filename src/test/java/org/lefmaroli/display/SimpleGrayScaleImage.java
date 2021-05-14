@@ -77,6 +77,10 @@ public class SimpleGrayScaleImage {
         });
   }
 
+  public void dispose(){
+    framedImage.dispose();
+  }
+
   private void assertNewDataHasSameDimensions(double[][] data) {
     if (data.length != width) {
       throw new IllegalArgumentException("Provided data has changed width");

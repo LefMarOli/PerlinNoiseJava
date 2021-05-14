@@ -4,6 +4,7 @@ import static org.awaitility.Awaitility.waitAtMost;
 import static org.junit.Assert.assertFalse;
 
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,7 @@ public class ScheduledUpdater {
 
   private static final Logger logger = LogManager.getLogger(ScheduledUpdater.class);
 
-  public static void updateAtRateForDuration(
+  public static CompletableFuture<Void> updateAtRateForDuration(
       Runnable r, long rate, TimeUnit rateUnit, long duration, TimeUnit durationUnit) {
     ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
     AtomicBoolean isDone = new AtomicBoolean(false);
@@ -53,5 +54,6 @@ public class ScheduledUpdater {
         Thread.currentThread().interrupt();
       }
     }
+    return CompletableFuture.completedFuture(null);
   }
 }

@@ -9,6 +9,7 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
@@ -498,7 +499,7 @@ public class SliceGeneratorTest {
     LogManager.getLogger(this.getClass()).info("MaxWidthRate:" + maxHeightWidthRate);
     LogManager.getLogger(this.getClass()).info("MaxHeightRate:" + maxHeightWidthRate);
 
-    ScheduledUpdater.updateAtRateForDuration(
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
         () -> {
           double[][] newSlices = generator.getNext();
           if (Thread.interrupted()) {
@@ -561,6 +562,7 @@ public class SliceGeneratorTest {
         TimeUnit.MILLISECONDS,
         200,
         TimeUnit.SECONDS);
+    completed.thenRun(image::dispose);
   }
 
   @Test
@@ -590,7 +592,7 @@ public class SliceGeneratorTest {
     final double maxWidthRate = Interpolation.getMaxStepWithFadeForStep(widthStepSize);
     final double maxHeightRate = Interpolation.getMaxStepWithFadeForStep(heightStepSize);
 
-    ScheduledUpdater.updateAtRateForDuration(
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
         () -> {
           double[][] next = generator.getNext();
           if (Thread.interrupted()) {
@@ -651,5 +653,6 @@ public class SliceGeneratorTest {
         TimeUnit.MILLISECONDS,
         15,
         TimeUnit.SECONDS);
+    completed.thenRun(image::dispose);
   }
 }

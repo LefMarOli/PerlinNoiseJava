@@ -3,6 +3,7 @@ package org.lefmaroli.perlin.slice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
@@ -85,7 +86,7 @@ public class SliceNoiseGeneratorBuilderTest {
       System.arraycopy(slice[i], 0, previous[i], 0, sliceHeight);
     }
 
-    ScheduledUpdater.updateAtRateForDuration(
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
         () -> {
           double[][] next = generator.getNext();
           if (Thread.interrupted()) {
@@ -121,5 +122,6 @@ public class SliceNoiseGeneratorBuilderTest {
         TimeUnit.MILLISECONDS,
         15,
         TimeUnit.SECONDS);
+    completed.thenRun(image::dispose);
   }
 }

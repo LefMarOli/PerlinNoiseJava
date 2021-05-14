@@ -3,6 +3,7 @@ package org.lefmaroli.perlin.point;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +67,7 @@ public class PointNoiseGeneratorBuilderTest {
     LogManager.getLogger(this.getClass()).info("MaxNoiseDiff:" + maxNoiseDiff);
     final double noiseDiff = maxNoiseDiff;
 
-    ScheduledUpdater.updateAtRateForDuration(
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
         () -> {
           System.arraycopy(line, 1, line, 0, requestedPoints - 1);
           if (Thread.interrupted()) {
@@ -93,5 +94,6 @@ public class PointNoiseGeneratorBuilderTest {
         TimeUnit.MILLISECONDS,
         15,
         TimeUnit.SECONDS);
+    completed.thenRun(chart::dispose);
   }
 }

@@ -74,6 +74,10 @@ public class LineChart {
     chartPanel.getChart().getXYPlot().getRangeAxis().setRange(from, to);
   }
 
+  public void dispose(){
+    framedChart.dispose();
+  }
+
   private JFrame getFramedChart() {
     JFrame frame = new JFrame(title);
     frame.setContentPane(createChartPanel());

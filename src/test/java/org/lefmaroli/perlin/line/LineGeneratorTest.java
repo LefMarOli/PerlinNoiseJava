@@ -8,6 +8,7 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -309,7 +310,7 @@ public class LineGeneratorTest {
     double maxLineStep = Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize);
     double maxNoiseStep = Interpolation.getMaxStepWithFadeForStep(defaultNoiseStepSize);
 
-    ScheduledUpdater.updateAtRateForDuration(
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
         () -> {
           double[] newline = generator.getNext();
           if (Thread.interrupted()) {
@@ -343,5 +344,6 @@ public class LineGeneratorTest {
         TimeUnit.MILLISECONDS,
         15,
         TimeUnit.SECONDS);
+    completed.thenRun(im::dispose);
   }
 }

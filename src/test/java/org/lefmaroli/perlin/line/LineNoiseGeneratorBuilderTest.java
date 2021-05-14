@@ -3,6 +3,7 @@ package org.lefmaroli.perlin.line;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
@@ -79,7 +80,7 @@ public class LineNoiseGeneratorBuilderTest {
     final double lineDiff = maxLineDiff;
     final double noiseDiff = maxNoiseDiff;
 
-    ScheduledUpdater.updateAtRateForDuration(
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
         () -> {
           for (int i = 0; i < requestedLines - 1; i++) {
             System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
@@ -107,5 +108,6 @@ public class LineNoiseGeneratorBuilderTest {
         TimeUnit.MILLISECONDS,
         15,
         TimeUnit.SECONDS);
+    completed.thenRun(im::dispose);
   }
 }
