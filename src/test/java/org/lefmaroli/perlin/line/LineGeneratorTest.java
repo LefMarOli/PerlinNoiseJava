@@ -10,10 +10,11 @@ import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
-import org.lefmaroli.interpolation.Interpolation;
+import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
 public class LineGeneratorTest {
@@ -243,23 +244,12 @@ public class LineGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "lineSegmentLength",
-            "noiseSegmentLength",
-            "randomGenerator",
-            "generated",
-            "randomBoundsCount",
-            "previousBounds",
-            "currentBounds",
-            "containers",
-            "containersCount",
-            "lineData",
-            "currentPosition",
-            "corners",
-            "distances",
-            "stepSize",
-            "circularResolution",
             "perlin",
-            "perlinData")
+            "perlinData",
+            "currentPosition",
+            "generated",
+            "containers",
+            "containersCount")
         .verify();
   }
 
@@ -274,25 +264,29 @@ public class LineGeneratorTest {
   }
 
   @Test
-  public void testCircularBounds() {
-    LineGenerator otherGenerator =
-        new LineGenerator(
-            defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, true);
-    double[] line = otherGenerator.getNext();
-    double firstValue = line[0];
-    double secondValue = line[1];
-    assertEquals(
-        firstValue, secondValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
-    double lastValue = line[otherGenerator.getLineLength() - 1];
-    assertEquals(
-        firstValue, lastValue, Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize));
+  public void testLineCircularity() {
+    LineGenerator generator =
+        new LineGenerator(1.0 / 100, 1 / 5.0, lineLength, 1.0, randomSeed, true);
+
+    int numCyclesInLine = (int) (generator.getLineLength() * generator.getLineStepSize());
+    int numInterpolationPointsPerCycle = (int) (1.0 / generator.getLineStepSize());
+
+    for (int i = 0; i < 1000; i++) {
+      double[] line = generator.getNext();
+
+      for (int j = 0; j < numInterpolationPointsPerCycle; j++) {
+        double ref = line[j];
+        for (int k = 1; k < numCyclesInLine; k++) {
+          assertEquals(ref, line[k * numInterpolationPointsPerCycle + j], 1E-12);
+        }
+      }
+    }
   }
 
   @Test
-  public void testSmoothVisuals() {
+  public void testSmoothVisuals() { //NOSONAR
     LineGenerator generator =
-        new LineGenerator(
-            defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, true);
+        new LineGenerator(1.0 / 50, 1 / 500.0, lineLength, 1.0, randomSeed, true);
     int requested = 200;
 
     final double[][] image = new double[requested][lineLength * 2];
@@ -306,9 +300,6 @@ public class LineGeneratorTest {
     }
     SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
     im.setVisible();
-
-    double maxLineStep = Interpolation.getMaxStepWithFadeForStep(defaultLineStepSize);
-    double maxNoiseStep = Interpolation.getMaxStepWithFadeForStep(defaultNoiseStepSize);
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -327,24 +318,24 @@ public class LineGeneratorTest {
                 image[image.length - 1][i] = newline[i];
                 image[image.length - 1][i + lineLength] = newline[i];
               }
+              try {
+                AssertUtils.valuesContinuousInArray(newline);
+                double[] row = new double[image.length];
+                for(int i = 0; i < lineLength; i++) {
+                  System.arraycopy(image[i], 0, row, 0, image.length);
+                  AssertUtils.valuesContinuousInArray(row);
+                }
+              } catch (AssertionError e) {
+                LogManager.getLogger(this.getClass())
+                    .error("Error with line smoothness for line generator " + generator, e);
+                throw e;
+              }
+
               im.updateImage(image);
-
-              for (int i = 0; i < (lineLength * 2) - 1; i++) {
-                double first = image[image.length - 1][i];
-                double second = image[image.length - 1][i + 1];
-                assertEquals("Values differ more than " + maxLineStep, first, second, maxLineStep);
-              }
-
-              for (int i = 0; i < lineLength * 2; i++) {
-                double first = image[image.length - 1][i];
-                double second = image[image.length - 2][i];
-                assertEquals(
-                    "Values differ more than " + maxNoiseStep, first, second, maxNoiseStep);
-              }
             },
             30,
             TimeUnit.MILLISECONDS,
-            15,
+            5,
             TimeUnit.SECONDS);
     completed.thenRun(im::dispose);
   }

@@ -11,12 +11,10 @@ import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
-import org.lefmaroli.interpolation.Interpolation;
+import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
 public class SliceGeneratorTest {
@@ -401,31 +399,19 @@ public class SliceGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "randomGenerator",
-            "generated",
-            "randomBoundsXCount",
-            "randomBoundsYCount",
-            "previousBounds",
-            "currentBounds",
-            "containers",
-            "containersCount",
-            "line",
-            "noiseSegmentLength",
-            "currentPosInNoiseInterpolation",
-            "corners",
-            "distances",
-            "stepSize",
-            "circularWidthResolution",
-            "circularHeightResolution",
+            "widthAngleFactor",
+            "heightAngleFactor",
             "perlin",
             "perlinData",
-            "res")
+            "currentPosInNoiseInterpolation",
+            "generated",
+            "containers",
+            "containersCount")
         .verify();
   }
 
-  @Ignore
   @Test
-  public void testCircularBounds() {
+  public void testSliceCircularity(){
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize,
@@ -436,37 +422,40 @@ public class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             true);
-    double[][] line = generator.getNext();
-    double[] firstLine = line[0];
-    double[] secondLine = line[1];
-    double[] lastLine = line[generator.getSliceWidth() - 1];
-    double maxRate = Interpolation.getMaxStepWithFadeForStep(generator.getWidthStepSize());
-    for (int i = 0; i < firstLine.length; i++) {
-      assertEquals(firstLine[i], secondLine[i], maxRate);
-      assertEquals(firstLine[i], lastLine[i], maxRate);
-    }
 
-    double[] firstColumn = new double[generator.getSliceWidth()];
-    double[] secondColumn = new double[generator.getSliceWidth()];
-    double[] lastColumn = new double[generator.getSliceWidth()];
-    for (int i = 0; i < generator.getSliceWidth(); i++) {
-      firstColumn[i] = line[i][0];
-      secondColumn[i] = line[i][1];
-      lastColumn[i] = line[i][generator.getSliceHeight() - 1];
-    }
-    maxRate = Interpolation.getMaxStepWithFadeForStep(generator.getHeightStepSize());
-    for (int i = 0; i < firstColumn.length; i++) {
-      assertEquals(firstColumn[i], secondColumn[i], maxRate);
-      assertEquals(firstColumn[i], lastColumn[i], maxRate);
+    int numCyclesInWidth = (int)(generator.getSliceWidth() * generator.getWidthStepSize());
+    int numInterpolationPointsPerCycleInWidth = (int)(1.0 / generator.getWidthStepSize());
+    int numCyclesInHeight = (int)(generator.getSliceHeight() * generator.getHeightStepSize());
+    int numInterpolationPointsPerCycleInHeight = (int)(1.0 / generator.getHeightStepSize());
+
+    for (int i = 0; i < 1000; i++) {
+      double[][] slice = generator.getNext();
+
+      for (int row = 0; row < generator.getSliceHeight(); row++) {
+        for (int j = 0; j < numInterpolationPointsPerCycleInWidth; j++) {
+          double ref = slice[j][row];
+          for (int k = 1; k < numCyclesInWidth; k++) {
+            assertEquals(ref, slice[k*numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
+          }
+        }
+      }
+
+      for (int column = 0; column < generator.getSliceWidth(); column++) {
+        for (int j = 0; j < numInterpolationPointsPerCycleInHeight; j++) {
+          double ref = slice[column][j];
+          for (int k = 1; k < numCyclesInHeight; k++) {
+            assertEquals(ref, slice[column][k*numInterpolationPointsPerCycleInHeight + j], 1E-12);
+          }
+        }
+      }
     }
   }
 
-  @Ignore("Skipped, only used to visualize results")
   @Test
-  public void testCircularity() {
+  public void testSmoothCircularity() {   //NOSONAR
     SliceGenerator generator =
         new SliceGenerator(
-            noiseStepSize, 1 / 50.0, 1 / 250.0, 150, 150, 1.0, System.currentTimeMillis(), true);
+            noiseStepSize, 1 / 200.0, 1 / 250.0, 150, 150, 1.0, System.currentTimeMillis(), true);
     double[][] slices = generator.getNext();
     int patchFactor = 2;
     double[][] patched =
@@ -479,25 +468,6 @@ public class SliceGeneratorTest {
     }
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(patched, 5);
     image.setVisible();
-
-    final double[][] previous =
-        new double[generator.getSliceWidth() * patchFactor]
-            [generator.getSliceHeight() * patchFactor];
-    for (int i = 0; i < generator.getSliceWidth() * patchFactor; i++) {
-      System.arraycopy(patched[i], 0, previous[i], 0, generator.getSliceHeight() * patchFactor);
-    }
-
-    final double maxNoiseRate =
-        Interpolation.getMaxStepWithFadeForStep(generator.getNoiseStepSize());
-    final double maxWidthRate =
-        Interpolation.getMaxStepWithFadeForStep(generator.getWidthStepSize());
-    final double maxHeightRate =
-        Interpolation.getMaxStepWithFadeForStep(generator.getHeightStepSize());
-    final double maxHeightWidthRate =
-        Math.sqrt((maxWidthRate * maxWidthRate) + (maxHeightRate * maxHeightRate));
-    LogManager.getLogger(this.getClass()).info("MaxNoiseRate:" + maxNoiseRate);
-    LogManager.getLogger(this.getClass()).info("MaxWidthRate:" + maxHeightWidthRate);
-    LogManager.getLogger(this.getClass()).info("MaxHeightRate:" + maxHeightWidthRate);
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -513,61 +483,22 @@ public class SliceGeneratorTest {
                 }
               }
               image.updateImage(patched);
-              //          for (int i = 0; i < patched.length - 1; i++) {
-              //            for (int j = 0; j < patched[i].length; j++) {
-              //              double first = patched[i][j];
-              //              double second = patched[i + 1][j];
-              //              assertEquals(
-              //                  "Values differ more than " + maxWidthRate + " for width:" +
-              // Math.abs(first - second),
-              //                  first,
-              //                  second,
-              //                  maxWidthRate);
-              //            }
-              //          }
-              if (Thread.interrupted()) {
-                return;
-              }
-              //          for (double[] rows : patched) {
-              //            for (int j = 0; j < rows.length - 1; j++) {
-              //              double first = rows[j];
-              //              double second = rows[j + 1];
-              //              assertEquals(
-              //                  "Values differ more than " + maxHeightWidthRate + " for height:" +
-              // Math
-              //                      .abs(first - second),
-              //                  first,
-              //                  second,
-              //                  maxHeightWidthRate);
-              //            }
-              //          }
-              for (int i = 0; i < patched.length; i++) {
-                for (int j = 0; j < patched[i].length; j++) {
-                  double first = previous[i][j];
-                  double second = patched[i][j];
-                  assertEquals(
-                      "Values differ more than "
-                          + maxNoiseRate
-                          + " for noise:"
-                          + Math.abs(first - second),
-                      first,
-                      second,
-                      maxNoiseRate);
-                }
-              }
-              for (int i = 0; i < patched.length; i++) {
-                System.arraycopy(patched[i], 0, previous[i], 0, patched[i].length);
+              double[] column = new double[newSlices[0].length];
+              for (double[] row : newSlices) {
+                AssertUtils.valuesContinuousInArray(row);
+                System.arraycopy(row, 0, column, 0, row.length);
+                AssertUtils.valuesContinuousInArray(column);
               }
             },
             200,
             TimeUnit.MILLISECONDS,
-            200,
+            5,
             TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 
   @Test
-  public void testVisualizeMorphingImage() {
+  public void testSmoothVisuals() {   //NOSONAR
     int sliceWidth = 200;
     int sliceHeight = 200;
     SliceGenerator generator =
@@ -584,77 +515,24 @@ public class SliceGeneratorTest {
     SimpleGrayScaleImage image = new SimpleGrayScaleImage(slice, 5);
     image.setVisible();
 
-    final double[][] previous = new double[sliceWidth][sliceHeight];
-    for (int i = 0; i < sliceWidth; i++) {
-      System.arraycopy(slice[i], 0, previous[i], 0, sliceHeight);
-    }
-
-    final double maxNoiseRate = Interpolation.getMaxStepWithFadeForStep(noiseStepSize);
-    final double maxWidthRate = Interpolation.getMaxStepWithFadeForStep(widthStepSize);
-    final double maxHeightRate = Interpolation.getMaxStepWithFadeForStep(heightStepSize);
-
-    CompletableFuture<Void> completed =
-        ScheduledUpdater.updateAtRateForDuration(
-            () -> {
-              double[][] next = generator.getNext();
-              if (Thread.interrupted()) {
-                return;
-              }
-              image.updateImage(next);
-
-              for (int i = 0; i < sliceWidth - 1; i++) {
-                for (int j = 0; j < sliceHeight; j++) {
-                  double first = next[i][j];
-                  double second = next[i + 1][j];
-                  assertEquals(
-                      "Values differ more than "
-                          + maxWidthRate
-                          + " for width:"
-                          + Math.abs(first - second),
-                      first,
-                      second,
-                      maxWidthRate);
-                }
-              }
-              if (Thread.interrupted()) {
-                return;
-              }
-              for (int i = 0; i < sliceWidth; i++) {
-                for (int j = 0; j < sliceHeight - 1; j++) {
-                  double first = next[i][j];
-                  double second = next[i][j + 1];
-                  assertEquals(
-                      "Values differ more than "
-                          + maxHeightRate
-                          + " for height:"
-                          + Math.abs(first - second),
-                      first,
-                      second,
-                      maxHeightRate);
-                }
-              }
-              for (int i = 0; i < sliceWidth; i++) {
-                for (int j = 0; j < sliceHeight; j++) {
-                  double first = previous[i][j];
-                  double second = next[i][j];
-                  assertEquals(
-                      "Values differ more than "
-                          + maxNoiseRate
-                          + " for noise:"
-                          + Math.abs(first - second),
-                      first,
-                      second,
-                      maxNoiseRate);
-                }
-              }
-              for (int i = 0; i < sliceWidth; i++) {
-                System.arraycopy(next[i], 0, previous[i], 0, sliceHeight);
-              }
-            },
-            100,
-            TimeUnit.MILLISECONDS,
-            15,
-            TimeUnit.SECONDS);
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
+        () -> {
+          double[][] next = generator.getNext();
+          if (Thread.interrupted()) {
+            return;
+          }
+          image.updateImage(next);
+          double[] column = new double[next[0].length];
+          for (double[] row : next) {
+            AssertUtils.valuesContinuousInArray(row);
+            System.arraycopy(row, 0, column, 0, row.length);
+            AssertUtils.valuesContinuousInArray(column);
+          }
+        },
+        100,
+        TimeUnit.MILLISECONDS,
+        5,
+        TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }
 }

@@ -41,15 +41,17 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
   protected double correctStepSizeForCircularity(
       double stepSize, int dimensionLength, String dimensionName) {
     if (isCircular) {
-      var interpolationPoints = (int) (1.0 / stepSize);
+      var interpolationPoints = (int) Math.round(1.0 / stepSize);
       var toEvaluate = Math.min(interpolationPoints, dimensionLength);
       var newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);
-      LogManager.getLogger(this.getClass())
-          .warn(
-              "Modified required step size for {} from {} to {} to respect" + " circularity.",
-              dimensionName,
-              stepSize,
-              1.0 / newInterpolationPoints);
+      if (interpolationPoints != newInterpolationPoints) {
+        LogManager.getLogger(this.getClass())
+            .warn(
+                "Modified required step size for {} from {} to {} to respect" + " circularity.",
+                dimensionName,
+                stepSize,
+                1.0 / newInterpolationPoints);
+      }
       return 1.0 / newInterpolationPoints;
     } else {
       return stepSize;

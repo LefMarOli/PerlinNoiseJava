@@ -4,24 +4,23 @@ import java.awt.EventQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
-@Ignore("Tests skipped, visual assessment only")
 public class PerlinNoiseVisualizeTests {
 
   private final long randomSeed = System.currentTimeMillis();
 
   @Test
-  public void test2D() {
+  public void test2D() {  //NOSONAR
     PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     int size = 500;
     double[] values = new double[size];
     double stepSizeX = 0.01;
-    double stepSizeY = 0.055;
+    double stepSizeY = 0.001;
     for (int i = 0; i < size; i++) {
       values[i] = perlinNoise.getFor(0 * stepSizeX, i * stepSizeY);
     }
@@ -49,16 +48,17 @@ public class PerlinNoiseVisualizeTests {
                             }
                           },
                           label));
+              AssertUtils.valuesContinuousInArray(values);
             },
             30,
             TimeUnit.MILLISECONDS,
-            15,
+            5,
             TimeUnit.SECONDS);
     completed.thenRun(chart::dispose);
   }
 
   @Test
-  public void test3D() {
+  public void test3D() {  //NOSONAR
     PerlinNoise perlinNoise = new PerlinNoise(3, randomSeed);
     final int size = 200;
     double[][] values = new double[size][size];
@@ -84,11 +84,20 @@ public class PerlinNoiseVisualizeTests {
                       perlinNoise.getFor(i * stepSize, j * stepSizeY, zIndex * stepSizeZ);
                 }
               }
+              if(Thread.interrupted()){
+                return;
+              }
               image.updateImage(values);
+              double[] column = new double[values[0].length];
+              for (double[] row : values) {
+                AssertUtils.valuesContinuousInArray(row);
+                System.arraycopy(row, 0, column, 0, row.length);
+                AssertUtils.valuesContinuousInArray(column);
+              }
             },
             30,
             TimeUnit.MILLISECONDS,
-            15,
+            5,
             TimeUnit.SECONDS);
     completed.thenRun(image::dispose);
   }

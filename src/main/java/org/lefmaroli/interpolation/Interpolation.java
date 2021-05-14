@@ -71,13 +71,6 @@ public class Interpolation {
     return fadeUnchecked(value);
   }
 
-  public static double getMaxStepWithFadeForStep(double step) {
-    if (step < 0.0 || step > 1.0) {
-      throw new ValueNotBoundedException("Value to fade");
-    }
-    return Math.abs(0.5 - fadeUnchecked(step + 0.5));
-  }
-
   private static String getDimensionsOrderForDimension(int dimension) {
     return FORMAT_MAP.get(dimension).getValue();
   }

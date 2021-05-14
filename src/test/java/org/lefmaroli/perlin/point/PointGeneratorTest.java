@@ -129,14 +129,12 @@ public class PointGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
+            "perlin",
+            "perlinData",
             "currentPosition",
             "generated",
-            "noiseSegmentLength",
             "containers",
-            "containersCount",
-            "stepSize",
-            "perlin",
-            "perlinData")
+            "containersCount")
         .verify();
   }
 

@@ -9,8 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
+import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
 public class LineNoiseGeneratorBuilderTest {
@@ -33,7 +33,7 @@ public class LineNoiseGeneratorBuilderTest {
   }
 
   @Test
-  public void testSmoothVisuals() throws NoiseBuilderException {
+  public void testSmoothVisuals() throws NoiseBuilderException {  //NOSONAR
     double lineStepSizeInitialValue = 1.0 / 50;
     DoubleGenerator lineStepSizeGenerator =
         new DoubleGenerator(lineStepSizeInitialValue, 1.0 / 0.9);
@@ -58,57 +58,34 @@ public class LineNoiseGeneratorBuilderTest {
     SimpleGrayScaleImage im = new SimpleGrayScaleImage(image, 5);
     im.setVisible();
 
-    amplitudeGenerator.reset();
-    noiseStepSizeGenerator.reset();
-    lineStepSizeGenerator.reset();
-    double maxLineDiff = 0;
-    double maxNoiseDiff = 0;
-    double maxValue = 0;
-
-    for (int i = 0; i < numLayers; i++) {
-      double layerMaxVal = amplitudeGenerator.getNext();
-      maxValue += layerMaxVal;
-      maxLineDiff += lineStepSizeGenerator.getNext() / layerMaxVal;
-      maxNoiseDiff += noiseStepSizeGenerator.getNext() / layerMaxVal;
-    }
-    maxLineDiff /= maxValue;
-    maxLineDiff = Interpolation.getMaxStepWithFadeForStep(maxLineDiff);
-    maxNoiseDiff /= maxValue;
-    maxNoiseDiff = Interpolation.getMaxStepWithFadeForStep(maxNoiseDiff);
-    LogManager.getLogger(this.getClass()).info("MaxLineDiff:" + maxLineDiff);
-    LogManager.getLogger(this.getClass()).info("MaxNoiseDiff:" + maxNoiseDiff);
-    final double lineDiff = maxLineDiff;
-    final double noiseDiff = maxNoiseDiff;
-
-    CompletableFuture<Void> completed =
-        ScheduledUpdater.updateAtRateForDuration(
-            () -> {
-              for (int i = 0; i < requestedLines - 1; i++) {
-                System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
-              }
-              if (Thread.interrupted()) {
-                return;
-              }
-              double[] nextLine = generator.getNext();
-              System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
-              im.updateImage(image);
-
-              for (int i = 0; i < lineLength - 1; i++) {
-                double first = nextLine[i];
-                double second = nextLine[i + 1];
-                assertEquals("Values differ more than " + lineDiff, first, second, lineDiff);
-              }
-
-              for (int i = 0; i < lineLength; i++) {
-                double first = image[image.length - 1][i];
-                double second = image[image.length - 2][i];
-                assertEquals("Values differ more than " + noiseDiff, first, second, noiseDiff);
-              }
-            },
-            30,
-            TimeUnit.MILLISECONDS,
-            15,
-            TimeUnit.SECONDS);
+    CompletableFuture<Void> completed = ScheduledUpdater.updateAtRateForDuration(
+        () -> {
+          for (int i = 0; i < requestedLines - 1; i++) {
+            System.arraycopy(image[i + 1], 0, image[i], 0, lineLength);
+          }
+          if (Thread.interrupted()) {
+            return;
+          }
+          double[] nextLine = generator.getNext();
+          System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
+          im.updateImage(image);
+          try {
+            AssertUtils.valuesContinuousInArray(nextLine);
+            double[] row = new double[image.length];
+            for(int i = 0; i < lineLength; i++) {
+              System.arraycopy(image[i], 0, row, 0, image.length);
+              AssertUtils.valuesContinuousInArray(row);
+            }
+          } catch (AssertionError e) {
+            LogManager.getLogger(this.getClass())
+                .error("Error with line smoothness for line generator " + generator, e);
+            throw e;
+          }
+        },
+        30,
+        TimeUnit.MILLISECONDS,
+        5,
+        TimeUnit.SECONDS);
     completed.thenRun(im::dispose);
   }
 }

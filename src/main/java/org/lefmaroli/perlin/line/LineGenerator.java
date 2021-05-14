@@ -13,7 +13,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
 
   private final double lineStepSize;
   private final int lineLength;
-  private final double circularResolution;
   private final PerlinNoise perlin;
   private final double[] perlinData;
   private int currentPosition = 0;
@@ -29,7 +28,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     assertValidValues(parameterNames, lineStepSize, lineLength);
     this.lineLength = lineLength;
     this.lineStepSize = correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
-    this.circularResolution = 1.0 / (this.lineStepSize * this.lineLength);
     if (isCircular) {
       perlin = new PerlinNoise(3, randomSeed);
       perlinData = new double[3];
@@ -104,9 +102,9 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
   private double processLineDomain(double noiseDist, int lineIndex) {
     perlinData[0] = noiseDist;
     if (isCircular()) {
-      double angle = lineIndex * lineStepSize * 2 * Math.PI;
-      perlinData[1] = (Math.cos(angle) + 1.0) / 2.0 * circularResolution;
-      perlinData[2] = (Math.sin(angle) + 1.0) / 2.0 * circularResolution;
+      double angle = lineIndex * lineStepSize * (2 * Math.PI);
+      perlinData[1] = (Math.cos(angle) + 1.0) / 2.0;
+      perlinData[2] = (Math.sin(angle) + 1.0) / 2.0;
     } else {
       perlinData[1] = lineIndex * lineStepSize;
     }
