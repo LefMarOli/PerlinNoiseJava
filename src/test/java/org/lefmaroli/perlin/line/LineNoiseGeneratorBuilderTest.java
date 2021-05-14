@@ -76,8 +76,7 @@ public class LineNoiseGeneratorBuilderTest {
               }
               double[] nextLine = generator.getNext();
               System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
-              if(isDisplaySupported)
-                im.get().updateImage(image);
+              if (isDisplaySupported) im.get().updateImage(image);
               try {
                 AssertUtils.valuesContinuousInArray(nextLine);
                 double[] row = new double[image.length];
@@ -95,10 +94,11 @@ public class LineNoiseGeneratorBuilderTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(()->{
-      if(isDisplaySupported){
-        im.get().dispose();
-      }
-    });
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) {
+            im.get().dispose();
+          }
+        });
   }
 }

@@ -69,7 +69,7 @@ public class SliceNoiseGeneratorBuilderTest {
               if (Thread.interrupted()) {
                 return;
               }
-              if(isDisplaySupported){
+              if (isDisplaySupported) {
                 im.get().updateImage(next);
               }
               double[] column = new double[next[0].length];
@@ -83,10 +83,11 @@ public class SliceNoiseGeneratorBuilderTest {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(()->{
-      if(isDisplaySupported){
-        im.get().dispose();
-      }
-    });
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) {
+            im.get().dispose();
+          }
+        });
   }
 }

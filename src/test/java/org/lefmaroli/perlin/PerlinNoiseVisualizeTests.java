@@ -108,7 +108,7 @@ public class PerlinNoiseVisualizeTests {
               if (Thread.interrupted()) {
                 return;
               }
-              if(isDisplaySupported){
+              if (isDisplaySupported) {
                 im.get().updateImage(values);
               }
               double[] column = new double[values[0].length];
@@ -122,10 +122,11 @@ public class PerlinNoiseVisualizeTests {
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
-    completed.thenRun(()->{
-      if(isDisplaySupported){
-        im.get().dispose();
-      }
-    });
+    completed.thenRun(
+        () -> {
+          if (isDisplaySupported) {
+            im.get().dispose();
+          }
+        });
   }
 }
