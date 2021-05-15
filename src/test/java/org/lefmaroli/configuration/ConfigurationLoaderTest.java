@@ -1,85 +1,70 @@
 package org.lefmaroli.configuration;
 
-import static org.junit.Assert.assertThrows;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
-
-@RunWith(Parameterized.class)
-public class ConfigurationLoaderTest {
+class ConfigurationLoaderTest {
 
   private static String ENV;
-  @Parameter() public String envVar;
 
-  @Parameter(1)
-  public Class<? extends Exception> expectedException;
-
-  @Parameter(2)
-  public String testTitle;
-
-  @BeforeClass
+  @BeforeAll
   public static void init() {
     ENV = ConfigurationLoader.getEnv();
     ConfigurationLoader.clear();
   }
 
-  @AfterClass
+  @AfterAll
   public static void cleanUp() {
     System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, ENV);
   }
 
-  @Parameters(name = "{index}: {2}")
-  public static Iterable<Object[]> data() {
-    String fileSeparator = java.io.File.separator;
-    return Arrays.asList(
-        new Object[][] {
-          {"nonsense", ConfigurationException.class, "Missing config file"},
-          {
-            fileSeparator + "config" + fileSeparator + "missingProperty",
-            MissingConfigurationException.class,
-            "Missing property in config file"
-          },
-          {
-            fileSeparator + "config" + fileSeparator + "classNotFound",
-            ConfigurationException.class,
-            "Class not found"
-          },
-          {
-            fileSeparator + "config" + fileSeparator + "noDefaultConstructor",
-            ConfigurationException.class,
-            "No default constructor"
-          },
-          {
-            fileSeparator + "config" + fileSeparator + "instantiationException",
-            ConfigurationException.class,
-            "Class instantiation exception"
-          },
-        });
+  @ParameterizedTest(name = "{index} {2}")
+  @MethodSource("provideParameters")
+  @SuppressWarnings("unused")
+  void testWrongConfigs(String envVar, Class<? extends Exception> expectedException, String title) {
+    System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, envVar);
+    Assertions.assertThrows(expectedException, ConfigurationLoader::getJitterStrategy);
   }
 
-  @Before
+  @SuppressWarnings("unused")
+  private static Stream<Arguments> provideParameters() {
+    String fileSeparator = java.io.File.separator;
+    return Stream.of(
+        Arguments.of("nonsense", ConfigurationException.class, "Missing config file"),
+        Arguments.of(
+            fileSeparator + "config" + fileSeparator + "missingProperty",
+            MissingConfigurationException.class,
+            "Missing property in config file"),
+        Arguments.of(
+            fileSeparator + "config" + fileSeparator + "classNotFound",
+            ConfigurationException.class,
+            "Class not found"),
+        Arguments.of(
+            fileSeparator + "config" + fileSeparator + "noDefaultConstructor",
+            ConfigurationException.class,
+            "No default constructor"),
+        Arguments.of(
+            fileSeparator + "config" + fileSeparator + "instantiationException",
+            ConfigurationException.class,
+            "Class instantiation exception"));
+  }
+
+  @BeforeEach
   public void setup() {
     System.clearProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
     ConfigurationLoader.clear();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     System.clearProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY);
     ConfigurationLoader.clear();
-  }
-
-  @Test
-  public void testWrongConfigs() {
-    System.setProperty(ConfigurationProperties.ENVIRONMENT_TARGET_PROPERTY, envVar);
-    assertThrows(expectedException, ConfigurationLoader::getJitterStrategy);
   }
 }

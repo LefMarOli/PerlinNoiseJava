@@ -1,9 +1,5 @@
 package org.lefmaroli.perlin.line;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
@@ -13,89 +9,120 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
-public class LineGeneratorTest {
+class LineGeneratorTest {
 
-  private static final int lineLength = 200;
+  private static final int lineLength = 10;
   private static final double maxAmplitude = 5.0;
   private static final double defaultLineStepSize = 1.0 / 25;
   private static final double defaultNoiseStepSize = 1.0 / 50;
   private static final boolean isCircular = false;
   private final long randomSeed = System.currentTimeMillis();
-  private LineGenerator defaultLineGenerator;
 
-  @Before
-  public void setup() {
-    defaultLineGenerator =
-        new LineGenerator(
-            defaultNoiseStepSize,
-            defaultLineStepSize,
-            lineLength,
-            maxAmplitude,
-            randomSeed,
-            isCircular);
+  @Test
+  void testCreateInvalidLineLength() {
+    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LineGenerator(
+        defaultNoiseStepSize, defaultLineStepSize, -5, 1.0, randomSeed, isCircular));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidLineLength() {
+  @Test
+  void testCreateInvalidLineStepSize() {
+    Assertions.assertThrows(IllegalArgumentException.class, ()->
     new LineGenerator(
-        defaultNoiseStepSize, defaultLineStepSize, -5, 1.0, System.currentTimeMillis(), isCircular);
+        defaultNoiseStepSize, -1, lineLength, 1.0, randomSeed, isCircular));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidLineStepSize() {
+  @Test
+  void testCreateInvalidNoiseStepSize() {
+    Assertions.assertThrows(IllegalArgumentException.class, ()->
     new LineGenerator(
-        defaultNoiseStepSize, -1, lineLength, 1.0, System.currentTimeMillis(), isCircular);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidNoiseStepSize() {
-    new LineGenerator(
-        -1, defaultLineStepSize, lineLength, 1.0, System.currentTimeMillis(), isCircular);
+        -1, defaultLineStepSize, lineLength, 1.0, randomSeed, isCircular));
   }
 
   @Test
-  public void getNextLinesCorrectSize() {
-    double[] lines = defaultLineGenerator.getNext();
-    assertEquals(lineLength, lines.length, 0);
+  void getNextLinesCorrectSize() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
+    double[] lines = generator.getNext();
+    Assertions.assertEquals(lineLength, lines.length, 0);
   }
 
   @Test
-  public void testGetLineStepSize() {
-    assertEquals(defaultLineStepSize, defaultLineGenerator.getLineStepSize(), 1E-9);
+  void testGetLineStepSize() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
+    Assertions.assertEquals(defaultLineStepSize, generator.getLineStepSize(), 1E-9);
   }
 
   @Test
-  public void testGetNoiseStepSize() {
-    assertEquals(defaultNoiseStepSize, defaultLineGenerator.getNoiseStepSize(), 1E-8);
+  void testGetNoiseStepSize() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
+    Assertions.assertEquals(defaultNoiseStepSize, generator.getNoiseStepSize(), 1E-8);
   }
 
   @Test
-  public void testGetLineLength() {
-    assertEquals(lineLength, defaultLineGenerator.getLineLength());
+  void testGetLineLength() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
+    Assertions.assertEquals(lineLength, generator.getLineLength());
   }
 
   @Test
-  public void testGetMaxAmplitude() {
-    assertEquals(maxAmplitude, defaultLineGenerator.getMaxAmplitude(), 0.0);
+  void testGetMaxAmplitude() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
+    Assertions.assertEquals(maxAmplitude, generator.getMaxAmplitude(), 0.0);
   }
 
   @Test
-  public void testValuesBounded() {
-    double[] line = defaultLineGenerator.getNext();
+  void testValuesBounded() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        100,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
+    double[] line = generator.getNext();
     for (double value : line) {
-      assertTrue(value > 0.0);
-      assertTrue(value < maxAmplitude);
+      Assertions.assertTrue(value > 0.0);
+      Assertions.assertTrue(value < maxAmplitude);
     }
   }
 
   @Test
-  public void testValuesMultipliedByMaxAmplitude() {
+  void testValuesMultipliedByMaxAmplitude() {
     long randomSeed = System.currentTimeMillis();
     LineGenerator layer =
         new LineGenerator(1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular);
@@ -112,12 +139,12 @@ public class LineGeneratorTest {
     }
 
     for (int i = 0; i < line.length; i++) {
-      assertEquals(line[i], amplifiedLine[i], 1e-18);
+      Assertions.assertEquals(line[i], amplifiedLine[i], 1e-18);
     }
   }
 
   @Test
-  public void testCreateSameGeneratedLines() {
+  void testCreateSameGeneratedLines() {
     long randomSeed = System.currentTimeMillis();
     LineGenerator layer =
         new LineGenerator(1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular);
@@ -126,14 +153,14 @@ public class LineGeneratorTest {
     double[] nextSegment1 = layer.getNext();
     double[] nextSegment2 = sameLayer.getNext();
 
-    assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    Assertions.assertEquals(nextSegment1.length, nextSegment2.length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
-      assertEquals(nextSegment1[i], nextSegment2[i], 0.0);
+      Assertions.assertEquals(nextSegment1[i], nextSegment2[i], 0.0);
     }
   }
 
   @Test
-  public void testCreateDifferentPointsForDifferentSeed() {
+  void testCreateDifferentPointsForDifferentSeed() {
     long randomSeed = System.currentTimeMillis();
     LineGenerator layer =
         new LineGenerator(1 / 50.0, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular);
@@ -141,15 +168,23 @@ public class LineGeneratorTest {
         new LineGenerator(1 / 50.0, 1.0 / 50, lineLength, 1.0, randomSeed + 1, isCircular);
     double[] nextSegment1 = layer.getNext();
     double[] nextSegment2 = sameLayer.getNext();
-    assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    Assertions.assertEquals(nextSegment1.length, nextSegment2.length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
       double val = nextSegment1[i];
-      assertNotEquals("Values are equal for i: " + i + ", value: " + val, val, nextSegment2[i]);
+      int index = i;
+      Assertions.assertNotEquals(val, nextSegment2[i], ()->"Values are equal for i: " + index + ", value: " + val);
     }
   }
 
   @Test
-  public void testEquals() {
+  void testEquals() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize,
@@ -158,12 +193,19 @@ public class LineGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertEquals(defaultLineGenerator, otherGenerator);
-    assertEquals(defaultLineGenerator.hashCode(), otherGenerator.hashCode());
+    Assertions.assertEquals(generator, otherGenerator);
+    Assertions.assertEquals(generator.hashCode(), otherGenerator.hashCode());
   }
 
   @Test
-  public void testNotEqualsNotSameLineLength() {
+  void testNotEqualsNotSameLineLength() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize,
@@ -172,11 +214,18 @@ public class LineGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultLineGenerator, otherGenerator);
+    Assertions.assertNotEquals(generator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameLineStepSize() {
+  void testNotEqualsNotSameLineStepSize() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize,
@@ -185,11 +234,18 @@ public class LineGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultLineGenerator, otherGenerator);
+    Assertions.assertNotEquals(generator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameNoiseStepSize() {
+  void testNotEqualsNotSameNoiseStepSize() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize + 0.125,
@@ -198,11 +254,18 @@ public class LineGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultLineGenerator, otherGenerator);
+    Assertions.assertNotEquals(generator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameMaxAmplitude() {
+  void testNotEqualsNotSameMaxAmplitude() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize,
@@ -211,11 +274,18 @@ public class LineGeneratorTest {
             maxAmplitude * 2,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultLineGenerator, otherGenerator);
+    Assertions.assertNotEquals(generator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameRandomSeed() {
+  void testNotEqualsNotSameRandomSeed() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize,
@@ -224,11 +294,18 @@ public class LineGeneratorTest {
             maxAmplitude,
             randomSeed + 1,
             isCircular);
-    assertNotEquals(defaultLineGenerator, otherGenerator);
+    Assertions.assertNotEquals(generator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameCircularity() {
+  void testNotEqualsNotSameCircularity() {
+    LineGenerator generator = new LineGenerator(
+        defaultNoiseStepSize,
+        defaultLineStepSize,
+        lineLength,
+        maxAmplitude,
+        randomSeed,
+        isCircular);
     LineGenerator otherGenerator =
         new LineGenerator(
             defaultNoiseStepSize,
@@ -237,11 +314,11 @@ public class LineGeneratorTest {
             maxAmplitude,
             randomSeed,
             !isCircular);
-    assertNotEquals(defaultLineGenerator, otherGenerator);
+    Assertions.assertNotEquals(generator, otherGenerator);
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     ToStringVerifier.forClass(LineGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
@@ -257,17 +334,7 @@ public class LineGeneratorTest {
   }
 
   @Test
-  public void testHugeLine() {
-    int lineLength = 2000000;
-    LineGenerator otherGenerator =
-        new LineGenerator(
-            defaultNoiseStepSize, defaultLineStepSize, lineLength, 1.0, randomSeed, false);
-    double[] nextLine = otherGenerator.getNext();
-    assertEquals(lineLength, nextLine.length);
-  }
-
-  @Test
-  public void testLineCircularity() {
+  void testLineCircularity() {
     LineGenerator generator =
         new LineGenerator(1.0 / 100, 1 / 5.0, lineLength, 1.0, randomSeed, true);
 
@@ -280,14 +347,15 @@ public class LineGeneratorTest {
       for (int j = 0; j < numInterpolationPointsPerCycle; j++) {
         double ref = line[j];
         for (int k = 1; k < numCyclesInLine; k++) {
-          assertEquals(ref, line[k * numInterpolationPointsPerCycle + j], 1E-12);
+          Assertions.assertEquals(ref, line[k * numInterpolationPointsPerCycle + j], 1E-12);
         }
       }
     }
   }
 
   @Test
-  public void testSmoothVisuals() { // NOSONAR
+  void testSmoothVisuals() { // NOSONAR
+    int lineLength = 200;
     LineGenerator generator =
         new LineGenerator(1.0 / 50, 1 / 500.0, lineLength, 1.0, randomSeed, true);
     int requested = 200;
@@ -308,7 +376,9 @@ public class LineGeneratorTest {
       im.set(new SimpleGrayScaleImage(image, 5));
       im.get().setVisible();
     }
-
+    double[] row = new double[image.length];
+    int[] rowPlaceholder = new int[image.length - 1];
+    int[] columnPlaceholder = new int[lineLength - 1];
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
             () -> {
@@ -327,11 +397,10 @@ public class LineGeneratorTest {
                 image[image.length - 1][i + lineLength] = newline[i];
               }
               try {
-                AssertUtils.valuesContinuousInArray(newline);
-                double[] row = new double[image.length];
+                AssertUtils.valuesContinuousInArray(newline, columnPlaceholder);
                 for (int i = 0; i < lineLength; i++) {
                   System.arraycopy(image[i], 0, row, 0, image.length);
-                  AssertUtils.valuesContinuousInArray(row);
+                  AssertUtils.valuesContinuousInArray(row, rowPlaceholder);
                 }
               } catch (AssertionError e) {
                 LogManager.getLogger(this.getClass())

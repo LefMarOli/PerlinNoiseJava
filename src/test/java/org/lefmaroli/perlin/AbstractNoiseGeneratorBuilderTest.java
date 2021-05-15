@@ -1,53 +1,63 @@
 package org.lefmaroli.perlin;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
-public class AbstractNoiseGeneratorBuilderTest {
+class AbstractNoiseGeneratorBuilderTest {
 
   @Test
-  public void testBuilderPattern() {
+  void testBuilderPattern() {
     MockNoiseBuilder noisePointBuilder = new MockNoiseBuilder();
-    assertNotNull(noisePointBuilder.withRandomSeed(0L));
-    assertNotNull(noisePointBuilder.withNumberOfLayers(5));
-    assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-    assertNotNull(noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateWithNoLayers() {
-    new MockNoiseBuilder().withNumberOfLayers(0);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateWithNegativeNumberOfLayers() {
-    new MockNoiseBuilder().withNumberOfLayers(-8);
+    Assertions.assertNotNull(noisePointBuilder.withRandomSeed(0L));
+    Assertions.assertNotNull(noisePointBuilder.withNumberOfLayers(5));
+    Assertions.assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
+    Assertions.assertNotNull(noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
   }
 
   @Test
-  public void testCreateSingleLayer() throws NoiseBuilderException {
+  void testCreateWithNoLayers() {
+    MockNoiseBuilder mockNoiseBuilder = new MockNoiseBuilder();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> mockNoiseBuilder.withNumberOfLayers(0));
+  }
+
+  @Test
+  void testCreateWithNegativeNumberOfLayers() {
+    MockNoiseBuilder mockNoiseBuilder = new MockNoiseBuilder();
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> mockNoiseBuilder.withNumberOfLayers(-8));
+  }
+
+  @Test
+  void testCreateSingleLayer() throws NoiseBuilderException {
     INoiseGenerator<Double> built = new MockNoiseBuilder().withNumberOfLayers(1).build();
-    assertTrue(built instanceof MockNoiseGeneratorLayer);
+    Assertions.assertTrue(built instanceof MockNoiseGeneratorLayer);
   }
 
-  @Test(expected = NoiseBuilderException.class)
-  public void testCreateSingleLayerWithNoStepSize() throws NoiseBuilderException {
-    new MockNoiseBuilder()
-        .withNumberOfLayers(1)
-        .withNoiseStepSizeGenerator(new DoubleGenerator(0, 500))
-        .build();
+  @Test
+  void testCreateSingleLayerWithNoStepSize() {
+    MockNoiseBuilder mockNoiseBuilder =
+        new MockNoiseBuilder()
+            .withNumberOfLayers(1)
+            .withNoiseStepSizeGenerator(new DoubleGenerator(0, 500));
+    Assertions.assertThrows(NoiseBuilderException.class, mockNoiseBuilder::build);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testWrongImplementationOfBuilderClass() {
+  @Test
+  void testWrongImplementationOfBuilderClass() {
     int dimensions = 5;
-    new WrongSubClassImplementationMock(dimensions)
-        .setStepSizeGeneratorForDimension(dimensions + 1, new DoubleGenerator(1, 2.0));
+    DoubleGenerator stepSizeGenerator = new DoubleGenerator(1, 2.0);
+    int wrongDimensions = dimensions + 1;
+    WrongSubClassImplementationMock wrongSubClassImplementationMock =
+        new WrongSubClassImplementationMock(dimensions);
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            wrongSubClassImplementationMock.setStepSizeGeneratorForDimension(
+                wrongDimensions, stepSizeGenerator));
   }
 
   private static class MockNoiseGenerator implements INoiseGenerator<Double> {

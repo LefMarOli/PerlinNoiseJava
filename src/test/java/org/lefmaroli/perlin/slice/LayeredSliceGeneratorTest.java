@@ -1,19 +1,15 @@
 package org.lefmaroli.perlin.slice;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class LayeredSliceGeneratorTest {
+class LayeredSliceGeneratorTest {
 
   private static final double maxAmplitude = 1.75;
   private static final int defaultSliceWidth = 200;
@@ -22,8 +18,8 @@ public class LayeredSliceGeneratorTest {
   private LayeredSliceGenerator defaultGenerator;
   private List<SliceNoiseGenerator> layers;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     layers = new ArrayList<>(3);
     layers.add(
         new SliceGenerator(
@@ -59,17 +55,18 @@ public class LayeredSliceGeneratorTest {
   }
 
   @Test
-  public void testDimension() {
-    assertEquals(3, defaultGenerator.getDimensions());
+  void testDimension() {
+    Assertions.assertEquals(3, defaultGenerator.getDimensions());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateWithNoLayers() {
-    new LayeredSliceGenerator(new ArrayList<>(5));
+  @Test
+  void testCreateWithNoLayers() {
+    ArrayList<SliceNoiseGenerator> layers = new ArrayList<>(5);
+    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredSliceGenerator(layers));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateWithDifferentSliceWidthLayers() {
+  @Test
+  void testCreateWithDifferentSliceWidthLayers() {
     List<SliceNoiseGenerator> newLayerSet = layers;
     newLayerSet.add(
         new SliceGenerator(
@@ -81,11 +78,11 @@ public class LayeredSliceGeneratorTest {
             0.1225,
             System.currentTimeMillis(),
             isCircularDefault));
-    new LayeredSliceGenerator(newLayerSet);
+    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredSliceGenerator(newLayerSet));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateWithDifferentSliceHeightLayers() {
+  @Test
+  void testCreateWithDifferentSliceHeightLayers() {
     List<SliceNoiseGenerator> newLayerSet = layers;
     newLayerSet.add(
         new SliceGenerator(
@@ -97,48 +94,48 @@ public class LayeredSliceGeneratorTest {
             0.1225,
             System.currentTimeMillis(),
             isCircularDefault));
-    new LayeredSliceGenerator(newLayerSet);
+    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredSliceGenerator(newLayerSet));
   }
 
   @Test
-  public void testGetNextCount() {
+  void testGetNextCount() {
     double[][] slice = defaultGenerator.getNext();
-    assertEquals(defaultSliceWidth, slice.length, 0);
+    Assertions.assertEquals(defaultSliceWidth, slice.length, 0);
     for (double[] line : slice) {
-      assertEquals(defaultSliceHeight, line.length, 0);
+      Assertions.assertEquals(defaultSliceHeight, line.length, 0);
     }
   }
 
   @Test
-  public void testGetNextBoundedValues() {
+  void testGetNextBoundedValues() {
     double[][] slice = defaultGenerator.getNext();
     for (double[] lines : slice) {
       for (double value : lines) {
-        assertTrue("Actual value smaller than 0.0: " + value, value >= 0.0);
-        assertTrue("Actual value greater than 1.0:" + value, value <= 1.0);
+        Assertions.assertTrue(value >= 0.0, "Actual value smaller than 0.0: " + value);
+        Assertions.assertTrue(value <= 1.0, "Actual value greater than 1.0:" + value);
       }
     }
   }
 
   @Test
-  public void testGetMaxAmplitude() {
-    assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
+  void testGetMaxAmplitude() {
+    Assertions.assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
   }
 
   @Test
-  public void testNumLayersGenerated() {
-    assertEquals(layers.size(), defaultGenerator.getNumberOfLayers(), 0);
+  void testNumLayersGenerated() {
+    Assertions.assertEquals(layers.size(), defaultGenerator.getNumberOfLayers(), 0);
   }
 
   @Test
-  public void testEquals() {
+  void testEquals() {
     LayeredSliceGenerator sameGenerator = new LayeredSliceGenerator(layers);
-    assertEquals(defaultGenerator, sameGenerator);
-    assertEquals(defaultGenerator.hashCode(), sameGenerator.hashCode());
+    Assertions.assertEquals(defaultGenerator, sameGenerator);
+    Assertions.assertEquals(defaultGenerator.hashCode(), sameGenerator.hashCode());
   }
 
   @Test
-  public void testNotEquals() {
+  void testNotEquals() {
     List<SliceNoiseGenerator> otherLayers = layers;
     otherLayers.add(
         new SliceGenerator(
@@ -151,21 +148,21 @@ public class LayeredSliceGeneratorTest {
             5L,
             isCircularDefault));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testSliceWidth() {
-    assertEquals(defaultSliceWidth, defaultGenerator.getSliceWidth());
+  void testSliceWidth() {
+    Assertions.assertEquals(defaultSliceWidth, defaultGenerator.getSliceWidth());
   }
 
   @Test
-  public void testSliceHeight() {
-    assertEquals(defaultSliceHeight, defaultGenerator.getSliceHeight());
+  void testSliceHeight() {
+    Assertions.assertEquals(defaultSliceHeight, defaultGenerator.getSliceHeight());
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     ToStringVerifier.forClass(LayeredSliceGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
@@ -175,22 +172,22 @@ public class LayeredSliceGeneratorTest {
   }
 
   @Test
-  public void testNonCircularity() {
-    assertFalse(defaultGenerator.isCircular());
+  void testNonCircularity() {
+    Assertions.assertFalse(defaultGenerator.isCircular());
   }
 
   @Test
-  public void testMixCircularity() {
+  void testMixCircularity() {
     List<SliceNoiseGenerator> otherLayers = layers;
     otherLayers.add(
         new SliceGenerator(
             1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
-    assertFalse(otherGenerator.isCircular());
+    Assertions.assertFalse(otherGenerator.isCircular());
   }
 
   @Test
-  public void testCircular() {
+  void testCircular() {
     List<SliceNoiseGenerator> otherLayers = new ArrayList<>(3);
     otherLayers.add(
         new SliceGenerator(
@@ -202,6 +199,6 @@ public class LayeredSliceGeneratorTest {
         new SliceGenerator(
             1.0 / 25, 1.0 / 25, 1.0 / 25, defaultSliceWidth, defaultSliceHeight, 0.005, 1L, true));
     LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
-    assertTrue(otherGenerator.isCircular());
+    Assertions.assertTrue(otherGenerator.isCircular());
   }
 }

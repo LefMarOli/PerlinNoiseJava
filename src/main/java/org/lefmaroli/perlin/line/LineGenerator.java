@@ -29,7 +29,7 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
     assertValidValues(parameterNames, lineStepSize, lineLength);
     this.lineLength = lineLength;
     this.lineStepSize = correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
-    this.lineAngleFactor = lineStepSize * (2 * Math.PI);
+    this.lineAngleFactor = this.lineStepSize * (2 * Math.PI);
     if (isCircular) {
       perlin = new PerlinNoise(3, randomSeed);
       perlinData = new double[3];

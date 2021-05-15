@@ -1,40 +1,38 @@
 package org.lefmaroli.perlin.point;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
-public class PointNoiseGeneratorBuilderTest {
+class PointNoiseGeneratorBuilderTest {
 
   @Test
-  public void testBuildNoisePointNotNull() throws NoiseBuilderException {
+  void testBuildNoisePointNotNull() throws NoiseBuilderException {
     PointNoiseGenerator noisePointGenerator = new PointNoiseGeneratorBuilder().build();
-    assertNotNull(noisePointGenerator);
+    Assertions.assertNotNull(noisePointGenerator);
   }
 
   @Test
-  public void testBuildNoisePointCreateSameFromSameBuilder() throws NoiseBuilderException {
+  void testBuildNoisePointCreateSameFromSameBuilder() throws NoiseBuilderException {
     PointNoiseGeneratorBuilder pointNoiseGeneratorBuilder = new PointNoiseGeneratorBuilder();
     PointNoiseGenerator noisePointGenerator = pointNoiseGeneratorBuilder.build();
     PointNoiseGenerator noisePointGenerator2 = pointNoiseGeneratorBuilder.build();
-    assertNotNull(noisePointGenerator2);
-    assertEquals(noisePointGenerator, noisePointGenerator2);
+    Assertions.assertNotNull(noisePointGenerator2);
+    Assertions.assertEquals(noisePointGenerator, noisePointGenerator2);
   }
 
   @Test
-  public void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
+  void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
     DoubleGenerator noiseStepSizeGenerator = new DoubleGenerator(1.0 / 200, 2.0);
     DoubleGenerator amplitudeGenerator = new DoubleGenerator(1.0, 0.95);
     int numLayers = 4;
@@ -61,6 +59,7 @@ public class PointNoiseGeneratorBuilderTest {
       chart.set(c);
     }
 
+    int[] placeholder = new int[requestedPoints-1];
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
             () -> {
@@ -83,7 +82,7 @@ public class PointNoiseGeneratorBuilderTest {
                                 label));
               }
               try {
-                AssertUtils.valuesContinuousInArray(line);
+                AssertUtils.valuesContinuousInArray(line, placeholder);
               } catch (AssertionError e) {
                 LogManager.getLogger(this.getClass())
                     .error("Error with line smoothness for point generator " + generator, e);

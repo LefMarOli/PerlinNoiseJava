@@ -1,10 +1,5 @@
 package org.lefmaroli.perlin.slice;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
@@ -13,13 +8,15 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.function.Supplier;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
-public class SliceGeneratorTest {
+class SliceGeneratorTest {
 
   private static final double noiseStepSize = 1.0 / 10.0;
   private static final double widthStepSize = 1.0 / 100;
@@ -31,8 +28,36 @@ public class SliceGeneratorTest {
   private final long randomSeed = System.currentTimeMillis();
   private SliceGenerator defaultGenerator;
 
-  @Before
-  public void setup() {
+  private static final ErrorMessageSupplier errorMessageSupplier = new ErrorMessageSupplier();
+
+  private static class ErrorMessageSupplier implements Supplier<String> {
+    private int i;
+    private int j;
+    private double val;
+
+    @Override
+    public String get() {
+      return "Values are equal for i: " + i + ", j: " + j + ", val: " + val;
+    }
+
+    public ErrorMessageSupplier setI(int i) {
+      this.i = i;
+      return this;
+    }
+
+    public ErrorMessageSupplier setJ(int j) {
+      this.j = j;
+      return this;
+    }
+
+    public ErrorMessageSupplier setVal(double val) {
+      this.val = val;
+      return this;
+    }
+  }
+
+  @BeforeEach
+  void setup() {
     defaultGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -45,112 +70,127 @@ public class SliceGeneratorTest {
             isCircular);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidNoiseStepSize() {
-    new SliceGenerator(
-        -5,
-        widthStepSize,
-        heightStepSize,
-        sliceWidth,
-        sliceHeight,
-        maxAmplitude,
-        randomSeed,
-        isCircular);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidWidthStepSize() {
-    new SliceGenerator(
-        noiseStepSize,
-        -4,
-        heightStepSize,
-        sliceWidth,
-        sliceHeight,
-        maxAmplitude,
-        randomSeed,
-        isCircular);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidHeightStepSize() {
-    new SliceGenerator(
-        noiseStepSize,
-        widthStepSize,
-        -5,
-        sliceWidth,
-        sliceHeight,
-        maxAmplitude,
-        randomSeed,
-        isCircular);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidSliceWidth() {
-    new SliceGenerator(
-        noiseStepSize,
-        widthStepSize,
-        heightStepSize,
-        -9,
-        sliceHeight,
-        maxAmplitude,
-        randomSeed,
-        isCircular);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testCreateInvalidSliceHeight() {
-    new SliceGenerator(
-        noiseStepSize,
-        widthStepSize,
-        heightStepSize,
-        sliceWidth,
-        -7,
-        maxAmplitude,
-        randomSeed,
-        isCircular);
+  @Test
+  void testCreateInvalidNoiseStepSize() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new SliceGenerator(
+                -5,
+                widthStepSize,
+                heightStepSize,
+                sliceWidth,
+                sliceHeight,
+                maxAmplitude,
+                randomSeed,
+                isCircular));
   }
 
   @Test
-  public void getNextSlicesCorrectSize() {
+  void testCreateInvalidWidthStepSize() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new SliceGenerator(
+                noiseStepSize,
+                -4,
+                heightStepSize,
+                sliceWidth,
+                sliceHeight,
+                maxAmplitude,
+                randomSeed,
+                isCircular));
+  }
+
+  @Test
+  void testCreateInvalidHeightStepSize() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new SliceGenerator(
+                noiseStepSize,
+                widthStepSize,
+                -5,
+                sliceWidth,
+                sliceHeight,
+                maxAmplitude,
+                randomSeed,
+                isCircular));
+  }
+
+  @Test
+  void testCreateInvalidSliceWidth() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new SliceGenerator(
+                noiseStepSize,
+                widthStepSize,
+                heightStepSize,
+                -9,
+                sliceHeight,
+                maxAmplitude,
+                randomSeed,
+                isCircular));
+  }
+
+  @Test
+  void testCreateInvalidSliceHeight() {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new SliceGenerator(
+                noiseStepSize,
+                widthStepSize,
+                heightStepSize,
+                sliceWidth,
+                -7,
+                maxAmplitude,
+                randomSeed,
+                isCircular));
+  }
+
+  @Test
+  void getNextSlicesCorrectSize() {
     double[][] noiseData = defaultGenerator.getNext();
-    assertEquals(sliceWidth, noiseData.length, 0);
+    Assertions.assertEquals(sliceWidth, noiseData.length, 0);
     for (double[] line : noiseData) {
-      assertEquals(sliceHeight, line.length, 0);
+      Assertions.assertEquals(sliceHeight, line.length, 0);
     }
   }
 
   @Test
-  public void testGetNoiseStepSize() {
-    assertEquals(noiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-9);
+  void testGetNoiseStepSize() {
+    Assertions.assertEquals(noiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-9);
   }
 
   @Test
-  public void testGetWidthStepSize() {
-    assertEquals(widthStepSize, defaultGenerator.getWidthStepSize(), 1E-9);
+  void testGetWidthStepSize() {
+    Assertions.assertEquals(widthStepSize, defaultGenerator.getWidthStepSize(), 1E-9);
   }
 
   @Test
-  public void testGetHeightStepSize() {
-    assertEquals(heightStepSize, defaultGenerator.getHeightStepSize(), 1E-9);
+  void testGetHeightStepSize() {
+    Assertions.assertEquals(heightStepSize, defaultGenerator.getHeightStepSize(), 1E-9);
   }
 
   @Test
-  public void testGetSliceWidth() {
-    assertEquals(sliceWidth, defaultGenerator.getSliceWidth());
+  void testGetSliceWidth() {
+    Assertions.assertEquals(sliceWidth, defaultGenerator.getSliceWidth());
   }
 
   @Test
-  public void testGetSliceHeight() {
-    assertEquals(sliceHeight, defaultGenerator.getSliceHeight());
+  void testGetSliceHeight() {
+    Assertions.assertEquals(sliceHeight, defaultGenerator.getSliceHeight());
   }
 
   @Test
-  public void testGetMaxAmplitude() {
-    assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
+  void testGetMaxAmplitude() {
+    Assertions.assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
   }
 
   @Test
-  public void testHugeSlice() {
+  void testHugeSlice() {
     SliceGenerator sliceGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -161,22 +201,23 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotNull(sliceGenerator);
+    Assertions.assertNotNull(sliceGenerator);
   }
 
   @Test
-  public void testValuesBounded() {
+  void testValuesBounded() {
     double[][] slice = defaultGenerator.getNext();
     for (double[] line : slice) {
       for (double value : line) {
-        assertTrue("Value " + value + "not bounded by 0", value > 0.0);
-        assertTrue("Value " + value + "not bounded by max amplitude", value < maxAmplitude);
+        Assertions.assertTrue(value > 0.0, "Value " + value + "not bounded by 0");
+        Assertions.assertTrue(
+            value < maxAmplitude, "Value " + value + "not bounded by max amplitude");
       }
     }
   }
 
   @Test
-  public void testValuesMultipliedByMaxAmplitude() {
+  void testValuesMultipliedByMaxAmplitude() {
     Random random = new Random(System.currentTimeMillis());
     double newMaxAmplitude = random.nextDouble() * 100;
     SliceGenerator amplifiedLayer =
@@ -201,13 +242,13 @@ public class SliceGeneratorTest {
 
     for (int i = 0; i < slice.length; i++) {
       for (int j = 0; j < slice[0].length; j++) {
-        assertEquals(slice[i][j], amplifiedSlice[i][j], 1e-18);
+        Assertions.assertEquals(slice[i][j], amplifiedSlice[i][j], 1e-18);
       }
     }
   }
 
   @Test
-  public void testCreateSameGeneratedSlices() {
+  void testCreateSameGeneratedSlices() {
     SliceGenerator same =
         new SliceGenerator(
             noiseStepSize,
@@ -221,17 +262,17 @@ public class SliceGeneratorTest {
     double[][] nextSegment1 = defaultGenerator.getNext();
     double[][] nextSegment2 = same.getNext();
 
-    assertEquals(nextSegment1.length, nextSegment2.length, 0);
-    assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
+    Assertions.assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    Assertions.assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
       for (int j = 0; j < nextSegment1[0].length; j++) {
-        assertEquals(nextSegment1[i][j], nextSegment2[i][j], 0.0);
+        Assertions.assertEquals(nextSegment1[i][j], nextSegment2[i][j], 0.0);
       }
     }
   }
 
   @Test
-  public void testCreateDifferentGeneratedSlicesForDifferentRandomSeed() {
+  void testCreateDifferentGeneratedSlicesForDifferentRandomSeed() {
     SliceGenerator diffRandSeed =
         new SliceGenerator(
             noiseStepSize,
@@ -245,22 +286,22 @@ public class SliceGeneratorTest {
     double[][] nextSegment1 = defaultGenerator.getNext();
     double[][] nextSegment2 = diffRandSeed.getNext();
 
-    assertEquals(nextSegment1.length, nextSegment2.length, 0);
-    assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
+    Assertions.assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    Assertions.assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
       for (int j = 0; j < nextSegment1[0].length; j++) {
         double val = nextSegment1[i][j];
-        assertNotEquals(
-            "Values are equal for i: " + i + ", j: " + j + ", val: " + val,
-            val,
-            nextSegment2[i][j],
-            0.0);
+        Assertions.assertNotEquals(val, nextSegment2[i][j], 0.0, getErrorMessage(i, j, val));
       }
     }
   }
 
+  private static Supplier<String> getErrorMessage(int i, int j, double val) {
+    return errorMessageSupplier.setI(i).setJ(j).setVal(val);
+  }
+
   @Test
-  public void testEquals() {
+  void testEquals() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -271,12 +312,12 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertEquals(defaultGenerator, otherGenerator);
-    assertEquals(defaultGenerator.hashCode(), otherGenerator.hashCode());
+    Assertions.assertEquals(defaultGenerator, otherGenerator);
+    Assertions.assertEquals(defaultGenerator.hashCode(), otherGenerator.hashCode());
   }
 
   @Test
-  public void testNotEqualsNotSameNoiseInterpolationPoints() {
+  void testNotEqualsNotSameNoiseInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize + 1.0 / 6,
@@ -287,11 +328,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameWidthInterpolationPoints() {
+  void testNotEqualsNotSameWidthInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -302,11 +343,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameHeightInterpolationPoints() {
+  void testNotEqualsNotSameHeightInterpolationPoints() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -317,11 +358,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameSliceWidth() {
+  void testNotEqualsNotSameSliceWidth() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -332,11 +373,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameSliceHeight() {
+  void testNotEqualsNotSameSliceHeight() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -347,11 +388,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameMaxAmplitude() {
+  void testNotEqualsNotSameMaxAmplitude() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -362,11 +403,11 @@ public class SliceGeneratorTest {
             maxAmplitude * 1.5,
             randomSeed,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameRandomSeed() {
+  void testNotEqualsNotSameRandomSeed() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -377,11 +418,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed + 5L,
             isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testNotEqualsNotSameCircularity() {
+  void testNotEqualsNotSameCircularity() {
     SliceGenerator otherGenerator =
         new SliceGenerator(
             noiseStepSize,
@@ -392,11 +433,11 @@ public class SliceGeneratorTest {
             maxAmplitude,
             randomSeed,
             !isCircular);
-    assertNotEquals(defaultGenerator, otherGenerator);
+    Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
   @Test
-  public void testToString() {
+  void testToString() {
     ToStringVerifier.forClass(SliceGenerator.class)
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
@@ -413,7 +454,7 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testSliceCircularity() {
+  void testSliceCircularity() {
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize,
@@ -437,7 +478,8 @@ public class SliceGeneratorTest {
         for (int j = 0; j < numInterpolationPointsPerCycleInWidth; j++) {
           double ref = slice[j][row];
           for (int k = 1; k < numCyclesInWidth; k++) {
-            assertEquals(ref, slice[k * numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
+            Assertions.assertEquals(
+                ref, slice[k * numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
           }
         }
       }
@@ -446,7 +488,8 @@ public class SliceGeneratorTest {
         for (int j = 0; j < numInterpolationPointsPerCycleInHeight; j++) {
           double ref = slice[column][j];
           for (int k = 1; k < numCyclesInHeight; k++) {
-            assertEquals(ref, slice[column][k * numInterpolationPointsPerCycleInHeight + j], 1E-12);
+            Assertions.assertEquals(
+                ref, slice[column][k * numInterpolationPointsPerCycleInHeight + j], 1E-12);
           }
         }
       }
@@ -454,7 +497,7 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testSmoothCircularity() { // NOSONAR
+  void testSmoothCircularity() { // NOSONAR
     SliceGenerator generator =
         new SliceGenerator(
             noiseStepSize, 1 / 200.0, 1 / 250.0, 150, 150, 1.0, System.currentTimeMillis(), true);
@@ -476,6 +519,10 @@ public class SliceGeneratorTest {
       im.get().setVisible();
     }
 
+    double[] column = new double[generator.getSliceHeight()];
+    int[] rowPlaceholder = new int[generator.getSliceWidth() - 1];
+    int[] columnPlaceholder = new int[generator.getSliceHeight() - 1];
+
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
             () -> {
@@ -492,11 +539,11 @@ public class SliceGeneratorTest {
               if (isDisplaySupported) {
                 im.get().updateImage(patched);
               }
-              double[] column = new double[newSlices[0].length];
+
               for (double[] row : newSlices) {
-                AssertUtils.valuesContinuousInArray(row);
+                AssertUtils.valuesContinuousInArray(row, rowPlaceholder);
                 System.arraycopy(row, 0, column, 0, row.length);
-                AssertUtils.valuesContinuousInArray(column);
+                AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
               }
             },
             200,
@@ -510,7 +557,7 @@ public class SliceGeneratorTest {
   }
 
   @Test
-  public void testSmoothVisuals() { // NOSONAR
+  void testSmoothVisuals() { // NOSONAR
     int sliceWidth = 200;
     int sliceHeight = 200;
     SliceGenerator generator =
@@ -532,6 +579,9 @@ public class SliceGeneratorTest {
       im.get().setVisible();
     }
 
+    double[] column = new double[generator.getSliceHeight()];
+    int[] rowPlaceholder = new int[generator.getSliceWidth() - 1];
+    int[] columnPlaceholder = new int[generator.getSliceHeight() - 1];
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
             () -> {
@@ -542,11 +592,11 @@ public class SliceGeneratorTest {
               if (isDisplaySupported) {
                 im.get().updateImage(next);
               }
-              double[] column = new double[next[0].length];
+
               for (double[] row : next) {
-                AssertUtils.valuesContinuousInArray(row);
+                AssertUtils.valuesContinuousInArray(row, rowPlaceholder);
                 System.arraycopy(row, 0, column, 0, row.length);
-                AssertUtils.valuesContinuousInArray(column);
+                AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
               }
             },
             100,

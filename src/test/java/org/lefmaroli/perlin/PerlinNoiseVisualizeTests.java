@@ -6,18 +6,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingUtilities;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
-public class PerlinNoiseVisualizeTests {
+class PerlinNoiseVisualizeTests {
 
   private final long randomSeed = System.currentTimeMillis();
 
   @Test
-  public void test2D() { // NOSONAR
+  void test2D() { // NOSONAR
     PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
     int size = 500;
     double[] values = new double[size];
@@ -38,6 +38,8 @@ public class PerlinNoiseVisualizeTests {
       c.setYAxisRange(0.0, 1.0);
       chart.set(c);
     }
+
+    int[] placeholder = new int[values.length-1];
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
@@ -60,7 +62,7 @@ public class PerlinNoiseVisualizeTests {
                                 },
                                 label));
               }
-              AssertUtils.valuesContinuousInArray(values);
+              AssertUtils.valuesContinuousInArray(values, placeholder);
             },
             30,
             TimeUnit.MILLISECONDS,
@@ -73,7 +75,7 @@ public class PerlinNoiseVisualizeTests {
   }
 
   @Test
-  public void test3D() { // NOSONAR
+  void test3D() { // NOSONAR
     PerlinNoise perlinNoise = new PerlinNoise(3, randomSeed);
     final int size = 200;
     double[][] values = new double[size][size];
@@ -92,6 +94,8 @@ public class PerlinNoiseVisualizeTests {
       im.set(new SimpleGrayScaleImage(values, 5));
       im.get().setVisible();
     }
+
+    int[] placeholder = new int[size - 1];
 
     AtomicInteger currentZIndex = new AtomicInteger(0);
     CompletableFuture<Void> completed =
@@ -113,9 +117,9 @@ public class PerlinNoiseVisualizeTests {
               }
               double[] column = new double[values[0].length];
               for (double[] row : values) {
-                AssertUtils.valuesContinuousInArray(row);
+                AssertUtils.valuesContinuousInArray(row, placeholder);
                 System.arraycopy(row, 0, column, 0, row.length);
-                AssertUtils.valuesContinuousInArray(column);
+                AssertUtils.valuesContinuousInArray(column, placeholder);
               }
             },
             30,

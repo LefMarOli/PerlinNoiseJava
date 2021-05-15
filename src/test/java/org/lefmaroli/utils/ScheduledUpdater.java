@@ -1,7 +1,6 @@
 package org.lefmaroli.utils;
 
 import static org.awaitility.Awaitility.waitAtMost;
-import static org.junit.Assert.assertFalse;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -13,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Assertions;
 
 public class ScheduledUpdater {
 
@@ -41,7 +41,7 @@ public class ScheduledUpdater {
     try {
       Awaitility.setDefaultPollInterval(Duration.ofMillis(10));
       waitAtMost(duration + 1, durationUnit).until(() -> (isDone.get() || hasErrors.get()));
-      assertFalse("Test did not complete without errors:" + error.get(), hasErrors.get());
+      Assertions.assertFalse(hasErrors.get(), ()->"Test did not complete without errors:" + error.get());
     } finally {
       ses.shutdownNow();
       try {

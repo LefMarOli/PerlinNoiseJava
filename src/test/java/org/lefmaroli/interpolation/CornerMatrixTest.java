@@ -1,13 +1,12 @@
 package org.lefmaroli.interpolation;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-public class CornerMatrixTest {
+class CornerMatrixTest {
 
   @Test
-  public void testToString() {
+  void testToString() {
     CornerMatrix matrix = CornerMatrix.getForDimension(2);
     matrix.setValueAtIndices(0.0, 0, 0);
     matrix.setValueAtIndices(1.0, 0, 1);
@@ -19,25 +18,26 @@ public class CornerMatrixTest {
     expected += "[1][0] = " + 2.0 + System.lineSeparator();
     expected += "[1][1] = " + 3.0;
     expected += "}";
-    assertEquals(expected, matrix.toString());
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void cantGetSubMatrixForDimension1() {
-    CornerMatrix.getForDimension(1).getSubMatrix(0);
+    Assertions.assertEquals(expected, matrix.toString());
   }
 
   @Test
-  public void testGetAtIndices() {
+  void cantGetSubMatrixForDimension1() {
+    CornerMatrix cornerMatrix = CornerMatrix.getForDimension(1);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> cornerMatrix.getSubMatrix(0));
+  }
+
+  @Test
+  void testGetAtIndices() {
     CornerMatrix matrix = CornerMatrix.getForDimension(2);
     matrix.setValueAtIndices(0.0, 0, 0);
     matrix.setValueAtIndices(1.0, 0, 1);
     matrix.setValueAtIndices(2.0, 1, 0);
     matrix.setValueAtIndices(3.0, 1, 1);
 
-    assertEquals(0.0, matrix.get(0, 0), 1E-9);
-    assertEquals(1.0, matrix.get(0, 1), 1E-9);
-    assertEquals(2.0, matrix.get(1, 0), 1E-9);
-    assertEquals(3.0, matrix.get(1, 1), 1E-9);
+    Assertions.assertEquals(0.0, matrix.get(0, 0), 1E-9);
+    Assertions.assertEquals(1.0, matrix.get(0, 1), 1E-9);
+    Assertions.assertEquals(2.0, matrix.get(1, 0), 1E-9);
+    Assertions.assertEquals(3.0, matrix.get(1, 1), 1E-9);
   }
 }

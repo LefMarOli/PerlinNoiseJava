@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.perlin.line.LineNoiseGenerator;
@@ -21,7 +21,7 @@ import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
 import org.lefmaroli.perlin.slice.SliceNoiseGenerator;
 import org.lefmaroli.perlin.slice.SliceNoiseGeneratorBuilder;
 
-public class PerlinNoisePerformanceTest {
+class PerlinNoisePerformanceTest {
 
   private final Logger logger = LogManager.getLogger(PerlinNoisePerformanceTest.class);
 
@@ -59,7 +59,7 @@ public class PerlinNoisePerformanceTest {
   }
 
   @Test
-  public void benchmarkCorePerformance() {
+  void benchmarkCorePerformance() {
     PerlinNoise perlinNoise = new PerlinNoise(1, System.currentTimeMillis());
     testPerformance(
         100000,
@@ -69,7 +69,7 @@ public class PerlinNoisePerformanceTest {
   }
 
   @Test
-  public void benchmarkPointGeneratorPerformance() throws NoiseBuilderException {
+  void benchmarkPointGeneratorPerformance() throws NoiseBuilderException {
     PointNoiseGenerator noiseGenerator =
         new PointNoiseGeneratorBuilder()
             .withNumberOfLayers(3)
@@ -85,7 +85,7 @@ public class PerlinNoisePerformanceTest {
   }
 
   @Test
-  public void benchmarkLineGeneratorPerformance() throws NoiseBuilderException {
+  void benchmarkLineGeneratorPerformance() throws NoiseBuilderException {
     LineNoiseGenerator noiseGenerator =
         new LineNoiseGeneratorBuilder(200)
             .withNumberOfLayers(3)
@@ -99,7 +99,7 @@ public class PerlinNoisePerformanceTest {
   }
 
   @Test
-  public void benchmarkSliceGeneratorPerformance() throws NoiseBuilderException {
+  void benchmarkSliceGeneratorPerformance() throws NoiseBuilderException {
     SliceNoiseGenerator noiseGenerator =
         new SliceNoiseGeneratorBuilder(100, 100)
             .withNumberOfLayers(3)

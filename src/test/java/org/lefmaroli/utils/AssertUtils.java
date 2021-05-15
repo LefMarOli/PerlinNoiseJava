@@ -1,14 +1,15 @@
 package org.lefmaroli.utils;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
+import java.util.function.Supplier;
+import org.junit.jupiter.api.Assertions;
 
 public class AssertUtils {
 
-  public static void valuesContinuousInArray(double[] array) {
+  private static final ErrorMessageSupplier errorMessageSupplier = new ErrorMessageSupplier();
+
+  public static void valuesContinuousInArray(double[] array, int[] signs) {
     int windowWidth = 2;
-    int[] signs = new int[array.length - 1];
     for (int i = 1; i < array.length; i++) {
       if (Math.abs(array[i] - array[i - 1]) < 1E-4) {
         signs[i - 1] = 0;
@@ -36,30 +37,53 @@ public class AssertUtils {
         }
       }
       if (transitionPoint != -1) {
-        double[] subArray = Arrays.copyOfRange(array, i - windowWidth, i + windowWidth + 1);
         for (int j = i - windowWidth + 1; j < transitionPoint; j++) {
           if (signs[j] != 0) {
-            assertEquals(
-                "Array does not have continuous values:"
-                    + Arrays.toString(subArray)
-                    + " around i="
-                    + i,
-                ref,
-                signs[j]);
+            Assertions.assertEquals(ref, signs[j], getErrorMessage(i, windowWidth, array));
           }
         }
         for (int j = transitionPoint + 1; j < i + windowWidth; j++) {
           if (signs[j] != 0) {
-            assertEquals(
-                "Array does not have continuous values:"
-                    + Arrays.toString(subArray)
-                    + " around i="
-                    + i,
-                signs[transitionPoint],
-                signs[j]);
+            Assertions.assertEquals(
+                signs[transitionPoint], signs[j], getErrorMessage(i, windowWidth, array));
           }
         }
       }
+    }
+  }
+
+  private static Supplier<String> getErrorMessage(int index, int windowWidth, double [] array){
+    return errorMessageSupplier.setIndex(index).setWindowWidth(windowWidth).setArray(array);
+  }
+
+  private static class ErrorMessageSupplier implements Supplier<String> {
+
+    private double[] array;
+    private int index;
+    private int windowWidth;
+
+    @Override
+    public String get() {
+      double[] subArray = Arrays.copyOfRange(array, index - windowWidth, index + windowWidth + 1);
+      return "Array does not have continuous values:"
+          + Arrays.toString(subArray)
+          + " around i="
+          + index;
+    }
+
+    public ErrorMessageSupplier setArray(double[] array) {
+      this.array = array;
+      return this;
+    }
+
+    public ErrorMessageSupplier setIndex(int index) {
+      this.index = index;
+      return this;
+    }
+
+    public ErrorMessageSupplier setWindowWidth(int windowWidth) {
+      this.windowWidth = windowWidth;
+      return this;
     }
   }
 }

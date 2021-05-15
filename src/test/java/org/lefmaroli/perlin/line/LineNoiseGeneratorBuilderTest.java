@@ -1,41 +1,39 @@
 package org.lefmaroli.perlin.line;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
-public class LineNoiseGeneratorBuilderTest {
+class LineNoiseGeneratorBuilderTest {
 
   private static final int lineLength = 800;
 
   @Test
-  public void testBuildNoiseLineNotNull() throws NoiseBuilderException {
+  void testBuildNoiseLineNotNull() throws NoiseBuilderException {
     LineNoiseGenerator noiseLineGenerator = new LineNoiseGeneratorBuilder(lineLength).build();
-    assertNotNull(noiseLineGenerator);
+    Assertions.assertNotNull(noiseLineGenerator);
   }
 
   @Test
-  public void testBuildNoiseLineCreateSameFromSameBuilder() throws NoiseBuilderException {
+  void testBuildNoiseLineCreateSameFromSameBuilder() throws NoiseBuilderException {
     LineNoiseGeneratorBuilder lineNoiseGeneratorBuilder = new LineNoiseGeneratorBuilder(lineLength);
     LineNoiseGenerator noisePointGenerator = lineNoiseGeneratorBuilder.build();
     LineNoiseGenerator noisePointGenerator2 = lineNoiseGeneratorBuilder.build();
-    assertNotNull(noisePointGenerator2);
-    assertEquals(noisePointGenerator, noisePointGenerator2);
+    Assertions.assertNotNull(noisePointGenerator2);
+    Assertions.assertEquals(noisePointGenerator, noisePointGenerator2);
   }
 
   @Test
-  public void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
+  void testSmoothVisuals() throws NoiseBuilderException { // NOSONAR
     double lineStepSizeInitialValue = 1.0 / 50;
     DoubleGenerator lineStepSizeGenerator =
         new DoubleGenerator(lineStepSizeInitialValue, 1.0 / 0.9);
@@ -64,7 +62,9 @@ public class LineNoiseGeneratorBuilderTest {
       im.set(new SimpleGrayScaleImage(image, 5));
       im.get().setVisible();
     }
-
+    double[] row = new double[image.length];
+    int[] placeholder = new int[lineLength - 1];
+    int[] rowPlaceholder = new int[image.length - 1];
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
             () -> {
@@ -78,11 +78,11 @@ public class LineNoiseGeneratorBuilderTest {
               System.arraycopy(nextLine, 0, image[requestedLines - 1], 0, lineLength);
               if (isDisplaySupported) im.get().updateImage(image);
               try {
-                AssertUtils.valuesContinuousInArray(nextLine);
-                double[] row = new double[image.length];
+                AssertUtils.valuesContinuousInArray(nextLine, placeholder);
+
                 for (int i = 0; i < lineLength; i++) {
                   System.arraycopy(image[i], 0, row, 0, image.length);
-                  AssertUtils.valuesContinuousInArray(row);
+                  AssertUtils.valuesContinuousInArray(row, rowPlaceholder);
                 }
               } catch (AssertionError e) {
                 LogManager.getLogger(this.getClass())
