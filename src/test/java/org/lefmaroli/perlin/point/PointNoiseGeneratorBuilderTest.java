@@ -59,7 +59,7 @@ class PointNoiseGeneratorBuilderTest {
       chart.set(c);
     }
 
-    int[] placeholder = new int[requestedPoints-1];
+    int[] placeholder = new int[requestedPoints - 1];
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(
             () -> {

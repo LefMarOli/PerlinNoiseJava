@@ -32,7 +32,8 @@ class LayeredPointGeneratorTest {
   @Test
   void testCreateWithNoLayers() {
     ArrayList<PointNoiseGenerator> layers = new ArrayList<>(5);
-    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredPointGenerator(layers));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new LayeredPointGenerator(layers));
   }
 
   @Test

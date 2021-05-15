@@ -56,7 +56,7 @@ class LayeredLineGeneratorTest {
   @Test
   void testCreateWithNoLayers() {
     ArrayList<LineNoiseGenerator> layers = new ArrayList<>(5);
-    Assertions.assertThrows(IllegalArgumentException.class, ()->new LayeredLineGenerator(layers));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> new LayeredLineGenerator(layers));
   }
 
   @Test
@@ -70,7 +70,8 @@ class LayeredLineGeneratorTest {
             0.1225,
             System.currentTimeMillis(),
             isCircularDefault));
-    Assertions.assertThrows(IllegalArgumentException.class, ()->new LayeredLineGenerator(newLayerSet));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new LayeredLineGenerator(newLayerSet));
   }
 
   @Test

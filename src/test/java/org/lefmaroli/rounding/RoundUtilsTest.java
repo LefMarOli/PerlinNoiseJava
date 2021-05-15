@@ -60,7 +60,8 @@ class RoundUtilsTest {
   @Test
   void testRoundDownToPowerOfTwoBiggerNumber() {
     for (int i = 1; i < testList.size(); i++) {
-      Assertions.assertEquals(testList.get(i), RoundUtils.floorToPowerOfTwo(testList.get(i) + 1), 0);
+      Assertions.assertEquals(
+          testList.get(i), RoundUtils.floorToPowerOfTwo(testList.get(i) + 1), 0);
     }
   }
 

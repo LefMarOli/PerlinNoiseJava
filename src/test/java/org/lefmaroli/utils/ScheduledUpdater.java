@@ -41,7 +41,8 @@ public class ScheduledUpdater {
     try {
       Awaitility.setDefaultPollInterval(Duration.ofMillis(10));
       waitAtMost(duration + 1, durationUnit).until(() -> (isDone.get() || hasErrors.get()));
-      Assertions.assertFalse(hasErrors.get(), ()->"Test did not complete without errors:" + error.get());
+      Assertions.assertFalse(
+          hasErrors.get(), () -> "Test did not complete without errors:" + error.get());
     } finally {
       ses.shutdownNow();
       try {

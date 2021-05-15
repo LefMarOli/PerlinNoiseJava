@@ -52,7 +52,7 @@ public class AssertUtils {
     }
   }
 
-  private static Supplier<String> getErrorMessage(int index, int windowWidth, double [] array){
+  private static Supplier<String> getErrorMessage(int index, int windowWidth, double[] array) {
     return errorMessageSupplier.setIndex(index).setWindowWidth(windowWidth).setArray(array);
   }
 

@@ -62,7 +62,8 @@ class LayeredSliceGeneratorTest {
   @Test
   void testCreateWithNoLayers() {
     ArrayList<SliceNoiseGenerator> layers = new ArrayList<>(5);
-    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredSliceGenerator(layers));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new LayeredSliceGenerator(layers));
   }
 
   @Test
@@ -78,7 +79,8 @@ class LayeredSliceGeneratorTest {
             0.1225,
             System.currentTimeMillis(),
             isCircularDefault));
-    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredSliceGenerator(newLayerSet));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new LayeredSliceGenerator(newLayerSet));
   }
 
   @Test
@@ -94,7 +96,8 @@ class LayeredSliceGeneratorTest {
             0.1225,
             System.currentTimeMillis(),
             isCircularDefault));
-    Assertions.assertThrows(IllegalArgumentException.class, ()-> new LayeredSliceGenerator(newLayerSet));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new LayeredSliceGenerator(newLayerSet));
   }
 
   @Test

@@ -39,7 +39,7 @@ class PerlinNoiseVisualizeTests {
       chart.set(c);
     }
 
-    int[] placeholder = new int[values.length-1];
+    int[] placeholder = new int[values.length - 1];
 
     CompletableFuture<Void> completed =
         ScheduledUpdater.updateAtRateForDuration(

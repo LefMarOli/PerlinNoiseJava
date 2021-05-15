@@ -67,8 +67,8 @@ class PointGeneratorTest {
     PointGenerator sameLayer = new PointGenerator(noiseStepSize, 1.0, randomSeed + 1);
     for (int i = 0; i < expectedCount; i++) {
       Double val = defaultGenerator.getNext();
-      Assertions.assertNotEquals(val, sameLayer.getNext(),
-          "Values are equal for i: " + i + ", value: " + val);
+      Assertions.assertNotEquals(
+          val, sameLayer.getNext(), "Values are equal for i: " + i + ", value: " + val);
     }
   }
 

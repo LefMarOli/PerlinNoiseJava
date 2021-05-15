@@ -14,7 +14,8 @@ class AbstractNoiseGeneratorBuilderTest {
     Assertions.assertNotNull(noisePointBuilder.withRandomSeed(0L));
     Assertions.assertNotNull(noisePointBuilder.withNumberOfLayers(5));
     Assertions.assertNotNull(noisePointBuilder.withAmplitudeGenerator(new DoubleGenerator(1, 1.0)));
-    Assertions.assertNotNull(noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
+    Assertions.assertNotNull(
+        noisePointBuilder.withNoiseStepSizeGenerator(new DoubleGenerator(1, 1.0)));
   }
 
   @Test
