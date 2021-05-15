@@ -79,21 +79,4 @@ class PerlinNoiseTest {
       }
     }
   }
-
-  @Test
-  void testValuesContinuity() {
-    PerlinNoise perlin = new PerlinNoise(1, randomSeed);
-    int size = 1024;
-    double[] values = new double[size];
-    double stepSize = 0.00001;
-    for (int i = 0; i < values.length; i++) {
-      values[i] = perlin.getFor(i * stepSize);
-    }
-
-    for (int i = 0; i < size - 2; i++) {
-      double mu = values[i] - values[i + 1];
-      double nextMu = values[i + 1] - values[i + 2];
-      Assertions.assertEquals(mu, nextMu, stepSize);
-    }
-  }
 }

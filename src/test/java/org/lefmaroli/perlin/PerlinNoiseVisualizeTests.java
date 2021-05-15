@@ -22,7 +22,7 @@ class PerlinNoiseVisualizeTests {
     int size = 500;
     double[] values = new double[size];
     double stepSizeX = 0.01;
-    double stepSizeY = 0.001;
+    double stepSizeY = 0.01;
     for (int i = 0; i < size; i++) {
       values[i] = perlinNoise.getFor(0 * stepSizeX, i * stepSizeY);
     }

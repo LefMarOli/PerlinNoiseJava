@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
@@ -10,8 +11,7 @@ import org.lefmaroli.vector.VectorMultiD;
 public class PerlinNoise {
 
   private static final double MAX_VALUE_VECTOR_PRODUCT = Math.sqrt(2.0) / 2.0;
-  private static final Map<Long, Map<Integer, VectorMultiD[]>> BOUNDS_MAP =
-      new ConcurrentHashMap<>(1);
+  private static final Map<Integer, VectorMultiD[]> BOUNDS_MAP = new ConcurrentHashMap<>(5);
   private final int numberOfBoundsPerDimension;
   private final int[] boundsIndicesMultipliers;
   private final double[] distancesArray;
@@ -20,17 +20,18 @@ public class PerlinNoise {
   private final int[] indicesArray;
   private final double[] cornerDistanceArray;
   private final int dimension;
-  private final Long randomSeed;
+  private final int randomStartingOffset;
 
   public PerlinNoise(int dimension, long randomSeed) {
     this.dimension = dimension;
-    this.randomSeed = randomSeed;
     distancesArray = new double[dimension];
     cornerMatrix = CornerMatrix.getForDimension(dimension);
     indexIntegerParts = new int[dimension];
     indicesArray = new int[dimension];
     cornerDistanceArray = new double[dimension];
     numberOfBoundsPerDimension = PerlinNoise.findNumberOfBoundsForDim(dimension);
+    randomStartingOffset =
+        new Random(randomSeed).nextInt(Integer.MAX_VALUE - (numberOfBoundsPerDimension));
     boundsIndicesMultipliers = new int[dimension];
     for (var i = 0; i < dimension; i++) {
       boundsIndicesMultipliers[i] = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, i);
@@ -43,9 +44,7 @@ public class PerlinNoise {
       throw new IllegalArgumentException(
           "Dimension " + dimension + " not supported, max dimension is 5");
     }
-    BOUNDS_MAP.putIfAbsent(seed, new ConcurrentHashMap<>(1));
-    Map<Integer, VectorMultiD[]> dimensionToBoundsMap = BOUNDS_MAP.get(seed);
-    dimensionToBoundsMap.computeIfAbsent(
+    BOUNDS_MAP.computeIfAbsent(
         dimension,
         dim -> {
           int numberOfBoundsPerDimension = findNumberOfBoundsForDim(dimension);
@@ -91,7 +90,11 @@ public class PerlinNoise {
       throw new IllegalArgumentException(
           "Coordinates length should be the same as the number of dimensions");
     }
-    for (var i = 0; i < dimension; i++) {
+    int firstDimCoordinate = (int) coordinates[0];
+    distancesArray[0] = coordinates[0] - firstDimCoordinate;
+    firstDimCoordinate = (firstDimCoordinate + randomStartingOffset) % numberOfBoundsPerDimension;
+    indexIntegerParts[0] = firstDimCoordinate;
+    for (var i = 1; i < dimension; i++) {
       indexIntegerParts[i] = (int) coordinates[i];
       distancesArray[i] = coordinates[i] - indexIntegerParts[i];
     }
@@ -118,7 +121,7 @@ public class PerlinNoise {
           distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
       if (currentDimension == 1) {
         int boundIndex = getBoundIndexFromIndices();
-        VectorMultiD currentBound = BOUNDS_MAP.get(randomSeed).get(dimension)[boundIndex];
+        VectorMultiD currentBound = BOUNDS_MAP.get(dimension)[boundIndex];
         double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
         cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
       } else {
