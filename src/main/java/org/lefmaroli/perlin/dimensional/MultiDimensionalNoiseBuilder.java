@@ -20,7 +20,7 @@ public abstract class MultiDimensionalNoiseBuilder<
     return self();
   }
 
-  public B withExecutorPool(ExecutorPool executorPool){
+  public B withExecutorPool(ExecutorPool executorPool) {
     this.executorPool = executorPool;
     return self();
   }
@@ -29,7 +29,7 @@ public abstract class MultiDimensionalNoiseBuilder<
     return isCircular;
   }
 
-  protected ExecutorPool getExecutorPool(){
+  protected ExecutorPool getExecutorPool() {
     return executorPool;
   }
 }

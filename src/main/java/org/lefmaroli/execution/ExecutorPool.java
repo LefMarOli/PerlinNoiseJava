@@ -6,24 +6,24 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ExecutorPool implements AutoCloseable{
+public class ExecutorPool implements AutoCloseable {
 
   private static final int DEFAULT_THREADS = 5;
   private final Logger logger;
   private final ExecutorService pool;
 
-  ExecutorPool(String className){
+  ExecutorPool(String className) {
     this(className, Executors.newFixedThreadPool(DEFAULT_THREADS));
   }
 
-  ExecutorPool(String className, ExecutorService service){
+  ExecutorPool(String className, ExecutorService service) {
     this.logger = LogManager.getLogger(className);
     this.pool = service;
   }
 
-//  public <T> Future<T> submit(Runnable r, T type){
-//
-//  }
+  //  public <T> Future<T> submit(Runnable r, T type){
+  //
+  //  }
 
   @Override
   public void close() {

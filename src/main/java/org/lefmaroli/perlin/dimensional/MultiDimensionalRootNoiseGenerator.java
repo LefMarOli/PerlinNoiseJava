@@ -11,10 +11,7 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
   private final boolean isCircular;
 
   protected MultiDimensionalRootNoiseGenerator(
-      double noiseStepSize,
-      double maxAmplitude,
-      long randomSeed,
-      boolean isCircular) {
+      double noiseStepSize, double maxAmplitude, long randomSeed, boolean isCircular) {
     super(noiseStepSize, maxAmplitude, randomSeed);
     this.isCircular = isCircular;
   }

@@ -2,12 +2,9 @@ package org.lefmaroli.perlin;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.lefmaroli.configuration.ConfigurationException;
-import org.lefmaroli.configuration.MissingConfigurationException;
 
 class PerlinNoiseTest {
 
@@ -15,17 +12,14 @@ class PerlinNoiseTest {
 
   @ParameterizedTest(name = "{index} Dim:{0} - {1}")
   @MethodSource("invalidDimensions")
-  void testInvalidDimension(int dimension, String title){
+  void testInvalidDimension(int dimension, String title) {
     long seed = System.currentTimeMillis();
-    Assertions.assertThrows(IllegalArgumentException.class, ()-> new PerlinNoise(dimension, seed));
+    Assertions.assertThrows(IllegalArgumentException.class, () -> new PerlinNoise(dimension, seed));
   }
 
-  private static Stream<Arguments> invalidDimensions(){
+  private static Stream<Arguments> invalidDimensions() {
     return Stream.of(
-        Arguments.of(-1, "negative"),
-        Arguments.of(0, "too little"),
-        Arguments.of(6, "too big")
-    );
+        Arguments.of(-1, "negative"), Arguments.of(0, "too little"), Arguments.of(6, "too big"));
   }
 
   @ParameterizedTest(name = "{index} {0} - {1}")
