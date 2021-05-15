@@ -1,7 +1,6 @@
-package org.lefmaroli.execution;
+package org.lefmaroli.configuration;
 
 import java.util.concurrent.Callable;
-import org.lefmaroli.configuration.ConfigurationLoader;
 
 public abstract class JitterTask<R> implements Callable<R> {
 

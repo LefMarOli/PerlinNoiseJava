@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin.layers;
 
-import org.lefmaroli.execution.JitterTask;
+import org.lefmaroli.configuration.JitterTask;
 import org.lefmaroli.perlin.INoiseGenerator;
 
 public class LayerProcess<N, L extends INoiseGenerator<N>> extends JitterTask<N[]> {

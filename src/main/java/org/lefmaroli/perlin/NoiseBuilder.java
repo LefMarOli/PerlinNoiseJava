@@ -96,9 +96,9 @@ public abstract class NoiseBuilder<
   protected abstract B self();
 
   protected abstract L buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws NoiseBuilderException;
+      List<Double> stepSizes, double layerAmplitude, long randomSeed);
 
-  protected abstract L buildMultipleNoiseLayer(List<L> layers) throws NoiseBuilderException;
+  protected abstract L buildMultipleNoiseLayer(List<L> layers);
 
   private void resetNumberGenerators() {
     amplitudeGenerator.reset();
@@ -122,7 +122,7 @@ public abstract class NoiseBuilder<
   }
 
   private L generateNoiseLayer(int layerNumber, long randomSeed)
-      throws NoiseLayerException, NoiseBuilderException {
+      throws NoiseLayerException {
     List<Double> stepSizesForLayer = getStepSizesForLayer(layerNumber);
     return buildSingleNoiseLayer(stepSizesForLayer, amplitudeGenerator.getNext(), randomSeed);
   }

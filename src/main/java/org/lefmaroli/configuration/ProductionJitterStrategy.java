@@ -1,4 +1,4 @@
-package org.lefmaroli.execution;
+package org.lefmaroli.configuration;
 
 public class ProductionJitterStrategy implements JitterStrategy {
   @Override
