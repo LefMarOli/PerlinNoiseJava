@@ -5,8 +5,9 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
+import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
 
-public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGenerator {
+public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]> implements LineNoiseGenerator {
 
   private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
   private static final List<String> parameterNames = List.of("Line step size", "Line length");
@@ -77,7 +78,6 @@ public class LineGenerator extends RootLineNoiseGenerator implements LineNoiseGe
         + '}';
   }
 
-  @Override
   public double getLineStepSize() {
     return lineStepSize;
   }

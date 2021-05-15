@@ -69,6 +69,16 @@ class PerlinNoisePerformanceTest {
   }
 
   @Test
+  void benchmarkCorePerformance5D() {
+    PerlinNoise perlinNoise = new PerlinNoise(5, System.currentTimeMillis());
+    testPerformance(
+        100000,
+        (i) -> perlinNoise.getFor(i * 0.005, i*0.1, i , i*50.7, i/3.0),
+        Duration.ofMillis(500),
+        "PerlinNoise core benchmark");
+  }
+
+  @Test
   void benchmarkPointGeneratorPerformance() throws NoiseBuilderException {
     PointNoiseGenerator noiseGenerator =
         new PointNoiseGeneratorBuilder()

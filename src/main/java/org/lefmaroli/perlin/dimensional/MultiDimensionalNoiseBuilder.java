@@ -1,5 +1,6 @@
 package org.lefmaroli.perlin.dimensional;
 
+import org.lefmaroli.execution.ExecutorPool;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.NoiseBuilder;
 
@@ -8,6 +9,7 @@ public abstract class MultiDimensionalNoiseBuilder<
     extends NoiseBuilder<N, L, B> {
 
   private boolean isCircular = false;
+  private ExecutorPool executorPool = null;
 
   protected MultiDimensionalNoiseBuilder(int dimensions) {
     super(dimensions);
@@ -18,7 +20,16 @@ public abstract class MultiDimensionalNoiseBuilder<
     return self();
   }
 
+  public B withExecutorPool(ExecutorPool executorPool){
+    this.executorPool = executorPool;
+    return self();
+  }
+
   protected boolean isCircular() {
     return isCircular;
+  }
+
+  protected ExecutorPool getExecutorPool(){
+    return executorPool;
   }
 }

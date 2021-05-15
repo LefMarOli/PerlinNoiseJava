@@ -3,7 +3,6 @@ package org.lefmaroli.perlin;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.random.RandomGenerator;
 import org.lefmaroli.vector.VectorMultiD;
@@ -14,21 +13,16 @@ public class PerlinNoise {
   private static final Map<Integer, VectorMultiD[]> BOUNDS_MAP = new ConcurrentHashMap<>(5);
   private final int numberOfBoundsPerDimension;
   private final int[] boundsIndicesMultipliers;
-  private final double[] distancesArray;
-  private final CornerMatrix cornerMatrix;
-  private final int[] indexIntegerParts;
-  private final int[] indicesArray;
-  private final double[] cornerDistanceArray;
   private final int dimension;
   private final int randomStartingOffset;
+  private final PerlinNoiseDataContainer dataContainer;
 
   public PerlinNoise(int dimension, long randomSeed) {
+    if (dimension > 5 || dimension < 1) {
+      throw new IllegalArgumentException(
+          "Dimension " + dimension + " not supported, max dimension is 5");
+    }
     this.dimension = dimension;
-    distancesArray = new double[dimension];
-    cornerMatrix = CornerMatrix.getForDimension(dimension);
-    indexIntegerParts = new int[dimension];
-    indicesArray = new int[dimension];
-    cornerDistanceArray = new double[dimension];
     numberOfBoundsPerDimension = PerlinNoise.findNumberOfBoundsForDim(dimension);
     randomStartingOffset =
         new Random(randomSeed).nextInt(Integer.MAX_VALUE - (numberOfBoundsPerDimension));
@@ -36,7 +30,12 @@ public class PerlinNoise {
     for (var i = 0; i < dimension; i++) {
       boundsIndicesMultipliers[i] = getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, i);
     }
+    this.dataContainer = PerlinNoiseDataContainer.initializeForDimension(dimension);
     PerlinNoise.initializeBoundsForSeedAndDimension(dimension, randomSeed);
+  }
+
+  public PerlinNoiseDataContainer getNewDataContainer() {
+    return PerlinNoiseDataContainer.initializeForDimension(dimension);
   }
 
   private static void initializeBoundsForSeedAndDimension(int dimension, long seed) {
@@ -81,27 +80,38 @@ public class PerlinNoise {
     return result;
   }
 
-  protected int getIndexBound(int intPart) {
-    return intPart & (numberOfBoundsPerDimension - 1);
-  }
-
   public double getFor(double... coordinates) {
     if (coordinates.length != dimension) {
       throw new IllegalArgumentException(
           "Coordinates length should be the same as the number of dimensions");
     }
-    int firstDimCoordinate = (int) coordinates[0];
-    distancesArray[0] = coordinates[0] - firstDimCoordinate;
-    firstDimCoordinate = (firstDimCoordinate + randomStartingOffset) % numberOfBoundsPerDimension;
-    indexIntegerParts[0] = firstDimCoordinate;
-    for (var i = 1; i < dimension; i++) {
-      indexIntegerParts[i] = (int) coordinates[i];
-      distancesArray[i] = coordinates[i] - indexIntegerParts[i];
+    for (int i = 0; i < coordinates.length; i++) {
+      dataContainer.setCoordinatesAtIndex(i, coordinates[i]);
     }
+    return getFor(dataContainer);
+  }
 
-    populateCornerMatrix(dimension);
+  public double getFor(PerlinNoiseDataContainer dataContainer) {
+    if (dataContainer.getDimension() != dimension) {
+      throw new IllegalArgumentException(
+          "Data container should be of dimension "
+              + dimension
+              + " to be used with this instance of PerlinNoise");
+    }
+    dataContainer.populateArrays(
+        randomStartingOffset,
+        numberOfBoundsPerDimension,
+        BOUNDS_MAP.get(dimension),
+        boundsIndicesMultipliers);
 
-    double interpolated = Interpolation.linearWithFade(cornerMatrix, distancesArray);
+    double interpolated =
+        Interpolation.linearWithFade(
+            dataContainer.getCornerMatrix(), dataContainer.getDistancesArray());
+
+    return adjustValue(interpolated);
+  }
+
+  private double adjustValue(double interpolated) {
     if (dimension == 1) {
       return interpolated + 0.5;
     }
@@ -112,30 +122,5 @@ public class PerlinNoise {
       adjusted = 0.0;
     }
     return adjusted;
-  }
-
-  private void populateCornerMatrix(int currentDimension) {
-    for (var i = 0; i < 2; i++) {
-      indicesArray[currentDimension - 1] = i;
-      cornerDistanceArray[currentDimension - 1] =
-          distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
-      if (currentDimension == 1) {
-        int boundIndex = getBoundIndexFromIndices();
-        VectorMultiD currentBound = BOUNDS_MAP.get(dimension)[boundIndex];
-        double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
-        cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
-      } else {
-        populateCornerMatrix(currentDimension - 1);
-      }
-    }
-  }
-
-  private int getBoundIndexFromIndices() {
-    var boundIndex = 0;
-    for (var i = 0; i < indexIntegerParts.length; i++) {
-      boundIndex +=
-          getIndexBound(indexIntegerParts[i] + indicesArray[i]) * boundsIndicesMultipliers[i];
-    }
-    return boundIndex;
   }
 }
