@@ -121,8 +121,7 @@ public abstract class NoiseBuilder<
     return layers;
   }
 
-  private L generateNoiseLayer(int layerNumber, long randomSeed)
-      throws NoiseLayerException {
+  private L generateNoiseLayer(int layerNumber, long randomSeed) throws NoiseLayerException {
     List<Double> stepSizesForLayer = getStepSizesForLayer(layerNumber);
     return buildSingleNoiseLayer(stepSizesForLayer, amplitudeGenerator.getNext(), randomSeed);
   }
