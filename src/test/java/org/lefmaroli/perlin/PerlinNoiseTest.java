@@ -10,35 +10,22 @@ class PerlinNoiseTest {
 
   private final long randomSeed = System.currentTimeMillis();
 
-  @ParameterizedTest(name = "{index} Dim:{0} - {1}")
+  @ParameterizedTest(name = "{index} Dim:{0} - {2}")
   @MethodSource("invalidDimensions")
-  void testInvalidDimension(int dimension, String title) {
-    long seed = System.currentTimeMillis();
-    Assertions.assertThrows(IllegalArgumentException.class, () -> new PerlinNoise(dimension, seed));
+  void testInvalidDimension(int dimension, double[] coordinates, String title) {
+    PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> perlinNoise.getFor(coordinates));
   }
 
   private static Stream<Arguments> invalidDimensions() {
     return Stream.of(
-        Arguments.of(-1, "negative"), Arguments.of(0, "too little"), Arguments.of(6, "too big"));
-  }
-
-  @ParameterizedTest(name = "{index} {0} - {1}")
-  @MethodSource("wrongIndices")
-  void testWrongNumberOfIndices(double[] args, String title) {
-    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
-    Assertions.assertThrows(IllegalArgumentException.class, () -> perlinNoise.getFor(args));
-  }
-
-  private static Stream<Arguments> wrongIndices() {
-    return Stream.of(
-        Arguments.of(new double[] {0.5}, "too few"),
-        Arguments.of(new double[] {0.5, 0.3, 15.4}, "too many"));
+        Arguments.of(0, new double[0], "empty array"), Arguments.of(6, new double[6], "too big"));
   }
 
   @ParameterizedTest(name = "{index} Dim:{0}")
   @MethodSource("valuesBounded")
   void testValuesBounded(int dimension, double[] args) {
-    PerlinNoise perlinNoise = new PerlinNoise(dimension, randomSeed);
+    PerlinNoise perlinNoise = new PerlinNoise(randomSeed);
     int numIterations = 100000;
     double value;
     for (int i = 0; i < numIterations; i++) {

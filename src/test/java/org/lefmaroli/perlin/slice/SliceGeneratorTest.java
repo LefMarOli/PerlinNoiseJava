@@ -444,7 +444,6 @@ class SliceGeneratorTest {
         .withIgnoredFields(
             "widthAngleFactor",
             "heightAngleFactor",
-            "perlin",
             "perlinData",
             "currentPosInNoiseInterpolation",
             "generated",

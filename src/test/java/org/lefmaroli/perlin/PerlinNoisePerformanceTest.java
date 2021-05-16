@@ -60,7 +60,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkCorePerformance() {
-    PerlinNoise perlinNoise = new PerlinNoise(1, System.currentTimeMillis());
+    PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
     testPerformance(
         100000,
         (i) -> perlinNoise.getFor(i * 0.005),
@@ -70,7 +70,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkCorePerformance5D() {
-    PerlinNoise perlinNoise = new PerlinNoise(5, System.currentTimeMillis());
+    PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
     testPerformance(
         100000,
         (i) -> perlinNoise.getFor(i * 0.005, i * 0.1, i, i * 50.7, i / 3.0),

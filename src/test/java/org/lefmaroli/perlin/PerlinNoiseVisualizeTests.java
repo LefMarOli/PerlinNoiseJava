@@ -18,7 +18,7 @@ class PerlinNoiseVisualizeTests {
 
   @Test
   void test2D() { // NOSONAR
-    PerlinNoise perlinNoise = new PerlinNoise(2, randomSeed);
+    PerlinNoise perlinNoise = new PerlinNoise(randomSeed);
     int size = 500;
     double[] values = new double[size];
     double stepSizeX = 0.01;
@@ -76,7 +76,7 @@ class PerlinNoiseVisualizeTests {
 
   @Test
   void test3D() { // NOSONAR
-    PerlinNoise perlinNoise = new PerlinNoise(3, randomSeed);
+    PerlinNoise perlinNoise = new PerlinNoise(randomSeed);
     final int size = 200;
     double[][] values = new double[size][size];
     double stepSize = 0.01;

@@ -18,15 +18,15 @@ public class TestJitterStrategy implements JitterStrategy {
 
   @Override
   public void jitter() {
-    switch (random.nextInt(4)) {
+    switch (random.nextInt(3)) {
       case 0:
         return;
       case 1:
         try {
-          int delay = random.nextInt(25);
+          int delay = random.nextInt(5);
           ScheduledFuture<?> future =
               scheduler.schedule(
-                  () -> logger.debug("Waiting for " + delay + "ms"), delay, TimeUnit.MILLISECONDS);
+                  () -> {}, delay, TimeUnit.MICROSECONDS);
           future.get();
         } catch (InterruptedException e) {
           logger.error("Interrupted while causing jitter wait", e);
@@ -37,9 +37,6 @@ public class TestJitterStrategy implements JitterStrategy {
         return;
       case 2:
         Thread.yield();
-        return;
-      case 3:
-        Thread.onSpinWait();
     }
   }
 }

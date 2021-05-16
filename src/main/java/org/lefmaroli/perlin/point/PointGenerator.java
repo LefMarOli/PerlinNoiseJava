@@ -5,19 +5,20 @@ import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
+import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
+import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
 import org.lefmaroli.perlin.RootNoiseGenerator;
 
 public class PointGenerator extends RootNoiseGenerator<Double> implements PointNoiseGenerator {
 
   private static final Logger LOGGER = LogManager.getLogger(PointGenerator.class);
-  private final PerlinNoise perlin;
-  private final double[] perlinData = new double[1];
+  private final PerlinNoiseDataContainer perlinData;
   private double currentPosition;
 
   public PointGenerator(double noiseStepSize, double maxAmplitude, long randomSeed) {
     super(noiseStepSize, maxAmplitude, randomSeed);
     this.currentPosition = new Random(randomSeed).nextDouble();
-    perlin = new PerlinNoise(1, randomSeed);
+    perlinData = new PerlinNoiseDataContainerBuilder(1, randomSeed).getNewContainer();
     LOGGER.debug("Created new {}", this);
   }
 
@@ -57,7 +58,7 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
   @Override
   protected Double generateNextSegment(Double container) {
     currentPosition += getNoiseStepSize();
-    perlinData[0] = currentPosition;
-    return perlin.getFor(perlinData) * getMaxAmplitude();
+    perlinData.setCoordinatesForDimension(0, currentPosition);
+    return PerlinNoise.getFor(perlinData) * getMaxAmplitude();
   }
 }

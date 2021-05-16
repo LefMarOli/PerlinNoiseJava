@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
+import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
 
 public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][]>
@@ -20,8 +21,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private final double heightAngleFactor;
   private final int sliceWidth;
   private final int sliceHeight;
-  private final PerlinNoise perlin;
-  private final double[] perlinData;
+  private final PerlinNoiseDataContainer perlinData;
   private int currentPosInNoiseInterpolation = 0;
 
   SliceGenerator(
@@ -43,11 +43,11 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
     if (isCircular) {
-      perlin = new PerlinNoise(5, randomSeed);
-      perlinData = new double[5];
+      perlinData =
+          new PerlinNoise.PerlinNoiseDataContainerBuilder(5, randomSeed).getNewContainer();
     } else {
-      perlin = new PerlinNoise(3, randomSeed);
-      perlinData = new double[3];
+      perlinData =
+          new PerlinNoise.PerlinNoiseDataContainerBuilder(3, randomSeed).getNewContainer();
     }
     LOGGER.debug("Create new {}", this);
   }
@@ -141,17 +141,17 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   private double processSliceHeightDomain(double noiseDist, double widthDist, int heightIndex) {
-    perlinData[0] = noiseDist;
+    perlinData.setCoordinatesForDimension(0, noiseDist);
     if (isCircular()) {
       double heightDist = heightIndex * heightAngleFactor;
-      perlinData[1] = (Math.cos(widthDist) + 1.0) / 2.0;
-      perlinData[2] = (Math.sin(widthDist) + 1.0) / 2.0;
-      perlinData[3] = (Math.cos(heightDist) + 1.0) / 2.0;
-      perlinData[4] = (Math.sin(heightDist) + 1.0) / 2.0;
+      perlinData.setCoordinatesForDimension(1, (Math.cos(widthDist) + 1.0) / 2.0);
+      perlinData.setCoordinatesForDimension(2, (Math.sin(widthDist) + 1.0) / 2.0);
+      perlinData.setCoordinatesForDimension(3, (Math.cos(heightDist) + 1.0) / 2.0);
+      perlinData.setCoordinatesForDimension(4, (Math.sin(heightDist) + 1.0) / 2.0);
     } else {
-      perlinData[1] = widthDist;
-      perlinData[2] = heightIndex * heightStepSize;
+      perlinData.setCoordinatesForDimension(1, widthDist);
+      perlinData.setCoordinatesForDimension(2, heightIndex * heightStepSize);
     }
-    return perlin.getFor(perlinData) * getMaxAmplitude();
+    return PerlinNoise.getFor(perlinData) * getMaxAmplitude();
   }
 }

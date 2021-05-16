@@ -4,39 +4,41 @@ import java.util.List;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lefmaroli.execution.ExecutorPool;
 import org.lefmaroli.perlin.PerlinNoise;
-import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
-import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
-import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
+import org.lefmaroli.perlin.dimensional.ParallelNoiseGenerator;
 
-public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
+public class ParallelLineGenerator extends ParallelNoiseGenerator<double[]>
     implements LineNoiseGenerator {
 
-  private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
+  private static final Logger LOGGER = LogManager.getLogger(ParallelLineGenerator.class);
   private static final List<String> parameterNames = List.of("Line step size", "Line length");
 
   private final double lineStepSize;
   private final int lineLength;
   private final double lineAngleFactor;
+  private final PerlinNoise perlin;
+  private final double[] perlinData;
   private int currentPosition = 0;
-  private final PerlinNoiseDataContainer perlinData;
 
-  public LineGenerator(
+  public ParallelLineGenerator(
       double noiseStepSize,
       double lineStepSize,
       int lineLength,
       double maxAmplitude,
       long randomSeed,
-      boolean isCircular) {
-    super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
+      boolean isCircular,
+      ExecutorPool executorPool) {
+    super(noiseStepSize, maxAmplitude, randomSeed, isCircular, executorPool);
     assertValidValues(parameterNames, lineStepSize, lineLength);
     this.lineLength = lineLength;
     this.lineStepSize = correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
     this.lineAngleFactor = this.lineStepSize * (2 * Math.PI);
+    perlin = new PerlinNoise(randomSeed);
     if (isCircular) {
-      perlinData = new PerlinNoiseDataContainerBuilder(3, randomSeed).getNewContainer();
+      perlinData = new double[3];
     } else {
-      perlinData = new PerlinNoiseDataContainerBuilder(2, randomSeed).getNewContainer();
+      perlinData = new double[2];
     }
     LOGGER.debug("Created new {}", this);
   }
@@ -51,7 +53,7 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     if (!super.equals(o)) return false;
-    LineGenerator that = (LineGenerator) o;
+    ParallelLineGenerator that = (ParallelLineGenerator) o;
     return lineStepSize == that.lineStepSize && lineLength == that.lineLength;
   }
 
@@ -62,7 +64,7 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
 
   @Override
   public String toString() {
-    return "LineGenerator{"
+    return "ParallelLineGenerator{"
         + "noiseStepSize="
         + getNoiseStepSize()
         + ", lineStepSize="
@@ -102,14 +104,14 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
   }
 
   private double processLineDomain(double noiseDist, int lineIndex) {
-    perlinData.setCoordinatesForDimension(0, noiseDist);
+    perlinData[0] = noiseDist;
     if (isCircular()) {
       double angle = lineIndex * lineAngleFactor;
-      perlinData.setCoordinatesForDimension(1, (Math.cos(angle) + 1.0) / 2.0);
-      perlinData.setCoordinatesForDimension(2, (Math.sin(angle) + 1.0) / 2.0);
+      perlinData[1] = (Math.cos(angle) + 1.0) / 2.0;
+      perlinData[2] = (Math.sin(angle) + 1.0) / 2.0;
     } else {
-      perlinData.setCoordinatesForDimension(1, lineIndex * lineStepSize);
+      perlinData[1] = lineIndex * lineStepSize;
     }
-    return PerlinNoise.getFor(perlinData) * getMaxAmplitude();
+    return perlin.getFor(perlinData) * getMaxAmplitude();
   }
 }

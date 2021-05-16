@@ -32,4 +32,8 @@ public abstract class MultiDimensionalNoiseBuilder<
   protected ExecutorPool getExecutorPool() {
     return executorPool;
   }
+
+  protected boolean isParallel(){
+    return executorPool != null;
+  }
 }
