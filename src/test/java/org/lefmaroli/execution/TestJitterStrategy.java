@@ -24,9 +24,7 @@ public class TestJitterStrategy implements JitterStrategy {
       case 1:
         try {
           int delay = random.nextInt(5);
-          ScheduledFuture<?> future =
-              scheduler.schedule(
-                  () -> {}, delay, TimeUnit.MICROSECONDS);
+          ScheduledFuture<?> future = scheduler.schedule(() -> {}, delay, TimeUnit.MICROSECONDS);
           future.get();
         } catch (InterruptedException e) {
           logger.error("Interrupted while causing jitter wait", e);

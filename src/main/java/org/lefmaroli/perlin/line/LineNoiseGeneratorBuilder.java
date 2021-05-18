@@ -34,13 +34,8 @@ public class LineNoiseGeneratorBuilder
   @Override
   protected LineNoiseGenerator buildSingleNoiseLayer(
       List<Double> stepSizes, double layerAmplitude, long randomSeed) {
-      return new LineGenerator(
-          stepSizes.get(0),
-          stepSizes.get(1),
-          lineLength,
-          layerAmplitude,
-          randomSeed,
-          isCircular());
+    return new LineGenerator(
+        stepSizes.get(0), stepSizes.get(1), lineLength, layerAmplitude, randomSeed, isCircular());
   }
 
   @Override

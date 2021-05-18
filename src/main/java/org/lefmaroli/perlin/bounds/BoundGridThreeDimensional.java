@@ -24,6 +24,6 @@ class BoundGridThreeDimensional extends BoundGrid {
   VectorMultiD getBoundForCoordinatesSpecificDim(int... coordinates) {
     return bounds[wrapIndexToBounds(coordinates[0], bounds.length)][
         wrapIndexToBounds(coordinates[1], bounds.length)][
-            wrapIndexToBounds(coordinates[2], bounds.length)];
+        wrapIndexToBounds(coordinates[2], bounds.length)];
   }
 }

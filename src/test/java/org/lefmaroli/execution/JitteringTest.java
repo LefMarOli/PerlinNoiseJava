@@ -7,13 +7,12 @@ import org.lefmaroli.configuration.JitterTrait;
 public abstract class JitteringTest {
 
   @BeforeAll
-  static void beforeAll(){
+  static void beforeAll() {
     JitterTrait.setJitterStrategy(new TestJitterStrategy());
   }
 
   @AfterAll
-  static void afterAll(){
+  static void afterAll() {
     JitterTrait.resetJitterStrategy();
   }
-
 }

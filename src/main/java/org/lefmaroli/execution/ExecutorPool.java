@@ -42,7 +42,7 @@ public class ExecutorPool implements AutoCloseable, ExecutorService {
     }
   }
 
-  //Delegate functions
+  // Delegate functions
   @Override
   public void shutdown() {
     pool.shutdown();
@@ -84,15 +84,15 @@ public class ExecutorPool implements AutoCloseable, ExecutorService {
   }
 
   @Override
-  public <T> List<Future<T>> invokeAll(
-      Collection<? extends Callable<T>> tasks) throws InterruptedException {
+  public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+      throws InterruptedException {
     return pool.invokeAll(tasks);
   }
 
   @Override
   public <T> List<Future<T>> invokeAll(
-      Collection<? extends Callable<T>> tasks, long timeout,
-      TimeUnit unit) throws InterruptedException {
+      Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+      throws InterruptedException {
     return pool.invokeAll(tasks, timeout, unit);
   }
 
@@ -103,8 +103,8 @@ public class ExecutorPool implements AutoCloseable, ExecutorService {
   }
 
   @Override
-  public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout,
-      TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+  public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
+      throws InterruptedException, ExecutionException, TimeoutException {
     return pool.invokeAny(tasks, timeout, unit);
   }
 
@@ -112,5 +112,4 @@ public class ExecutorPool implements AutoCloseable, ExecutorService {
   public void execute(Runnable command) {
     pool.execute(command);
   }
-
 }

@@ -43,11 +43,9 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     this.sliceWidth = sliceWidth;
     this.sliceHeight = sliceHeight;
     if (isCircular) {
-      perlinData =
-          new PerlinNoise.PerlinNoiseDataContainerBuilder(5, randomSeed).getNewContainer();
+      perlinData = new PerlinNoise.PerlinNoiseDataContainerBuilder(5, randomSeed).getNewContainer();
     } else {
-      perlinData =
-          new PerlinNoise.PerlinNoiseDataContainerBuilder(3, randomSeed).getNewContainer();
+      perlinData = new PerlinNoise.PerlinNoiseDataContainerBuilder(3, randomSeed).getNewContainer();
     }
     LOGGER.debug("Create new {}", this);
   }
