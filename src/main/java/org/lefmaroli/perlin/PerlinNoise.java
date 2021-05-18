@@ -1,12 +1,14 @@
 package org.lefmaroli.perlin;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
-import org.lefmaroli.random.RandomGenerator;
+import org.lefmaroli.perlin.bounds.BoundGrid;
 import org.lefmaroli.vector.VectorMultiD;
 
 public class PerlinNoise {
@@ -14,10 +16,7 @@ public class PerlinNoise {
   public static final int MAX_DIMENSION = 5;
   static final Map<Integer, Integer> AXIS_BOUNDS_BY_DIMENSIONS =
       new ConcurrentHashMap<>(MAX_DIMENSION);
-  static final Map<Integer, int[]> BOUNDS_INDICES_MULTIPLIERS =
-      new ConcurrentHashMap<>(MAX_DIMENSION);
-  private static final Map<Integer, VectorMultiD[]> BOUNDS_MAP =
-      new ConcurrentHashMap<>(MAX_DIMENSION);
+  private static final Map<Integer, BoundGrid> BOUNDS_MAP = new ConcurrentHashMap<>(MAX_DIMENSION);
   private static final JitterTrait JITTER_TRAIT = new JitterTrait();
   private static final double MAX_VALUE_VECTOR_PRODUCT = Math.sqrt(2.0) / 2.0;
   private final Map<Integer, PerlinNoiseDataContainer> defaultContainers =
@@ -28,12 +27,6 @@ public class PerlinNoise {
     for (var dim = 1; dim <= MAX_DIMENSION; dim++) {
       int numberOfAxisBoundsForDim = findNumberOfBoundsForDim(dim);
       AXIS_BOUNDS_BY_DIMENSIONS.put(dim, numberOfAxisBoundsForDim);
-      int[] boundsIndicesMultipliersForDim = new int[dim];
-      for (int j = 0; j < dim; j++) {
-        boundsIndicesMultipliersForDim[j] =
-            getIntMultipliedByItselfNTimes(numberOfAxisBoundsForDim, j);
-      }
-      BOUNDS_INDICES_MULTIPLIERS.put(dim, boundsIndicesMultipliersForDim);
     }
   }
 
@@ -56,14 +49,6 @@ public class PerlinNoise {
       }
     }
     return 2;
-  }
-
-  private static int getIntMultipliedByItselfNTimes(int number, int times) {
-    var result = 1;
-    for (var i = 0; i < times; i++) {
-      result *= number;
-    }
-    return result;
   }
 
   private static double adjustValue(double interpolated, int dimension) {
@@ -135,14 +120,7 @@ public class PerlinNoise {
           dimension,
           dim -> {
             var numberOfBoundsPerDimension = AXIS_BOUNDS_BY_DIMENSIONS.get(dimension);
-            var totalBoundsForDimension =
-                getIntMultipliedByItselfNTimes(numberOfBoundsPerDimension, dimension);
-            var bounds = new VectorMultiD[totalBoundsForDimension];
-            var generator = new RandomGenerator(System.currentTimeMillis());
-            for (var i = 0; i < totalBoundsForDimension; i++) {
-              bounds[i] = generator.getRandomUnitVectorOfDim(dimension);
-            }
-            return bounds;
+            return BoundGrid.getNewBoundGridForDimension(dimension, numberOfBoundsPerDimension);
           });
     }
   }
@@ -153,25 +131,25 @@ public class PerlinNoise {
     private final double[] distancesArray;
     private final int[] indexIntegerParts;
     private final int[] indicesArray;
+    private final int[] boundsCoordinates;
     private final double[] cornerDistanceArray;
     private final double[] coordinates;
     private final int firstDimensionOffset;
     private final int numberOfBounds;
-    private final int[] indicesMultipliers;
 
     private PerlinNoiseDataContainer(int dimension, int firstDimensionOffset, int numberOfBounds) {
       this.cornerMatrix = CornerMatrix.getForDimension(dimension);
       this.distancesArray = new double[dimension];
       this.indexIntegerParts = new int[dimension];
       this.indicesArray = new int[dimension];
+      this.boundsCoordinates = new int[dimension];
       this.cornerDistanceArray = new double[dimension];
       this.coordinates = new double[dimension];
       this.firstDimensionOffset = firstDimensionOffset;
       this.numberOfBounds = numberOfBounds;
-      this.indicesMultipliers = BOUNDS_INDICES_MULTIPLIERS.get(getDimension());
     }
 
-    private void setBoundsForInterpolation(VectorMultiD[] bounds) {
+    private void setBoundsForInterpolation(BoundGrid bounds) {
       populateFirstDimension();
       populateIntegerPartsArrays();
       JITTER_TRAIT.jitter();
@@ -204,6 +182,7 @@ public class PerlinNoise {
     private void populateIntegerPartsArrays() {
       for (var i = 1; i < getDimension(); i++) {
         indexIntegerParts[i] = (int) coordinates[i];
+        boundsCoordinates[i] = indexIntegerParts[i];
       }
     }
 
@@ -213,34 +192,40 @@ public class PerlinNoise {
       }
     }
 
-    private void populateCornerMatrix(int currentDimension, VectorMultiD[] bounds) {
+    private void populateCornerMatrix(int currentDimension, BoundGrid bounds) {
       for (var i = 0; i < 2; i++) {
         JITTER_TRAIT.jitter();
         indicesArray[currentDimension - 1] = i;
+        boundsCoordinates[currentDimension - 1] += i;
         cornerDistanceArray[currentDimension - 1] =
             distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
         if (currentDimension == 1) {
-          int boundIndex = getBoundIndexFromIndices();
-          VectorMultiD currentBound = bounds[boundIndex];
+          VectorMultiD currentBound = bounds.getBoundForCoordinates(boundsCoordinates);
           double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
           cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
         } else {
           populateCornerMatrix(currentDimension - 1, bounds);
         }
+        boundsCoordinates[currentDimension - 1] = indexIntegerParts[currentDimension - 1];
       }
     }
 
-    private int getBoundIndexFromIndices() {
-      var boundIndex = getIndexBound(indexIntegerParts[0] + indicesArray[0]);
-      JITTER_TRAIT.jitter();
-      for (var i = 1; i < indexIntegerParts.length; i++) {
-        boundIndex += getIndexBound(indexIntegerParts[i] + indicesArray[i]) * indicesMultipliers[i];
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
       }
-      return boundIndex;
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      PerlinNoiseDataContainer that = (PerlinNoiseDataContainer) o;
+      return firstDimensionOffset == that.firstDimensionOffset
+          && numberOfBounds == that.numberOfBounds;
     }
 
-    private int getIndexBound(int intPart) {
-      return intPart & (numberOfBounds - 1);
+    @Override
+    public int hashCode() {
+      return Objects.hash(firstDimensionOffset, numberOfBounds);
     }
   }
 }

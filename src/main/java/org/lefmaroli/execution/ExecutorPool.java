@@ -19,11 +19,11 @@ public class ExecutorPool implements AutoCloseable, ExecutorService {
 
   private final ExecutorService pool;
 
-  ExecutorPool(String className) {
+  public ExecutorPool(String className) {
     this(className, Executors.newFixedThreadPool(DEFAULT_THREADS));
   }
 
-  ExecutorPool(String className, ExecutorService service) {
+  public ExecutorPool(String className, ExecutorService service) {
     this.logger = LogManager.getLogger(className);
     this.pool = service;
   }

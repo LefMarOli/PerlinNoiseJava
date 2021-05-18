@@ -97,7 +97,7 @@ class PerlinNoisePerformanceTest {
   @Test
   void benchmarkLineGeneratorPerformance() throws NoiseBuilderException {
     LineNoiseGenerator noiseGenerator =
-        new LineNoiseGeneratorBuilder(200)
+        new LineNoiseGeneratorBuilder(1000)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
             .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
@@ -105,7 +105,7 @@ class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(200), "LineGenerator benchmark");
+        500000, (i) -> noiseGenerator.getNext(), Duration.ofSeconds(500), "LineGenerator benchmark");
   }
 
   @Test

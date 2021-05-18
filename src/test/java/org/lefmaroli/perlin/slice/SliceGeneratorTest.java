@@ -545,7 +545,7 @@ class SliceGeneratorTest {
                 AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
               }
             },
-            200,
+            30,
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
@@ -598,7 +598,7 @@ class SliceGeneratorTest {
                 AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
               }
             },
-            100,
+            30,
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);

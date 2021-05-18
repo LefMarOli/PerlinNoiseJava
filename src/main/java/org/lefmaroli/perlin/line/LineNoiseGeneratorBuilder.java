@@ -34,16 +34,6 @@ public class LineNoiseGeneratorBuilder
   @Override
   protected LineNoiseGenerator buildSingleNoiseLayer(
       List<Double> stepSizes, double layerAmplitude, long randomSeed) {
-    if(isParallel()){
-      return new ParallelLineGenerator(
-          stepSizes.get(0),
-          stepSizes.get(1),
-          lineLength,
-          layerAmplitude,
-          randomSeed,
-          isCircular(),
-          getExecutorPool());
-    }else{
       return new LineGenerator(
           stepSizes.get(0),
           stepSizes.get(1),
@@ -51,7 +41,6 @@ public class LineNoiseGeneratorBuilder
           layerAmplitude,
           randomSeed,
           isCircular());
-    }
   }
 
   @Override
