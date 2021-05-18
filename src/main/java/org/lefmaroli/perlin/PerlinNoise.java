@@ -130,7 +130,6 @@ public class PerlinNoise {
     private final double[] distancesArray;
     private final int[] indexIntegerParts;
     private final int[] indicesArray;
-    private final int[] boundsCoordinates;
     private final double[] cornerDistanceArray;
     private final double[] coordinates;
     private final int firstDimensionOffset;
@@ -141,7 +140,6 @@ public class PerlinNoise {
       this.distancesArray = new double[dimension];
       this.indexIntegerParts = new int[dimension];
       this.indicesArray = new int[dimension];
-      this.boundsCoordinates = new int[dimension];
       this.cornerDistanceArray = new double[dimension];
       this.coordinates = new double[dimension];
       this.firstDimensionOffset = firstDimensionOffset;
@@ -181,7 +179,6 @@ public class PerlinNoise {
     private void populateIntegerPartsArrays() {
       for (var i = 1; i < getDimension(); i++) {
         indexIntegerParts[i] = (int) coordinates[i];
-        boundsCoordinates[i] = indexIntegerParts[i];
       }
     }
 
@@ -195,17 +192,15 @@ public class PerlinNoise {
       for (var i = 0; i < 2; i++) {
         JITTER_TRAIT.jitter();
         indicesArray[currentDimension - 1] = i;
-        boundsCoordinates[currentDimension - 1] += i;
         cornerDistanceArray[currentDimension - 1] =
             distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
         if (currentDimension == 1) {
-          VectorMultiD currentBound = bounds.getBoundForCoordinates(boundsCoordinates);
+          VectorMultiD currentBound = bounds.getBoundForCoordinates(indexIntegerParts, indicesArray);
           double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
           cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
         } else {
           populateCornerMatrix(currentDimension - 1, bounds);
         }
-        boundsCoordinates[currentDimension - 1] = indexIntegerParts[currentDimension - 1];
       }
     }
 

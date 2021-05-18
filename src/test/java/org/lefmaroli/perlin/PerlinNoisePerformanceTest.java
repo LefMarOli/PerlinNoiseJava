@@ -105,10 +105,7 @@ class PerlinNoisePerformanceTest {
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
     testPerformance(
-        500000,
-        (i) -> noiseGenerator.getNext(),
-        Duration.ofSeconds(500),
-        "LineGenerator benchmark");
+        500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(500), "LineGenerator benchmark");
   }
 
   @Test

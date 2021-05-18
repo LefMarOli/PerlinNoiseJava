@@ -16,7 +16,7 @@ class BoundGridOneDimensional extends BoundGrid {
   }
 
   @Override
-  VectorMultiD getBoundForCoordinatesSpecificDim(int... coordinates) {
-    return bounds[wrapIndexToBounds(coordinates[0], bounds.length)];
+  VectorMultiD getBoundForCoordinatesSpecificDim(int[] coordinates, int[] boundIndices) {
+    return bounds[wrapIndexToBounds(coordinates[0] + boundIndices[0], bounds.length)];
   }
 }

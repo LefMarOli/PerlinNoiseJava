@@ -22,10 +22,10 @@ class BoundGridFourDimensional extends BoundGrid {
   }
 
   @Override
-  VectorMultiD getBoundForCoordinatesSpecificDim(int... coordinates) {
-    return bounds[wrapIndexToBounds(coordinates[0], bounds.length)][
-        wrapIndexToBounds(coordinates[1], bounds.length)][
-        wrapIndexToBounds(coordinates[2], bounds.length)][
-        wrapIndexToBounds(coordinates[3], bounds.length)];
+  VectorMultiD getBoundForCoordinatesSpecificDim(int[] coordinates, int[] boundIndices) {
+    return bounds[wrapIndexToBounds(coordinates[0] + boundIndices[0], bounds.length)][
+        wrapIndexToBounds(coordinates[1] + boundIndices[1], bounds.length)][
+        wrapIndexToBounds(coordinates[2] + boundIndices[2], bounds.length)][
+        wrapIndexToBounds(coordinates[3] + boundIndices[3], bounds.length)];
   }
 }

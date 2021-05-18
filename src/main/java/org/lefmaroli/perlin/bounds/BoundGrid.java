@@ -12,18 +12,18 @@ public abstract class BoundGrid {
     this.dimension = dimension;
   }
 
-  public VectorMultiD getBoundForCoordinates(int... coordinates) {
-    if (coordinates.length != dimension) {
+  public VectorMultiD getBoundForCoordinates(int[] coordinates, int[] boundIndices) {
+    if (coordinates.length != dimension || boundIndices.length != coordinates.length) {
       throw new IllegalArgumentException(
           "Number of coordinates don't match dimension of "
               + dimension
               + ", supplied coordinates: "
               + Arrays.toString(coordinates));
     }
-    return getBoundForCoordinatesSpecificDim(coordinates);
+    return getBoundForCoordinatesSpecificDim(coordinates, boundIndices);
   }
 
-  abstract VectorMultiD getBoundForCoordinatesSpecificDim(int... coordinates);
+  abstract VectorMultiD getBoundForCoordinatesSpecificDim(int[] coordinates, int[] boundIndices);
 
   protected static int wrapIndexToBounds(int index, int numberOfBounds) {
     return index & (numberOfBounds - 1);
