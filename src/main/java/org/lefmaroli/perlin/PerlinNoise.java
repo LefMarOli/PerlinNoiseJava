@@ -195,7 +195,8 @@ public class PerlinNoise {
         cornerDistanceArray[currentDimension - 1] =
             distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
         if (currentDimension == 1) {
-          VectorMultiD currentBound = bounds.getBoundForCoordinates(indexIntegerParts, indicesArray);
+          VectorMultiD currentBound =
+              bounds.getBoundForCoordinates(indexIntegerParts, indicesArray);
           double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
           cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);
         } else {
