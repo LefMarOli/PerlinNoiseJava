@@ -1,6 +1,6 @@
 package org.lefmaroli.vector;
 
-public abstract class AbstractDimensionalVector implements DimensionalVector{
+public abstract class AbstractDimensionalVector implements DimensionalVector {
 
   @Override
   public double getVectorProduct(double... other) {
@@ -8,7 +8,8 @@ public abstract class AbstractDimensionalVector implements DimensionalVector{
       throw new IllegalArgumentException(
           "Vector product impossible, parameter length ("
               + other.length
-              + ") different than vector length of " + getDimension());
+              + ") different than vector length of "
+              + getDimension());
     }
     return computeVectorProduct(other);
   }

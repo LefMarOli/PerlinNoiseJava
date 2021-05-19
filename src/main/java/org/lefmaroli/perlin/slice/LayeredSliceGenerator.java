@@ -13,8 +13,8 @@ public class LayeredSliceGenerator
   private final int sliceWidth;
   private final int sliceHeight;
 
-  protected LayeredSliceGenerator(List<SliceNoiseGenerator> sliceNoiseGenerators,
-      ForkJoinPool pool) {
+  protected LayeredSliceGenerator(
+      List<SliceNoiseGenerator> sliceNoiseGenerators, ForkJoinPool pool) {
     super(sliceNoiseGenerators, pool);
     this.sliceWidth = sliceNoiseGenerators.get(0).getSliceWidth();
     this.sliceHeight = sliceNoiseGenerators.get(0).getSliceHeight();

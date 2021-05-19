@@ -28,7 +28,8 @@ class LayeredLineGeneratorTest {
             defaultLineLength,
             1.0,
             System.currentTimeMillis(),
-            isCircularDefault, null));
+            isCircularDefault,
+            null));
     layers.add(
         new LineGenerator(
             1.0 / 1024,
@@ -36,7 +37,8 @@ class LayeredLineGeneratorTest {
             defaultLineLength,
             0.5,
             System.currentTimeMillis(),
-            isCircularDefault, null));
+            isCircularDefault,
+            null));
     layers.add(
         new LineGenerator(
             1.0 / 512,
@@ -44,7 +46,8 @@ class LayeredLineGeneratorTest {
             defaultLineLength,
             0.25,
             System.currentTimeMillis(),
-            isCircularDefault, null));
+            isCircularDefault,
+            null));
     defaultGenerator = new LayeredLineGenerator(layers, null);
   }
 
@@ -56,8 +59,8 @@ class LayeredLineGeneratorTest {
   @Test
   void testCreateWithNoLayers() {
     ArrayList<LineNoiseGenerator> layers = new ArrayList<>(5);
-    Assertions.assertThrows(IllegalArgumentException.class, () -> new LayeredLineGenerator(layers,
-        null));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> new LayeredLineGenerator(layers, null));
   }
 
   @Test
@@ -70,7 +73,8 @@ class LayeredLineGeneratorTest {
             defaultLineLength + 5,
             0.1225,
             System.currentTimeMillis(),
-            isCircularDefault, null));
+            isCircularDefault,
+            null));
     Assertions.assertThrows(
         IllegalArgumentException.class, () -> new LayeredLineGenerator(newLayerSet, null));
   }
@@ -149,7 +153,8 @@ class LayeredLineGeneratorTest {
     List<LineNoiseGenerator> otherLayers = new ArrayList<>(3);
     otherLayers.add(new LineGenerator(1.0 / 8, 1.0 / 8, defaultLineLength, 0.1, 5L, true, null));
     otherLayers.add(new LineGenerator(1.0 / 16, 1.0 / 16, defaultLineLength, 0.05, 2L, true, null));
-    otherLayers.add(new LineGenerator(1.0 / 25, 1.0 / 25, defaultLineLength, 0.005, 1L, true, null));
+    otherLayers.add(
+        new LineGenerator(1.0 / 25, 1.0 / 25, defaultLineLength, 0.005, 1L, true, null));
     LayeredLineGenerator otherGenerator = new LayeredLineGenerator(otherLayers, null);
     Assertions.assertTrue(otherGenerator.isCircular());
   }

@@ -26,7 +26,7 @@ public class Vector2D extends AbstractDimensionalVector {
 
   @Override
   public double getLength() {
-    return Math.sqrt(x*x + y*y);
+    return Math.sqrt(x * x + y * y);
   }
 
   @Override

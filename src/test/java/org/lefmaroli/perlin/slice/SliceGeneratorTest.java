@@ -67,7 +67,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
   }
 
   @Test
@@ -83,7 +84,8 @@ class SliceGeneratorTest {
                 sliceHeight,
                 maxAmplitude,
                 randomSeed,
-                isCircular, null));
+                isCircular,
+                null));
   }
 
   @Test
@@ -99,7 +101,8 @@ class SliceGeneratorTest {
                 sliceHeight,
                 maxAmplitude,
                 randomSeed,
-                isCircular, null));
+                isCircular,
+                null));
   }
 
   @Test
@@ -115,7 +118,8 @@ class SliceGeneratorTest {
                 sliceHeight,
                 maxAmplitude,
                 randomSeed,
-                isCircular, null));
+                isCircular,
+                null));
   }
 
   @Test
@@ -131,7 +135,8 @@ class SliceGeneratorTest {
                 sliceHeight,
                 maxAmplitude,
                 randomSeed,
-                isCircular, null));
+                isCircular,
+                null));
   }
 
   @Test
@@ -147,7 +152,8 @@ class SliceGeneratorTest {
                 -7,
                 maxAmplitude,
                 randomSeed,
-                isCircular, null));
+                isCircular,
+                null));
   }
 
   @Test
@@ -200,7 +206,8 @@ class SliceGeneratorTest {
             10000,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotNull(sliceGenerator);
   }
 
@@ -229,7 +236,8 @@ class SliceGeneratorTest {
             sliceHeight,
             newMaxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
 
     double[][] slice = defaultGenerator.getNext();
     double[][] amplifiedSlice = amplifiedLayer.getNext();
@@ -258,7 +266,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     double[][] nextSegment1 = defaultGenerator.getNext();
     double[][] nextSegment2 = same.getNext();
 
@@ -282,7 +291,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed + 1,
-            isCircular, null);
+            isCircular,
+            null);
     double[][] nextSegment1 = defaultGenerator.getNext();
     double[][] nextSegment2 = diffRandSeed.getNext();
 
@@ -311,7 +321,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertEquals(defaultGenerator, otherGenerator);
     Assertions.assertEquals(defaultGenerator.hashCode(), otherGenerator.hashCode());
   }
@@ -327,7 +338,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -342,7 +354,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -357,7 +370,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -372,7 +386,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -387,7 +402,8 @@ class SliceGeneratorTest {
             sliceHeight + 6,
             maxAmplitude,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -402,7 +418,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude * 1.5,
             randomSeed,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -417,7 +434,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed + 5L,
-            isCircular, null);
+            isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -432,7 +450,8 @@ class SliceGeneratorTest {
             sliceHeight,
             maxAmplitude,
             randomSeed,
-            !isCircular, null);
+            !isCircular,
+            null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -463,7 +482,8 @@ class SliceGeneratorTest {
             sliceHeight,
             1.0,
             System.currentTimeMillis(),
-            true, null);
+            true,
+            null);
 
     int numCyclesInWidth = (int) (generator.getSliceWidth() * generator.getWidthStepSize());
     int numInterpolationPointsPerCycleInWidth = (int) (1.0 / generator.getWidthStepSize());
@@ -499,7 +519,14 @@ class SliceGeneratorTest {
   void testSmoothCircularity() { // NOSONAR
     SliceGenerator generator =
         new SliceGenerator(
-            noiseStepSize, 1 / 200.0, 1 / 250.0, 150, 150, 1.0, System.currentTimeMillis(), true,
+            noiseStepSize,
+            1 / 200.0,
+            1 / 250.0,
+            150,
+            150,
+            1.0,
+            System.currentTimeMillis(),
+            true,
             null);
     double[][] slices = generator.getNext();
     int patchFactor = 2;
@@ -569,13 +596,14 @@ class SliceGeneratorTest {
             sliceHeight,
             1.0,
             System.currentTimeMillis(),
-            false, null);
+            false,
+            null);
 
     double[][] slice = generator.getNext();
 
     AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
     boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
-//    boolean isDisplaySupported = false;
+    //    boolean isDisplaySupported = false;
     if (isDisplaySupported) {
       im.set(new SimpleGrayScaleImage(slice, 5));
       im.get().setVisible();

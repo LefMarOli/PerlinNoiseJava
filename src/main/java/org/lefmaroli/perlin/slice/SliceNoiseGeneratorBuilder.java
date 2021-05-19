@@ -51,7 +51,8 @@ public class SliceNoiseGeneratorBuilder
         sliceHeight,
         layerAmplitude,
         randomSeed,
-        isCircular(), null);
+        isCircular(),
+        null);
   }
 
   @Override

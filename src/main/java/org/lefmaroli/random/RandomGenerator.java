@@ -42,7 +42,7 @@ public class RandomGenerator {
           }
           vectorMultiD = VectorFactory.getVectorForCoordinates(coordinates);
           length = vectorMultiD.getLength();
-        }while (length < lengthLimit);
+        } while (length < lengthLimit);
         templates[i] = vectorMultiD.normalize();
       }
     }

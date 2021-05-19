@@ -23,7 +23,8 @@ public abstract class BoundGrid {
     return getBoundForCoordinatesSpecificDim(coordinates, boundIndices);
   }
 
-  abstract DimensionalVector getBoundForCoordinatesSpecificDim(int[] coordinates, int[] boundIndices);
+  abstract DimensionalVector getBoundForCoordinatesSpecificDim(
+      int[] coordinates, int[] boundIndices);
 
   protected static int wrapIndexToBounds(int index, int numberOfBounds) {
     return index & (numberOfBounds - 1);

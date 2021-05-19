@@ -33,7 +33,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       int sliceHeight,
       double maxAmplitude,
       long randomSeed,
-      boolean isCircular, ForkJoinPool pool) {
+      boolean isCircular,
+      ForkJoinPool pool) {
     super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
     assertValidValues(parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
     this.widthStepSize = correctStepSizeForCircularity(widthStepSize, sliceWidth, "slice width");

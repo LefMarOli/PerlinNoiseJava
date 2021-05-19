@@ -15,7 +15,7 @@ public abstract class MultiDimensionalNoiseBuilder<
     super(dimensions);
   }
 
-  public B withForkJoinPool(ForkJoinPool pool){
+  public B withForkJoinPool(ForkJoinPool pool) {
     this.pool = pool;
     return self();
   }
@@ -25,12 +25,11 @@ public abstract class MultiDimensionalNoiseBuilder<
     return self();
   }
 
-
   protected boolean isCircular() {
     return isCircular;
   }
 
-  protected ForkJoinPool getPool(){
+  protected ForkJoinPool getPool() {
     return pool;
   }
 }

@@ -30,7 +30,7 @@ class PerlinNoisePerformanceTest {
   private static ForkJoinPool pool;
 
   @BeforeAll
-  static void init(){
+  static void init() {
     pool = ForkJoinPool.commonPool();
     pool = new ForkJoinPool();
   }
@@ -120,16 +120,16 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkSliceGeneratorPerformance() throws NoiseBuilderException {
-      SliceNoiseGenerator noiseGenerator =
-          new SliceNoiseGeneratorBuilder(100, 100)
-              .withNumberOfLayers(3)
-              .withRandomSeed(0L)
-              .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
-              .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-              .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-              .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
-              .build();
-      testPerformance(
-          50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
+    SliceNoiseGenerator noiseGenerator =
+        new SliceNoiseGeneratorBuilder(100, 100)
+            .withNumberOfLayers(3)
+            .withRandomSeed(0L)
+            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+            .build();
+    testPerformance(
+        50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
   }
 }
