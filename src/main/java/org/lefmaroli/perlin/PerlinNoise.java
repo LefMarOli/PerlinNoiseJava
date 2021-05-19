@@ -8,7 +8,7 @@ import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.bounds.BoundGrid;
-import org.lefmaroli.vector.VectorMultiD;
+import org.lefmaroli.vector.DimensionalVector;
 
 public class PerlinNoise {
 
@@ -195,7 +195,7 @@ public class PerlinNoise {
         cornerDistanceArray[currentDimension - 1] =
             distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
         if (currentDimension == 1) {
-          VectorMultiD currentBound =
+          DimensionalVector currentBound =
               bounds.getBoundForCoordinates(indexIntegerParts, indicesArray);
           double vectorProduct = currentBound.getVectorProduct(cornerDistanceArray);
           cornerMatrix.setValueAtIndices(vectorProduct, indicesArray);

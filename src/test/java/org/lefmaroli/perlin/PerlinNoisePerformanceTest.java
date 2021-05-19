@@ -5,12 +5,14 @@ import static org.awaitility.Awaitility.waitAtMost;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
@@ -24,6 +26,14 @@ import org.lefmaroli.perlin.slice.SliceNoiseGeneratorBuilder;
 class PerlinNoisePerformanceTest {
 
   private final Logger logger = LogManager.getLogger(PerlinNoisePerformanceTest.class);
+
+  private static ForkJoinPool pool;
+
+  @BeforeAll
+  static void init(){
+    pool = ForkJoinPool.commonPool();
+    pool = new ForkJoinPool();
+  }
 
   private void testPerformance(
       int numIterations, Consumer<Integer> c, Duration maxTestDuration, String testTitle) {
@@ -110,16 +120,16 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkSliceGeneratorPerformance() throws NoiseBuilderException {
-    SliceNoiseGenerator noiseGenerator =
-        new SliceNoiseGeneratorBuilder(100, 100)
-            .withNumberOfLayers(3)
-            .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
-            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
-            .build();
-    testPerformance(
-        50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
+      SliceNoiseGenerator noiseGenerator =
+          new SliceNoiseGeneratorBuilder(100, 100)
+              .withNumberOfLayers(3)
+              .withRandomSeed(0L)
+              .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
+              .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+              .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+              .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+              .build();
+      testPerformance(
+          50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
   }
 }

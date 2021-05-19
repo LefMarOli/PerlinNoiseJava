@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin.dimensional;
 
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
 import org.apache.logging.log4j.LogManager;
 import org.lefmaroli.perlin.RootNoiseGenerator;
 import org.lefmaroli.rounding.RoundUtils;
@@ -9,16 +10,34 @@ public abstract class MultiDimensionalRootNoiseGenerator<C> extends RootNoiseGen
     implements MultiDimensionalNoiseGenerator {
 
   private final boolean isCircular;
+  private final ForkJoinPool pool;
+  private final int numberAvailableProcessors;
 
   protected MultiDimensionalRootNoiseGenerator(
-      double noiseStepSize, double maxAmplitude, long randomSeed, boolean isCircular) {
+      double noiseStepSize,
+      double maxAmplitude,
+      long randomSeed,
+      boolean isCircular,
+      ForkJoinPool pool) {
     super(noiseStepSize, maxAmplitude, randomSeed);
     this.isCircular = isCircular;
+    this.pool = pool;
+    this.numberAvailableProcessors = Runtime.getRuntime().availableProcessors();
   }
 
   @Override
   public boolean isCircular() {
     return isCircular;
+  }
+
+  @Override
+  public boolean hasParallelProcessingEnabled() {
+    return pool != null && numberAvailableProcessors > 1;
+  }
+
+  @Override
+  public ForkJoinPool getExecutionPool() {
+    return pool;
   }
 
   @Override

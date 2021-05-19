@@ -51,11 +51,11 @@ public class SliceNoiseGeneratorBuilder
         sliceHeight,
         layerAmplitude,
         randomSeed,
-        isCircular());
+        isCircular(), null);
   }
 
   @Override
   protected SliceNoiseGenerator buildMultipleNoiseLayer(List<SliceNoiseGenerator> layers) {
-    return new LayeredSliceGenerator(layers);
+    return new LayeredSliceGenerator(layers, null);
   }
 }

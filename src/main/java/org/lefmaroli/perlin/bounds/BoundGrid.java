@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.bounds;
 
 import java.util.Arrays;
 import org.lefmaroli.perlin.PerlinNoise;
-import org.lefmaroli.vector.VectorMultiD;
+import org.lefmaroli.vector.DimensionalVector;
 
 public abstract class BoundGrid {
 
@@ -12,7 +12,7 @@ public abstract class BoundGrid {
     this.dimension = dimension;
   }
 
-  public VectorMultiD getBoundForCoordinates(int[] coordinates, int[] boundIndices) {
+  public DimensionalVector getBoundForCoordinates(int[] coordinates, int[] boundIndices) {
     if (coordinates.length != dimension || boundIndices.length != coordinates.length) {
       throw new IllegalArgumentException(
           "Number of coordinates don't match dimension of "
@@ -23,7 +23,7 @@ public abstract class BoundGrid {
     return getBoundForCoordinatesSpecificDim(coordinates, boundIndices);
   }
 
-  abstract VectorMultiD getBoundForCoordinatesSpecificDim(int[] coordinates, int[] boundIndices);
+  abstract DimensionalVector getBoundForCoordinatesSpecificDim(int[] coordinates, int[] boundIndices);
 
   protected static int wrapIndexToBounds(int index, int numberOfBounds) {
     return index & (numberOfBounds - 1);

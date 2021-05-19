@@ -3,6 +3,7 @@ package org.lefmaroli.perlin.slice;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
 import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
 
 public class LayeredSliceGenerator
@@ -12,8 +13,9 @@ public class LayeredSliceGenerator
   private final int sliceWidth;
   private final int sliceHeight;
 
-  protected LayeredSliceGenerator(List<SliceNoiseGenerator> sliceNoiseGenerators) {
-    super(sliceNoiseGenerators);
+  protected LayeredSliceGenerator(List<SliceNoiseGenerator> sliceNoiseGenerators,
+      ForkJoinPool pool) {
+    super(sliceNoiseGenerators, pool);
     this.sliceWidth = sliceNoiseGenerators.get(0).getSliceWidth();
     this.sliceHeight = sliceNoiseGenerators.get(0).getSliceHeight();
     assertAllLayersHaveSameSize(sliceNoiseGenerators);

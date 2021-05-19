@@ -3,12 +3,14 @@ package org.lefmaroli.random;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import org.lefmaroli.vector.VectorMultiD;
+import org.lefmaroli.vector.DimensionalVector;
+import org.lefmaroli.vector.Vector1D;
+import org.lefmaroli.vector.VectorFactory;
 
 public class RandomGenerator {
 
   public static final int NUMBER_OF_TEMPLATES = 10000;
-  private static final Map<Integer, VectorMultiD[]> UNIT_VECTORS_TEMPLATES_MULTI_D =
+  private static final Map<Integer, DimensionalVector[]> UNIT_VECTORS_TEMPLATES_MULTI_D =
       new HashMap<>(5);
 
   private final Random basicRandGenerator;
@@ -22,35 +24,35 @@ public class RandomGenerator {
   }
 
   private static void generateMultiDSamples(
-      Random randomGenerator, int dimensions, VectorMultiD[] templates) {
+      Random randomGenerator, int dimensions, DimensionalVector[] templates) {
     var lengthLimit = 1E-4;
     var max = 1.0;
     var min = -1.0;
     for (var i = 0; i < NUMBER_OF_TEMPLATES; i++) {
-      var vectorMultiD = new VectorMultiD(0);
       if (dimensions == 1) {
         double value = randomGenerator.nextDouble() * (max - min) + min;
-        templates[i] = new VectorMultiD(value);
+        templates[i] = new Vector1D(value);
       } else {
-        var length = 0.0;
+        DimensionalVector vectorMultiD;
+        double length;
         var coordinates = new double[dimensions];
-        while (length < lengthLimit) {
+        do {
           for (var j = 0; j < dimensions; j++) {
             coordinates[j] = randomGenerator.nextDouble() * (max - min + 1) + min;
           }
-          vectorMultiD = new VectorMultiD(coordinates);
+          vectorMultiD = VectorFactory.getVectorForCoordinates(coordinates);
           length = vectorMultiD.getLength();
-        }
+        }while (length < lengthLimit);
         templates[i] = vectorMultiD.normalize();
       }
     }
   }
 
-  public VectorMultiD getRandomUnitVectorOfDim(int dimension) {
+  public DimensionalVector getRandomUnitVectorOfDim(int dimension) {
     UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(
         dimension,
         k -> {
-          var v = new VectorMultiD[NUMBER_OF_TEMPLATES];
+          var v = new DimensionalVector[NUMBER_OF_TEMPLATES];
           generateMultiDSamples(basicRandGenerator, dimension, v);
           return v;
         });

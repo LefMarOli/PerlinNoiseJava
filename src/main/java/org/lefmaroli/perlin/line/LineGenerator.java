@@ -2,6 +2,8 @@ package org.lefmaroli.perlin.line;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
@@ -12,6 +14,8 @@ import org.lefmaroli.perlin.dimensional.MultiDimensionalRootNoiseGenerator;
 public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
     implements LineNoiseGenerator {
 
+  public static int LINE_LENGTH_THRESHOLD = 200;
+
   private static final Logger LOGGER = LogManager.getLogger(LineGenerator.class);
   private static final List<String> parameterNames = List.of("Line step size", "Line length");
 
@@ -20,6 +24,7 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
   private final double lineAngleFactor;
   private int currentPosition = 0;
   private final PerlinNoiseDataContainer perlinData;
+  private final PerlinNoiseDataContainerBuilder builder;
 
   public LineGenerator(
       double noiseStepSize,
@@ -27,17 +32,19 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
       int lineLength,
       double maxAmplitude,
       long randomSeed,
-      boolean isCircular) {
-    super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
+      boolean isCircular,
+      ForkJoinPool pool) {
+    super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
     assertValidValues(parameterNames, lineStepSize, lineLength);
     this.lineLength = lineLength;
     this.lineStepSize = correctStepSizeForCircularity(lineStepSize, lineLength, "line length");
     this.lineAngleFactor = this.lineStepSize * (2 * Math.PI);
     if (isCircular) {
-      perlinData = new PerlinNoiseDataContainerBuilder(3, randomSeed).getNewContainer();
+      builder = new PerlinNoiseDataContainerBuilder(3, randomSeed);
     } else {
-      perlinData = new PerlinNoiseDataContainerBuilder(2, randomSeed).getNewContainer();
+      builder = new PerlinNoiseDataContainerBuilder(2, randomSeed);
     }
+    this.perlinData = builder.getNewContainer();
     LOGGER.debug("Created new {}", this);
   }
 
@@ -96,20 +103,73 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
 
   private void processNoiseDomain(int noiseIndex, double[] lineData) {
     double noiseDist = (double) (noiseIndex) * getNoiseStepSize();
-    for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
-      lineData[lineIndex] = processLineDomain(noiseDist, lineIndex);
+    perlinData.setCoordinatesForDimension(0, noiseDist);
+    if (hasParallelProcessingEnabled()) {
+      getExecutionPool()
+          .invoke(new GenerateLineNoiseTask(lineData, noiseDist, perlinData, 0, lineLength));
+    } else {
+      for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
+        lineData[lineIndex] = processLineDomain(lineIndex, perlinData);
+      }
     }
   }
 
-  private double processLineDomain(double noiseDist, int lineIndex) {
-    perlinData.setCoordinatesForDimension(0, noiseDist);
+  private double processLineDomain(int lineIndex, PerlinNoiseDataContainer container) {
     if (isCircular()) {
       double angle = lineIndex * lineAngleFactor;
-      perlinData.setCoordinatesForDimension(1, (Math.cos(angle) + 1.0) / 2.0);
-      perlinData.setCoordinatesForDimension(2, (Math.sin(angle) + 1.0) / 2.0);
+      container.setCoordinatesForDimension(1, (Math.cos(angle) + 1.0) / 2.0);
+      container.setCoordinatesForDimension(2, (Math.sin(angle) + 1.0) / 2.0);
     } else {
-      perlinData.setCoordinatesForDimension(1, lineIndex * lineStepSize);
+      container.setCoordinatesForDimension(1, lineIndex * lineStepSize);
     }
-    return PerlinNoise.getFor(perlinData) * getMaxAmplitude();
+    return PerlinNoise.getFor(container) * getMaxAmplitude();
+  }
+
+  private class GenerateLineNoiseTask extends RecursiveAction {
+
+    private final double[] results;
+    private final double noiseDistance;
+    private final int startLineIndex;
+    private final int endLineIndex;
+    private final PerlinNoiseDataContainer dataContainer;
+
+    GenerateLineNoiseTask(
+        double[] results,
+        double noiseDistance,
+        PerlinNoiseDataContainer dataContainer,
+        int startLineIndex,
+        int endLineIndex) {
+      this.results = results;
+      this.noiseDistance = noiseDistance;
+      this.startLineIndex = startLineIndex;
+      this.endLineIndex = endLineIndex;
+      this.dataContainer = dataContainer;
+    }
+
+    private void computeDirectly() {
+      for (var lineIndex = startLineIndex; lineIndex < endLineIndex; lineIndex++) {
+        results[lineIndex] = processLineDomain(lineIndex, dataContainer);
+      }
+    }
+
+    @Override
+    protected void compute() {
+
+      var lineSegment = endLineIndex - startLineIndex;
+      if (lineSegment < LINE_LENGTH_THRESHOLD) {
+        computeDirectly();
+        return;
+      }
+
+      int splitIndex = (lineSegment / 2) + startLineIndex;
+
+      PerlinNoiseDataContainer newContainer = builder.getNewContainer();
+      newContainer.setCoordinatesForDimension(0, noiseDistance);
+      invokeAll(
+          new GenerateLineNoiseTask(
+              results, noiseDistance, dataContainer, startLineIndex, splitIndex),
+          new GenerateLineNoiseTask(
+              results, noiseDistance, newContainer, splitIndex, endLineIndex));
+    }
   }
 }

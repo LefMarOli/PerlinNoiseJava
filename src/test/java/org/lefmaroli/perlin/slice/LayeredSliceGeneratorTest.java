@@ -30,7 +30,7 @@ class LayeredSliceGeneratorTest {
             defaultSliceHeight,
             1.0,
             System.currentTimeMillis(),
-            isCircularDefault));
+            isCircularDefault, null));
     layers.add(
         new SliceGenerator(
             1.0 / 50,
@@ -40,7 +40,7 @@ class LayeredSliceGeneratorTest {
             defaultSliceHeight,
             0.5,
             System.currentTimeMillis(),
-            isCircularDefault));
+            isCircularDefault, null));
     layers.add(
         new SliceGenerator(
             1.0 / 25,
@@ -50,8 +50,8 @@ class LayeredSliceGeneratorTest {
             defaultSliceHeight,
             0.25,
             System.currentTimeMillis(),
-            isCircularDefault));
-    defaultGenerator = new LayeredSliceGenerator(layers);
+            isCircularDefault, null));
+    defaultGenerator = new LayeredSliceGenerator(layers, null);
   }
 
   @Test
@@ -63,7 +63,7 @@ class LayeredSliceGeneratorTest {
   void testCreateWithNoLayers() {
     ArrayList<SliceNoiseGenerator> layers = new ArrayList<>(5);
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> new LayeredSliceGenerator(layers));
+        IllegalArgumentException.class, () -> new LayeredSliceGenerator(layers, null));
   }
 
   @Test
@@ -78,9 +78,9 @@ class LayeredSliceGeneratorTest {
             defaultSliceHeight,
             0.1225,
             System.currentTimeMillis(),
-            isCircularDefault));
+            isCircularDefault, null));
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> new LayeredSliceGenerator(newLayerSet));
+        IllegalArgumentException.class, () -> new LayeredSliceGenerator(newLayerSet, null));
   }
 
   @Test
@@ -95,9 +95,9 @@ class LayeredSliceGeneratorTest {
             defaultSliceHeight - 9,
             0.1225,
             System.currentTimeMillis(),
-            isCircularDefault));
+            isCircularDefault, null));
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> new LayeredSliceGenerator(newLayerSet));
+        IllegalArgumentException.class, () -> new LayeredSliceGenerator(newLayerSet, null));
   }
 
   @Test
@@ -132,7 +132,7 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testEquals() {
-    LayeredSliceGenerator sameGenerator = new LayeredSliceGenerator(layers);
+    LayeredSliceGenerator sameGenerator = new LayeredSliceGenerator(layers, null);
     Assertions.assertEquals(defaultGenerator, sameGenerator);
     Assertions.assertEquals(defaultGenerator.hashCode(), sameGenerator.hashCode());
   }
@@ -149,8 +149,8 @@ class LayeredSliceGeneratorTest {
             defaultSliceHeight,
             0.1,
             5L,
-            isCircularDefault));
-    LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
+            isCircularDefault, null));
+    LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers, null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -184,8 +184,8 @@ class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> otherLayers = layers;
     otherLayers.add(
         new SliceGenerator(
-            1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
-    LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
+            1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true, null));
+    LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers, null);
     Assertions.assertFalse(otherGenerator.isCircular());
   }
 
@@ -194,14 +194,16 @@ class LayeredSliceGeneratorTest {
     List<SliceNoiseGenerator> otherLayers = new ArrayList<>(3);
     otherLayers.add(
         new SliceGenerator(
-            1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true));
+            1.0 / 8, 1.0 / 8, 1.0 / 8, defaultSliceWidth, defaultSliceHeight, 0.1, 5L, true, null));
     otherLayers.add(
         new SliceGenerator(
-            1.0 / 16, 1.0 / 16, 1.0 / 16, defaultSliceWidth, defaultSliceHeight, 0.05, 2L, true));
+            1.0 / 16, 1.0 / 16, 1.0 / 16, defaultSliceWidth, defaultSliceHeight, 0.05, 2L, true,
+            null));
     otherLayers.add(
         new SliceGenerator(
-            1.0 / 25, 1.0 / 25, 1.0 / 25, defaultSliceWidth, defaultSliceHeight, 0.005, 1L, true));
-    LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers);
+            1.0 / 25, 1.0 / 25, 1.0 / 25, defaultSliceWidth, defaultSliceHeight, 0.005, 1L, true,
+            null));
+    LayeredSliceGenerator otherGenerator = new LayeredSliceGenerator(otherLayers, null);
     Assertions.assertTrue(otherGenerator.isCircular());
   }
 }

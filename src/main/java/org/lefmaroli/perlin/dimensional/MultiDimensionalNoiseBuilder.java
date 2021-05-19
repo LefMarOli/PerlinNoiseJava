@@ -1,7 +1,6 @@
 package org.lefmaroli.perlin.dimensional;
 
-import java.util.concurrent.Executors;
-import org.lefmaroli.execution.ExecutorPool;
+import java.util.concurrent.ForkJoinPool;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.NoiseBuilder;
 
@@ -10,11 +9,15 @@ public abstract class MultiDimensionalNoiseBuilder<
     extends NoiseBuilder<N, L, B> {
 
   private boolean isCircular = false;
-  private ExecutorPool executorPool =
-      new ExecutorPool(this.getClass().getName(), Executors.newWorkStealingPool(1));
+  private ForkJoinPool pool = ForkJoinPool.commonPool();
 
   protected MultiDimensionalNoiseBuilder(int dimensions) {
     super(dimensions);
+  }
+
+  public B withForkJoinPool(ForkJoinPool pool){
+    this.pool = pool;
+    return self();
   }
 
   public B withCircularBounds() {
@@ -22,20 +25,12 @@ public abstract class MultiDimensionalNoiseBuilder<
     return self();
   }
 
-  public B withExecutorPool(ExecutorPool executorPool) {
-    this.executorPool = executorPool;
-    return self();
-  }
 
   protected boolean isCircular() {
     return isCircular;
   }
 
-  protected ExecutorPool getExecutorPool() {
-    return executorPool;
-  }
-
-  protected boolean isParallel() {
-    return executorPool != null;
+  protected ForkJoinPool getPool(){
+    return pool;
   }
 }

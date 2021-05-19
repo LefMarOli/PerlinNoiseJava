@@ -2,6 +2,7 @@ package org.lefmaroli.perlin.slice;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
@@ -32,8 +33,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       int sliceHeight,
       double maxAmplitude,
       long randomSeed,
-      boolean isCircular) {
-    super(noiseStepSize, maxAmplitude, randomSeed, isCircular);
+      boolean isCircular, ForkJoinPool pool) {
+    super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
     assertValidValues(parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
     this.widthStepSize = correctStepSizeForCircularity(widthStepSize, sliceWidth, "slice width");
     this.widthAngleFactor = this.widthStepSize * 2 * Math.PI;
