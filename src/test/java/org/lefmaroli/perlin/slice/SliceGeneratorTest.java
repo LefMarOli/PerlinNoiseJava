@@ -468,7 +468,11 @@ class SliceGeneratorTest {
             "currentPosInNoiseInterpolation",
             "generated",
             "containers",
-            "containersCount")
+            "containersCount",
+            "recycler",
+            "lengthThreshold",
+            "pool",
+            "numberAvailableProcessors")
         .verify();
   }
 
@@ -603,8 +607,7 @@ class SliceGeneratorTest {
     double[][] slice = generator.getNext();
 
     AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
-    //    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
-    boolean isDisplaySupported = false;
+    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
     if (isDisplaySupported) {
       im.set(new SimpleGrayScaleImage(slice, 5));
       im.get().setVisible();
@@ -632,7 +635,7 @@ class SliceGeneratorTest {
             },
             30,
             TimeUnit.MILLISECONDS,
-            500,
+            5,
             TimeUnit.SECONDS);
     completed.thenRun(
         () -> {

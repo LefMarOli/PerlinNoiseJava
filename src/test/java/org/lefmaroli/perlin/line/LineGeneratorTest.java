@@ -370,7 +370,11 @@ class LineGeneratorTest {
             "generated",
             "containers",
             "containersCount",
-            "lineAngleFactor")
+            "lineAngleFactor",
+            "recycler",
+            "lineLengthThreshold",
+            "pool",
+            "numberAvailableProcessors")
         .verify();
   }
 
