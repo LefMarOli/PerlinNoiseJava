@@ -89,7 +89,7 @@ class InterpolationTest {
 
   @ParameterizedTest
   @ValueSource(ints = {-1, 4})
-  void testDimensionGetFromIllegalIndex(int index){
-    Assertions.assertThrows(IllegalArgumentException.class, ()-> Dimension.getFromIndex(index));
+  void testDimensionGetFromIllegalIndex(int index) {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Dimension.getFromIndex(index));
   }
 }

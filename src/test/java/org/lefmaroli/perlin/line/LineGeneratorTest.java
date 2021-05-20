@@ -190,7 +190,8 @@ class LineGeneratorTest {
     LineGenerator layer =
         new LineGenerator(1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular, null);
     LineGenerator sameLayer =
-        new LineGenerator(1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular, ForkJoinPool.commonPool());
+        new LineGenerator(
+            1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular, ForkJoinPool.commonPool());
     double[] nextSegment1 = layer.getNext();
     double[] nextSegment2 = sameLayer.getNext();
 

@@ -23,7 +23,8 @@ class BoundGridTest {
   @MethodSource("invalidNumberOfBounds")
   void testInvalidNumberOfBoundsCreate(int numberOfBounds) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> BoundGrid.getNewBoundGridForDimension(1, numberOfBounds));
+        IllegalArgumentException.class,
+        () -> BoundGrid.getNewBoundGridForDimension(1, numberOfBounds));
   }
 
   private static Stream<Arguments> invalidNumberOfBounds() {

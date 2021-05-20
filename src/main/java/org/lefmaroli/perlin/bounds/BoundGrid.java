@@ -31,11 +31,14 @@ public abstract class BoundGrid {
   }
 
   public static BoundGrid getNewBoundGridForDimension(int dimension, int numberOfBounds) {
-    if(numberOfBounds < 1){
-      throw new IllegalArgumentException("Number of bounds should be greater than 0, provided "+ numberOfBounds);
+    if (numberOfBounds < 1) {
+      throw new IllegalArgumentException(
+          "Number of bounds should be greater than 0, provided " + numberOfBounds);
     }
-    if(!isPowerOfTwo(numberOfBounds)){
-      throw new IllegalArgumentException("Only power-of-two number of bounds allowed for faster processing, provided " + numberOfBounds);
+    if (!isPowerOfTwo(numberOfBounds)) {
+      throw new IllegalArgumentException(
+          "Only power-of-two number of bounds allowed for faster processing, provided "
+              + numberOfBounds);
     }
     return switch (dimension) {
       case 1 -> new BoundGridOneDimensional(dimension, numberOfBounds);
