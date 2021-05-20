@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import org.lefmaroli.configuration.JitterTrait;
+import org.lefmaroli.execution.ContainerRecycler.ContainerCreator;
 import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.bounds.BoundGrid;
@@ -78,7 +79,7 @@ public class PerlinNoise {
           "Coordinates length should be the same as the number of dimensions");
     }
     defaultContainers.putIfAbsent(
-        dim, new PerlinNoiseDataContainerBuilder(dim, randomSeed).getNewContainer());
+        dim, new PerlinNoiseDataContainerBuilder(dim, randomSeed).createNewContainer());
     PerlinNoiseDataContainer dataContainer = defaultContainers.get(dim);
     for (var i = 0; i < dim; i++) {
       dataContainer.setCoordinatesForDimension(i, coordinates[i]);
@@ -86,7 +87,7 @@ public class PerlinNoise {
     return getFor(dataContainer);
   }
 
-  public static class PerlinNoiseDataContainerBuilder {
+  public static class PerlinNoiseDataContainerBuilder implements ContainerCreator<PerlinNoiseDataContainer> {
     private final int dimension;
     private final int numberOfBounds;
     private final int firstDimensionOffset;
@@ -103,7 +104,8 @@ public class PerlinNoise {
           new Random(randomSeed).nextInt(Integer.MAX_VALUE - (numberOfBounds));
     }
 
-    public PerlinNoiseDataContainer getNewContainer() {
+    @Override
+    public PerlinNoiseDataContainer createNewContainer() {
       return new PerlinNoiseDataContainer(dimension, firstDimensionOffset, numberOfBounds);
     }
 
@@ -122,6 +124,7 @@ public class PerlinNoise {
             return BoundGrid.getNewBoundGridForDimension(dimension, numberOfBoundsPerDimension);
           });
     }
+
   }
 
   public static class PerlinNoiseDataContainer {

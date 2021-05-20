@@ -6,6 +6,7 @@ import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -527,7 +528,7 @@ class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             true,
-            null);
+            ForkJoinPool.commonPool());
     double[][] slices = generator.getNext();
     int patchFactor = 2;
     double[][] patched =
@@ -597,13 +598,13 @@ class SliceGeneratorTest {
             1.0,
             System.currentTimeMillis(),
             false,
-            null);
+            ForkJoinPool.commonPool());
 
     double[][] slice = generator.getNext();
 
     AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
-    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
-    //    boolean isDisplaySupported = false;
+//    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+        boolean isDisplaySupported = false;
     if (isDisplaySupported) {
       im.set(new SimpleGrayScaleImage(slice, 5));
       im.get().setVisible();

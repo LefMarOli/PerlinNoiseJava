@@ -4,17 +4,13 @@ import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
@@ -465,60 +461,5 @@ class LineGeneratorTest {
             im.get().dispose();
           }
         });
-  }
-
-  @ParameterizedTest
-  @MethodSource("forkingtest")
-  void testForkingThreshold(int lineLength, int lineSizeThreshold) {
-
-    double noiseStepSize = 0.01;
-    double lineStepSize = 0.05;
-    double maxAmplitude = 1.0;
-    LineGenerator generator =
-        new LineGenerator(
-            noiseStepSize, lineStepSize, lineLength, maxAmplitude, randomSeed, false, null);
-    ForkJoinPool pool = null;
-    try {
-      pool = new ForkJoinPool(2);
-      LineGenerator forkedGenerator =
-          new LineGenerator(
-              noiseStepSize, lineStepSize, lineLength, maxAmplitude, randomSeed, false, pool);
-
-      int numIterations = 50000;
-      long start, forkedStart, mean, forkedMean;
-      ArrayList<Long> durations = new ArrayList<>(numIterations);
-      ArrayList<Long> forkedDurations = new ArrayList<>(numIterations);
-      for (int i = 0; i < numIterations; i++) {
-        start = System.nanoTime();
-        generator.getNext();
-        durations.add(System.nanoTime() - start);
-        forkedStart = System.nanoTime();
-        forkedGenerator.getNext();
-        forkedDurations.add(System.nanoTime() - forkedStart);
-      }
-      mean = durations.stream().reduce(Long::sum).get() / numIterations;
-      forkedMean = forkedDurations.stream().reduce(Long::sum).get() / numIterations;
-
-      Long sum = durations.stream().map(x -> (x - mean) * (x - mean)).reduce(Long::sum).get();
-      double std = Math.sqrt(sum / ((double) numIterations));
-
-      Long forkedSum =
-          forkedDurations.stream()
-              .map(x -> (x - forkedMean) * (x - forkedMean))
-              .reduce(Long::sum)
-              .get();
-      double forkedStd = Math.sqrt(forkedSum / ((double) numIterations));
-
-      LogManager.getLogger(this.getClass()).info("Unforked mean: " + mean + "±" + std);
-      LogManager.getLogger(this.getClass()).info("Forked mean: " + forkedMean + "±" + forkedStd);
-
-      long diff = mean - forkedMean;
-      Assertions.assertTrue(diff > 0);
-
-    } finally {
-      if (pool != null) {
-        pool.shutdown();
-      }
-    }
   }
 }

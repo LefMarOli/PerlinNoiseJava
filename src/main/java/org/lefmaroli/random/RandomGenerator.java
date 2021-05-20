@@ -3,6 +3,7 @@ package org.lefmaroli.random;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 import org.lefmaroli.vector.DimensionalVector;
 import org.lefmaroli.vector.Vector1D;
 import org.lefmaroli.vector.VectorFactory;
@@ -14,6 +15,7 @@ public class RandomGenerator {
       new HashMap<>(5);
 
   private final Random basicRandGenerator;
+  private final Function<Integer, DimensionalVector[]> integerFunction;
 
   RandomGenerator() {
     this(System.currentTimeMillis());
@@ -21,6 +23,11 @@ public class RandomGenerator {
 
   public RandomGenerator(long seed) {
     this.basicRandGenerator = new Random(seed);
+    integerFunction = dim -> {
+      var v = new DimensionalVector[NUMBER_OF_TEMPLATES];
+      generateMultiDSamples(basicRandGenerator, dim, v);
+      return v;
+    };
   }
 
   private static void generateMultiDSamples(
@@ -51,11 +58,7 @@ public class RandomGenerator {
   public DimensionalVector getRandomUnitVectorOfDim(int dimension) {
     UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(
         dimension,
-        k -> {
-          var v = new DimensionalVector[NUMBER_OF_TEMPLATES];
-          generateMultiDSamples(basicRandGenerator, dimension, v);
-          return v;
-        });
+        integerFunction);
     var rand = basicRandGenerator.nextInt(NUMBER_OF_TEMPLATES);
     return UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension)[rand];
   }

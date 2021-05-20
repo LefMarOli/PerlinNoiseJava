@@ -18,7 +18,7 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
   public PointGenerator(double noiseStepSize, double maxAmplitude, long randomSeed) {
     super(noiseStepSize, maxAmplitude, randomSeed);
     this.currentPosition = new Random(randomSeed).nextDouble();
-    perlinData = new PerlinNoiseDataContainerBuilder(1, randomSeed).getNewContainer();
+    perlinData = new PerlinNoiseDataContainerBuilder(1, randomSeed).createNewContainer();
     LOGGER.debug("Created new {}", this);
   }
 
