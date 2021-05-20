@@ -41,7 +41,7 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<
 
   @Override
   public boolean hasParallelProcessingEnabled() {
-    return pool != null;
+    return pool != null && Runtime.getRuntime().availableProcessors() > 1;
   }
 
   @Override

@@ -31,9 +31,11 @@ public abstract class BoundGrid {
   }
 
   public static BoundGrid getNewBoundGridForDimension(int dimension, int numberOfBounds) {
-    if (dimension < 1 || dimension > PerlinNoise.MAX_DIMENSION) {
-      throw new IllegalArgumentException(
-          "Dimension should be in range [1, " + PerlinNoise.MAX_DIMENSION + "]");
+    if(numberOfBounds < 1){
+      throw new IllegalArgumentException("Number of bounds should be greater than 0, provided "+ numberOfBounds);
+    }
+    if(!isPowerOfTwo(numberOfBounds)){
+      throw new IllegalArgumentException("Only power-of-two number of bounds allowed for faster processing, provided " + numberOfBounds);
     }
     return switch (dimension) {
       case 1 -> new BoundGridOneDimensional(dimension, numberOfBounds);
@@ -41,7 +43,12 @@ public abstract class BoundGrid {
       case 3 -> new BoundGridThreeDimensional(dimension, numberOfBounds);
       case 4 -> new BoundGridFourDimensional(dimension, numberOfBounds);
       case 5 -> new BoundGridFiveDimensional(dimension, numberOfBounds);
-      default -> throw new IllegalStateException("Unexpected dimension: " + dimension);
+      default -> throw new IllegalArgumentException(
+          "Dimension should be in range [1, " + PerlinNoise.MAX_DIMENSION + "]");
     };
+  }
+
+  private static boolean isPowerOfTwo(int numberOfBounds) {
+    return (numberOfBounds & (numberOfBounds - 1)) == 0;
   }
 }

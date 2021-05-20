@@ -55,13 +55,7 @@ public class PerlinNoise {
     if (dimension == 1) {
       return interpolated + 0.5;
     }
-    double adjusted = adjustInRange(interpolated);
-    if (adjusted > 1.0) {
-      adjusted = 1.0;
-    } else if (adjusted < 0.0) {
-      adjusted = 0.0;
-    }
-    return adjusted;
+    return adjustInRange(interpolated);
   }
 
   private static double adjustInRange(double interpolated) {
@@ -111,13 +105,6 @@ public class PerlinNoise {
     }
 
     private static void initializeBoundsForDimension(int dimension) {
-      if (dimension < 1 || dimension > MAX_DIMENSION) {
-        throw new IllegalArgumentException(
-            "Dimension "
-                + dimension
-                + " not supported, dimension must be in range [1, "
-                + MAX_DIMENSION);
-      }
       BOUNDS_MAP.computeIfAbsent(
           dimension,
           dim -> {

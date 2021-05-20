@@ -6,12 +6,15 @@ import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.execution.TestJitterStrategy;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
@@ -177,6 +180,25 @@ class LineGeneratorTest {
     for (int i = 0; i < nextSegment1.length; i++) {
       Assertions.assertEquals(nextSegment1[i], nextSegment2[i], 0.0);
     }
+  }
+
+  @Test
+  void testCreateSameGeneratedLinesWithPool() {
+    JitterTrait.setJitterStrategy(new TestJitterStrategy());
+    long randomSeed = System.currentTimeMillis();
+    int lineLength = 8000;
+    LineGenerator layer =
+        new LineGenerator(1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular, null);
+    LineGenerator sameLayer =
+        new LineGenerator(1.0 / 50, 1.0 / 50, lineLength, 1.0, randomSeed, isCircular, ForkJoinPool.commonPool());
+    double[] nextSegment1 = layer.getNext();
+    double[] nextSegment2 = sameLayer.getNext();
+
+    Assertions.assertEquals(nextSegment1.length, nextSegment2.length, 0);
+    for (int i = 0; i < nextSegment1.length; i++) {
+      Assertions.assertEquals(nextSegment1[i], nextSegment2[i], 0.0);
+    }
+    JitterTrait.resetJitterStrategy();
   }
 
   @Test

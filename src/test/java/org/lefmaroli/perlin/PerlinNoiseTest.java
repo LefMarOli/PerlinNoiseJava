@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class PerlinNoiseTest {
 
@@ -44,5 +45,13 @@ class PerlinNoiseTest {
         Arguments.of(2, new double[] {0.5, 0.3}),
         Arguments.of(3, new double[] {0.5, 0.3, 0.5472}),
         Arguments.of(4, new double[] {0.5, 0.3, 0.5472, 0.587}));
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {0, 6})
+  void testInvalidDimensionPerlinNoiseContainerBuilder(int dimension) {
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> new PerlinNoise.PerlinNoiseDataContainerBuilder(dimension, 0L));
   }
 }

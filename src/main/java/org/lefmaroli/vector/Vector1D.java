@@ -2,6 +2,8 @@ package org.lefmaroli.vector;
 
 public class Vector1D extends AbstractDimensionalVector {
 
+  private static final Vector1D NORMALIZED = new Vector1D(1.0);
+
   private final double x;
 
   public Vector1D(double x) {
@@ -10,11 +12,7 @@ public class Vector1D extends AbstractDimensionalVector {
 
   @Override
   public DimensionalVector normalize() {
-    if (Double.compare(x, 1.0) == 0) {
-      return this;
-    } else {
-      return new Vector1D(1.0);
-    }
+    return NORMALIZED;
   }
 
   @Override

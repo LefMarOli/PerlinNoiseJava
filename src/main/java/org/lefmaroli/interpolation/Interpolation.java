@@ -116,7 +116,7 @@ public class Interpolation {
     }
 
     public static Dimension getFromIndex(int index) {
-      if (index > 3 || index < 0) {
+      if (index < 0 || index >= Dimension.values().length) {
         throw new IllegalArgumentException("Supported dimensions from 0(X) to 3(T)");
       }
       for (Dimension value : Dimension.values()) {

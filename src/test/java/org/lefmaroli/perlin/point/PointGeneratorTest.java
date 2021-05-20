@@ -82,6 +82,19 @@ class PointGeneratorTest {
     PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
     PointGenerator layer2 = new PointGenerator(1.0 / 5, 1.0, 0L);
     Assertions.assertEquals(layer, layer2);
+    Assertions.assertEquals(layer, layer);
+  }
+
+  @Test
+  void testNotEqualWithNull() {
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    Assertions.assertNotEquals(null, layer);
+  }
+
+  @Test
+  void testNotEqualWithOtherObject() {
+    PointGenerator layer = new PointGenerator(1.0 / 5, 1.0, 0L);
+    Assertions.assertNotEquals(new Random(), layer);
   }
 
   @Test

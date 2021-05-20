@@ -2,6 +2,9 @@ package org.lefmaroli.interpolation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.lefmaroli.interpolation.Interpolation.Dimension;
 
 class InterpolationTest {
 
@@ -82,5 +85,11 @@ class InterpolationTest {
   @Test
   void testFadeIllegalValue2() {
     Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.fade(5));
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {-1, 4})
+  void testDimensionGetFromIllegalIndex(int index){
+    Assertions.assertThrows(IllegalArgumentException.class, ()-> Dimension.getFromIndex(index));
   }
 }
