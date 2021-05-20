@@ -23,11 +23,12 @@ public class RandomGenerator {
 
   public RandomGenerator(long seed) {
     this.basicRandGenerator = new Random(seed);
-    integerFunction = dim -> {
-      var v = new DimensionalVector[NUMBER_OF_TEMPLATES];
-      generateMultiDSamples(basicRandGenerator, dim, v);
-      return v;
-    };
+    integerFunction =
+        dim -> {
+          var v = new DimensionalVector[NUMBER_OF_TEMPLATES];
+          generateMultiDSamples(basicRandGenerator, dim, v);
+          return v;
+        };
   }
 
   private static void generateMultiDSamples(
@@ -56,9 +57,7 @@ public class RandomGenerator {
   }
 
   public DimensionalVector getRandomUnitVectorOfDim(int dimension) {
-    UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(
-        dimension,
-        integerFunction);
+    UNIT_VECTORS_TEMPLATES_MULTI_D.computeIfAbsent(dimension, integerFunction);
     var rand = basicRandGenerator.nextInt(NUMBER_OF_TEMPLATES);
     return UNIT_VECTORS_TEMPLATES_MULTI_D.get(dimension)[rand];
   }

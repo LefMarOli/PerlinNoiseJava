@@ -603,8 +603,8 @@ class SliceGeneratorTest {
     double[][] slice = generator.getNext();
 
     AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
-//    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
-        boolean isDisplaySupported = false;
+    //    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+    boolean isDisplaySupported = false;
     if (isDisplaySupported) {
       im.set(new SimpleGrayScaleImage(slice, 5));
       im.get().setVisible();

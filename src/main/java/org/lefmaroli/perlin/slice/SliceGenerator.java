@@ -64,7 +64,8 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   private int computeLengthThresholdForForkingProcess(int sliceWidth, int sliceHeight) {
     var threshold = 2500;
     if (hasParallelProcessingEnabled() && sliceWidth * sliceHeight > 2500) {
-      threshold = (int) Math.ceil( (double)sliceWidth * sliceHeight / getExecutionPool().getParallelism());
+      threshold =
+          (int) Math.ceil((double) sliceWidth * sliceHeight / getExecutionPool().getParallelism());
     }
     return threshold;
   }
@@ -206,7 +207,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       PerlinNoiseDataContainer dataContainer = recycler.getNewOrNextAvailableContainer();
       dataContainer.setCoordinatesForDimension(0, noiseDistance);
       for (var widthIndex = startWidthIndex; widthIndex < endWidthIndex; widthIndex++) {
-        processSliceWidthDomain(widthIndex, results[widthIndex],  dataContainer);
+        processSliceWidthDomain(widthIndex, results[widthIndex], dataContainer);
       }
       recycler.recycleContainer(dataContainer);
     }
@@ -224,10 +225,34 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       int splitHeightIndex = (heightSegment / 2) + startHeightIndex;
 
       invokeAll(
-          new SliceNoiseTask(results, noiseDistance, startWidthIndex, splitWidthIndex, startHeightIndex, splitHeightIndex),
-          new SliceNoiseTask(results, noiseDistance, splitWidthIndex, endWidthIndex, startHeightIndex, splitHeightIndex),
-          new SliceNoiseTask(results, noiseDistance, startWidthIndex, splitWidthIndex, splitHeightIndex, endHeightIndex),
-          new SliceNoiseTask(results, noiseDistance, splitWidthIndex, endWidthIndex, splitHeightIndex, endHeightIndex));
+          new SliceNoiseTask(
+              results,
+              noiseDistance,
+              startWidthIndex,
+              splitWidthIndex,
+              startHeightIndex,
+              splitHeightIndex),
+          new SliceNoiseTask(
+              results,
+              noiseDistance,
+              splitWidthIndex,
+              endWidthIndex,
+              startHeightIndex,
+              splitHeightIndex),
+          new SliceNoiseTask(
+              results,
+              noiseDistance,
+              startWidthIndex,
+              splitWidthIndex,
+              splitHeightIndex,
+              endHeightIndex),
+          new SliceNoiseTask(
+              results,
+              noiseDistance,
+              splitWidthIndex,
+              endWidthIndex,
+              splitHeightIndex,
+              endHeightIndex));
     }
   }
 }

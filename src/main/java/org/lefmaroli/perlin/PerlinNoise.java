@@ -87,7 +87,8 @@ public class PerlinNoise {
     return getFor(dataContainer);
   }
 
-  public static class PerlinNoiseDataContainerBuilder implements ContainerCreator<PerlinNoiseDataContainer> {
+  public static class PerlinNoiseDataContainerBuilder
+      implements ContainerCreator<PerlinNoiseDataContainer> {
     private final int dimension;
     private final int numberOfBounds;
     private final int firstDimensionOffset;
@@ -124,7 +125,6 @@ public class PerlinNoise {
             return BoundGrid.getNewBoundGridForDimension(dimension, numberOfBoundsPerDimension);
           });
     }
-
   }
 
   public static class PerlinNoiseDataContainer {
