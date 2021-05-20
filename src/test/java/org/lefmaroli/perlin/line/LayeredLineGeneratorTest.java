@@ -131,7 +131,13 @@ class LayeredLineGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "scheduler", "jitterStrategy", "logger", "containers", "generated", "containersCount", "pool")
+            "scheduler",
+            "jitterStrategy",
+            "logger",
+            "containers",
+            "generated",
+            "containersCount",
+            "pool")
         .verify();
   }
 
