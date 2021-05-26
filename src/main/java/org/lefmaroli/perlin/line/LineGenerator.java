@@ -107,7 +107,7 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
 
   @Override
   public int getTotalSize() {
-    return lineLength;
+    return getLineLength();
   }
 
   @Override

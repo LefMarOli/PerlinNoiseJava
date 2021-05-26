@@ -155,7 +155,7 @@ class PerlinNoisePerformanceTest {
   @Test
   void benchmarkSliceGeneratorPerformanceWithExecutor() throws NoiseBuilderException {
     ExecutorService service = Executors.newFixedThreadPool(3);
-    long optimized = Long.MAX_VALUE;
+    long optimized;
     int numIterations = 50;
     SliceNoiseGeneratorBuilder builder =
         new SliceNoiseGeneratorBuilder(200, 200)

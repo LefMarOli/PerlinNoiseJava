@@ -13,7 +13,7 @@ class BoundGridThreeDimensional extends BoundGrid {
     var generator = new RandomGenerator(System.currentTimeMillis());
     for (var i = 0; i < numberOfBounds; i++) {
       for (var j = 0; j < numberOfBounds; j++) {
-        for (int k = 0; k < numberOfBounds; k++) {
+        for (var k = 0; k < numberOfBounds; k++) {
           bounds[i][j][k] = generator.getRandomUnitVectorOfDim(dimension);
         }
       }
