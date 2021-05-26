@@ -2,7 +2,7 @@ package org.lefmaroli.vector;
 
 public class VectorFactory {
 
-  private VectorFactory(){}
+  private VectorFactory() {}
 
   public static DimensionalVector getVectorForCoordinates(double[] coordinates) {
     if (coordinates.length > 5 || coordinates.length == 0) {
