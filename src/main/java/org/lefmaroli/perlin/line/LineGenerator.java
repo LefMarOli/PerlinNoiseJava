@@ -106,6 +106,11 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
   }
 
   @Override
+  public int getTotalSize() {
+    return lineLength;
+  }
+
+  @Override
   protected double[] generateNextSegment(double[] container) {
     currentPosition++;
     processNoiseDomain(currentPosition, container);
@@ -119,6 +124,9 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
     } else {
       perlinData.setCoordinatesForDimension(0, noiseDist);
       for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
+        if(Thread.interrupted()){
+          return;
+        }
         lineData[lineIndex] = processLineDomain(lineIndex, perlinData);
       }
     }
@@ -153,6 +161,9 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
       PerlinNoiseDataContainer dataContainer = recycler.getNewOrNextAvailableContainer();
       dataContainer.setCoordinatesForDimension(0, noiseDistance);
       for (var lineIndex = startLineIndex; lineIndex < endLineIndex; lineIndex++) {
+        if(Thread.interrupted()){
+          return;
+        }
         results[lineIndex] = processLineDomain(lineIndex, dataContainer);
       }
       recycler.recycleContainer(dataContainer);
@@ -160,6 +171,9 @@ public class LineGenerator extends MultiDimensionalRootNoiseGenerator<double[]>
 
     @Override
     protected void compute() {
+      if(Thread.interrupted()){
+        return;
+      }
       var lineSegment = endLineIndex - startLineIndex;
       if (lineSegment < lineLengthThreshold) {
         computeDirectly();

@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
@@ -79,6 +80,11 @@ class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
+    public int getTotalSize() {
+      return 0;
+    }
+
+    @Override
     public Double getNext() {
       return 0.0;
     }
@@ -110,7 +116,8 @@ class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers) {
+    protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers,
+        ExecutorService executorService) {
       return new MockNoiseGenerator();
     }
   }
@@ -134,7 +141,8 @@ class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers) {
+    protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers,
+        ExecutorService executorService) {
       return null;
     }
   }

@@ -3,7 +3,7 @@ package org.lefmaroli.perlin.line;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
 import org.lefmaroli.perlin.layers.MultiDimensionalLayeredNoiseGenerator;
 
 public class LayeredLineGenerator
@@ -12,8 +12,8 @@ public class LayeredLineGenerator
 
   private final int lineLength;
 
-  LayeredLineGenerator(List<LineNoiseGenerator> layers, ForkJoinPool pool) {
-    super(layers, pool);
+  LayeredLineGenerator(List<LineNoiseGenerator> layers, ExecutorService executorService) {
+    super(layers, executorService);
     this.lineLength = layers.get(0).getLineLength();
     assertAllLayersHaveSameLineLength(layers);
   }

@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin.point;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.lefmaroli.perlin.NoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
 
@@ -28,7 +29,8 @@ public class PointNoiseGeneratorBuilder
   }
 
   @Override
-  protected PointNoiseGenerator buildMultipleNoiseLayer(List<PointNoiseGenerator> layers) {
-    return new LayeredPointGenerator(layers);
+  protected PointNoiseGenerator buildMultipleNoiseLayer(List<PointNoiseGenerator> layers,
+      ExecutorService executorService) {
+    return new LayeredPointGenerator(layers, executorService);
   }
 }

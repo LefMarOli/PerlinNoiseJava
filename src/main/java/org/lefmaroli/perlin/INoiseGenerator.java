@@ -6,4 +6,6 @@ public interface INoiseGenerator<R> {
   double getMaxAmplitude();
 
   int getDimensions();
+
+  int getTotalSize();
 }

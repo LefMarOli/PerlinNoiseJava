@@ -21,7 +21,7 @@ class LayeredPointGeneratorTest {
     layers.add(new PointGenerator(2048, 1.0, System.currentTimeMillis()));
     layers.add(new PointGenerator(1024, 0.5, System.currentTimeMillis()));
     layers.add(new PointGenerator(512, 0.25, System.currentTimeMillis()));
-    defaultGenerator = new LayeredPointGenerator(layers);
+    defaultGenerator = new LayeredPointGenerator(layers, null);
   }
 
   @Test
@@ -33,7 +33,7 @@ class LayeredPointGeneratorTest {
   void testCreateWithNoLayers() {
     ArrayList<PointNoiseGenerator> layers = new ArrayList<>(5);
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> new LayeredPointGenerator(layers));
+        IllegalArgumentException.class, () -> new LayeredPointGenerator(layers, null));
   }
 
   @Test
@@ -57,7 +57,7 @@ class LayeredPointGeneratorTest {
 
   @Test
   void testEquals() {
-    LayeredPointGenerator sameGenerator = new LayeredPointGenerator(layers);
+    LayeredPointGenerator sameGenerator = new LayeredPointGenerator(layers, null);
     Assertions.assertEquals(defaultGenerator, sameGenerator);
     Assertions.assertEquals(defaultGenerator.hashCode(), sameGenerator.hashCode());
   }
@@ -66,7 +66,7 @@ class LayeredPointGeneratorTest {
   void testNotEquals() {
     List<PointNoiseGenerator> otherLayers = layers;
     otherLayers.add(new PointGenerator(8, 0.1, 5L));
-    LayeredPointGenerator otherGenerator = new LayeredPointGenerator(otherLayers);
+    LayeredPointGenerator otherGenerator = new LayeredPointGenerator(otherLayers, null);
     Assertions.assertNotEquals(defaultGenerator, otherGenerator);
   }
 
@@ -76,7 +76,8 @@ class LayeredPointGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "scheduler", "jitterStrategy", "logger", "containers", "generated", "containersCount")
+            "scheduler", "jitterStrategy", "logger", "containers", "generated", "containersCount",
+            "futures", "totalSize", "timeout", "executorService")
         .verify();
   }
 }

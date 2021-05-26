@@ -40,6 +40,9 @@ public class Interpolation {
   }
 
   private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances) {
+    if(Thread.interrupted()){
+      return 0.0;
+    }
     if (cornerMatrix.getDimension() == 1) {
       return linearWithFadeUnchecked(
           cornerMatrix.get(0), cornerMatrix.get(1), distances[distances.length - 1]);

@@ -1,13 +1,14 @@
 package org.lefmaroli.perlin.point;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.lefmaroli.perlin.layers.LayeredNoiseGenerator;
 
 public class LayeredPointGenerator extends LayeredNoiseGenerator<Double, PointNoiseGenerator>
     implements PointNoiseGenerator {
 
-  LayeredPointGenerator(List<PointNoiseGenerator> layers) {
-    super(layers);
+  LayeredPointGenerator(List<PointNoiseGenerator> layers, ExecutorService executorService) {
+    super(layers, executorService);
   }
 
   @Override

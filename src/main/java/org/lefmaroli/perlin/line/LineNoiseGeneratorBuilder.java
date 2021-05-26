@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin.line;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.lefmaroli.factorgenerator.NumberGenerator;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
@@ -45,7 +46,8 @@ public class LineNoiseGeneratorBuilder
   }
 
   @Override
-  protected LineNoiseGenerator buildMultipleNoiseLayer(List<LineNoiseGenerator> layers) {
-    return new LayeredLineGenerator(layers, null);
+  protected LineNoiseGenerator buildMultipleNoiseLayer(List<LineNoiseGenerator> layers,
+      ExecutorService executorService) {
+    return new LayeredLineGenerator(layers, executorService);
   }
 }

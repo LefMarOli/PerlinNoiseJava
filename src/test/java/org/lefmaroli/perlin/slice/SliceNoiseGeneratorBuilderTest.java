@@ -1,7 +1,10 @@
 package org.lefmaroli.perlin.slice;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.awt.GraphicsEnvironment;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Assertions;
@@ -43,6 +46,8 @@ class SliceNoiseGeneratorBuilderTest {
     int numLayers = 4;
     int sliceWidth = 200;
     int sliceHeight = 200;
+    ExecutorService executorService = Executors.newFixedThreadPool(numLayers,
+        new ThreadFactoryBuilder().setNameFormat("layer-thread-%d").build());
     SliceNoiseGenerator generator =
         new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
             .withWidthInterpolationPointGenerator(widthStepSizeGenerator)
@@ -50,7 +55,9 @@ class SliceNoiseGeneratorBuilderTest {
             .withNoiseStepSizeGenerator(noiseStepSizeGenerator)
             .withNumberOfLayers(numLayers)
             .withAmplitudeGenerator(amplitudeGenerator)
+            .withLayerExecutorService(executorService)
             .build();
+    try{
     double[][] slice = generator.getNext();
 
     AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
@@ -79,7 +86,7 @@ class SliceNoiseGeneratorBuilderTest {
                 AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
               }
             },
-            60,
+            30,
             TimeUnit.MILLISECONDS,
             5,
             TimeUnit.SECONDS);
@@ -89,5 +96,9 @@ class SliceNoiseGeneratorBuilderTest {
             im.get().dispose();
           }
         });
+    }finally{
+      if(!executorService.isShutdown())
+        executorService.shutdownNow();
+    }
   }
 }

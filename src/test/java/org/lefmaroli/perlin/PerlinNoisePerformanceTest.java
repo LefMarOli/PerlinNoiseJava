@@ -5,14 +5,14 @@ import static org.awaitility.Awaitility.waitAtMost;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
@@ -27,28 +27,29 @@ class PerlinNoisePerformanceTest {
 
   private final Logger logger = LogManager.getLogger(PerlinNoisePerformanceTest.class);
 
-  private static ForkJoinPool pool;
-
-  @BeforeAll
-  static void init() {
-    pool = ForkJoinPool.commonPool();
-    pool = new ForkJoinPool();
-  }
-
-  private void testPerformance(
+  private long testPerformance(
       int numIterations, Consumer<Integer> c, Duration maxTestDuration, String testTitle) {
     ExecutorService service = Executors.newSingleThreadExecutor();
     AtomicBoolean isDone = new AtomicBoolean(false);
+    AtomicLong meanDuration = new AtomicLong();
     service.submit(
         () -> {
-          long start = System.currentTimeMillis();
+          long start, duration = 0;
           for (int i = 0; i < numIterations; i++) {
+            start = System.nanoTime();
             c.accept(i);
+            duration += System.nanoTime() - start;
             if (Thread.interrupted()) {
               return;
             }
           }
-          logger.info(testTitle + " done in " + (System.currentTimeMillis() - start) + "ms");
+          duration /= numIterations;
+          meanDuration.set(duration);
+          if(duration > 1E6){
+            logger.info(testTitle + " mean duration " + duration / 1E6 + "ms");
+          }else{
+            logger.info(testTitle + " mean duration " + duration + "ns");
+          }
           isDone.set(true);
         });
     try {
@@ -66,26 +67,29 @@ class PerlinNoisePerformanceTest {
         Thread.currentThread().interrupt();
       }
     }
+    return meanDuration.get();
   }
 
   @Test
   void benchmarkCorePerformance() {
     PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
-    testPerformance(
+    long meanDuration = testPerformance(
         100000,
         (i) -> perlinNoise.getFor(i * 0.005),
-        Duration.ofMillis(80),
+        Duration.ofMillis(200),
         "PerlinNoise core benchmark");
+    Assertions.assertTrue(meanDuration < 2000);
   }
 
   @Test
   void benchmarkCorePerformance5D() {
     PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
-    testPerformance(
+    long meanDuration = testPerformance(
         100000,
         (i) -> perlinNoise.getFor(i * 0.005, i * 0.1, i, i * 50.7, i / 3.0),
         Duration.ofMillis(500),
         "PerlinNoise core benchmark");
+    Assertions.assertTrue(meanDuration < 5000);
   }
 
   @Test
@@ -97,11 +101,12 @@ class PerlinNoisePerformanceTest {
             .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
-    testPerformance(
+    long meanDuration = testPerformance(
         100000,
         (i) -> noiseGenerator.getNext(),
         Duration.ofMillis(300),
         "PointGenerator benchmark");
+    Assertions.assertTrue(meanDuration < 2000);
   }
 
   @Test
@@ -114,8 +119,9 @@ class PerlinNoisePerformanceTest {
             .withLineStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
-    testPerformance(
+    long meanDuration = testPerformance(
         500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(500), "LineGenerator benchmark");
+    Assertions.assertTrue(meanDuration < 500000);
   }
 
   @Test
@@ -129,7 +135,50 @@ class PerlinNoisePerformanceTest {
             .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
-    testPerformance(
+    long meanDuration = testPerformance(
         50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
+    meanDuration /= 1E6;
+    Assertions.assertTrue(meanDuration < 7);
+  }
+
+  @Test
+  void benchmarkSliceGeneratorPerformanceWithExecutor() throws NoiseBuilderException {
+    ExecutorService service = Executors.newFixedThreadPool(3);
+    long optimized = Long.MAX_VALUE;
+    int numIterations = 50;
+    SliceNoiseGeneratorBuilder builder =
+        new SliceNoiseGeneratorBuilder(200, 200)
+            .withNumberOfLayers(3)
+            .withRandomSeed(0L)
+            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
+            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+            .withForkJoinPool(null)
+            .withLayerExecutorService(service);
+    try {
+      SliceNoiseGenerator noiseGenerator = builder.build();
+      optimized =
+          testPerformance(
+              numIterations,
+              (i) -> noiseGenerator.getNext(),
+              Duration.ofMillis(10000),
+              "Optimized sliceGenerator benchmark (with ExecutorService)");
+    } finally {
+      service.shutdown();
+    }
+    builder.withLayerExecutorService(null);
+    SliceNoiseGenerator noiseGenerator = builder.build();
+    long unoptimized =
+        testPerformance(
+            numIterations,
+            (i) -> noiseGenerator.getNext(),
+            Duration.ofMillis(40000),
+            "Unoptimized sliceGenerator benchmark (without ExecutorService)");
+
+    long diff = unoptimized - optimized;
+    Assertions.assertTrue(diff > 0, "Unoptimized code ran faster than optimized code");
+    Assertions.assertTrue(diff < unoptimized * 2 / 3, "Optimized code ran slower than "
+        + "two-thirds of the unoptimized process");
   }
 }

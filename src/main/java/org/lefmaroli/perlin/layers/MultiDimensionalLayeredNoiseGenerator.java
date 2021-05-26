@@ -2,6 +2,7 @@ package org.lefmaroli.perlin.layers;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import org.lefmaroli.perlin.INoiseGenerator;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseGenerator;
@@ -13,10 +14,17 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<
   private final boolean isCircular;
   private final ForkJoinPool pool;
 
-  protected MultiDimensionalLayeredNoiseGenerator(List<L> layers, ForkJoinPool pool) {
-    super(layers);
+  protected MultiDimensionalLayeredNoiseGenerator(List<L> layers, ExecutorService executorService) {
+    super(layers, executorService);
     isCircular = checkCircularity(layers);
-    this.pool = pool;
+    ForkJoinPool joinPool = null;
+    for(L layer: layers){
+      if(layer.hasParallelProcessingEnabled()){
+        joinPool = layer.getExecutionPool();
+        break;
+      }
+    }
+    this.pool = joinPool;
   }
 
   @Override

@@ -137,7 +137,11 @@ class LayeredLineGeneratorTest {
             "containers",
             "generated",
             "containersCount",
-            "pool")
+            "pool",
+            "futures",
+            "totalSize",
+            "timeout",
+            "executorService")
         .verify();
   }
 

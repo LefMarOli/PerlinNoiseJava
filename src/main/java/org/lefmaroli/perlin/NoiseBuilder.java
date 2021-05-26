@@ -3,6 +3,7 @@ package org.lefmaroli.perlin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.factorgenerator.NumberGenerator;
@@ -20,6 +21,7 @@ public abstract class NoiseBuilder<
   protected int numberOfLayers = 5;
   protected long randomSeed = System.currentTimeMillis();
   private NumberGenerator<Double> amplitudeGenerator = new DoubleGenerator(1.0, 0.5);
+  private ExecutorService executorService = null;
 
   protected NoiseBuilder(int dimensions) {
     this.dimensions = dimensions;
@@ -64,6 +66,11 @@ public abstract class NoiseBuilder<
     return self();
   }
 
+  public B withLayerExecutorService(ExecutorService executorService){
+    this.executorService = executorService;
+    return self();
+  }
+
   public INoiseGenerator<N> build() throws NoiseBuilderException {
     resetNumberGenerators();
     if (numberOfLayers == 1) {
@@ -74,7 +81,7 @@ public abstract class NoiseBuilder<
         throw new NoiseBuilderException(e);
       }
     } else {
-      return buildMultipleNoiseLayer(generateNoiseLayers());
+      return buildMultipleNoiseLayer(generateNoiseLayers(), executorService);
     }
   }
 
@@ -98,7 +105,8 @@ public abstract class NoiseBuilder<
   protected abstract L buildSingleNoiseLayer(
       List<Double> stepSizes, double layerAmplitude, long randomSeed);
 
-  protected abstract L buildMultipleNoiseLayer(List<L> layers);
+  protected abstract L buildMultipleNoiseLayer(List<L> layers,
+      ExecutorService executorService);
 
   private void resetNumberGenerators() {
     amplitudeGenerator.reset();

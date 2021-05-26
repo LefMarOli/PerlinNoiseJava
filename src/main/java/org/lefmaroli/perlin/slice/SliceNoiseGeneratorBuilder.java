@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin.slice;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import org.lefmaroli.factorgenerator.NumberGenerator;
 import org.lefmaroli.perlin.dimensional.MultiDimensionalNoiseBuilder;
 import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
@@ -52,11 +53,12 @@ public class SliceNoiseGeneratorBuilder
         layerAmplitude,
         randomSeed,
         isCircular(),
-        null);
+        getPool());
   }
 
   @Override
-  protected SliceNoiseGenerator buildMultipleNoiseLayer(List<SliceNoiseGenerator> layers) {
-    return new LayeredSliceGenerator(layers, null);
+  protected SliceNoiseGenerator buildMultipleNoiseLayer(List<SliceNoiseGenerator> layers,
+      ExecutorService executorService) {
+    return new LayeredSliceGenerator(layers, executorService);
   }
 }

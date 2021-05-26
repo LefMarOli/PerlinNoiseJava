@@ -182,7 +182,11 @@ class LayeredSliceGeneratorTest {
             "containers",
             "generated",
             "containersCount",
-            "pool")
+            "pool",
+            "futures",
+            "totalSize",
+            "timeout",
+            "executorService")
         .verify();
   }
 

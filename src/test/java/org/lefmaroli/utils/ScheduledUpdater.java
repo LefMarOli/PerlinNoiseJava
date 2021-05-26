@@ -2,10 +2,12 @@ package org.lefmaroli.utils;
 
 import static org.awaitility.Awaitility.waitAtMost;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,11 +22,12 @@ public class ScheduledUpdater {
 
   public static CompletableFuture<Void> updateAtRateForDuration(
       Runnable r, long rate, TimeUnit rateUnit, long duration, TimeUnit durationUnit) {
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1,
+        new ThreadFactoryBuilder().setNameFormat("ScheduledUpdater-thread-%d").build());
     AtomicBoolean isDone = new AtomicBoolean(false);
     AtomicBoolean hasErrors = new AtomicBoolean(false);
     AtomicReference<Throwable> error = new AtomicReference<>();
-    ses.scheduleAtFixedRate(
+    ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(
         () -> {
           try {
             r.run();
@@ -37,7 +40,10 @@ public class ScheduledUpdater {
         0,
         rate,
         rateUnit);
-    ses.schedule(() -> isDone.set(true), duration, durationUnit);
+    ses.schedule(() ->{
+      scheduledFuture.cancel(true);
+      isDone.set(true);
+    } , duration, durationUnit);
     try {
       Awaitility.setDefaultPollInterval(Duration.ofMillis(10));
       waitAtMost(duration + 1, durationUnit).until(() -> (isDone.get() || hasErrors.get()));

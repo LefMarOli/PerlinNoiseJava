@@ -118,6 +118,11 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
   }
 
   @Override
+  public int getTotalSize() {
+    return sliceWidth * sliceHeight;
+  }
+
+  @Override
   public int getSliceWidth() {
     return sliceWidth;
   }
@@ -147,13 +152,20 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
     } else {
       perlinData.setCoordinatesForDimension(0, noiseDist);
       for (var widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
-        processSliceWidthDomain(widthIndex, slice[widthIndex], perlinData);
+        if (Thread.interrupted()) {
+          return;
+        }
+        processSliceWidthDomain(widthIndex, 0, sliceHeight, slice[widthIndex], perlinData);
       }
     }
   }
 
   private void processSliceWidthDomain(
-      int widthIndex, double[] line, PerlinNoiseDataContainer dataContainer) {
+      int widthIndex,
+      int heightStartIndex,
+      int heightEndIndex,
+      double[] line,
+      PerlinNoiseDataContainer dataContainer) {
     double widthDist;
     if (isCircular()) {
       widthDist = widthIndex * widthAngleFactor;
@@ -163,7 +175,7 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       widthDist = widthIndex * widthStepSize;
       dataContainer.setCoordinatesForDimension(1, widthDist);
     }
-    for (var heightIndex = 0; heightIndex < sliceHeight; heightIndex++) {
+    for (var heightIndex = heightStartIndex; heightIndex < heightEndIndex; heightIndex++) {
       line[heightIndex] = processSliceHeightDomain(heightIndex, dataContainer);
     }
   }
@@ -207,13 +219,20 @@ public class SliceGenerator extends MultiDimensionalRootNoiseGenerator<double[][
       PerlinNoiseDataContainer dataContainer = recycler.getNewOrNextAvailableContainer();
       dataContainer.setCoordinatesForDimension(0, noiseDistance);
       for (var widthIndex = startWidthIndex; widthIndex < endWidthIndex; widthIndex++) {
-        processSliceWidthDomain(widthIndex, results[widthIndex], dataContainer);
+        if (Thread.interrupted()) {
+          return;
+        }
+        processSliceWidthDomain(
+            widthIndex, startHeightIndex, endHeightIndex, results[widthIndex], dataContainer);
       }
       recycler.recycleContainer(dataContainer);
     }
 
     @Override
     protected void compute() {
+      if (Thread.interrupted()) {
+        return;
+      }
       var widthSegment = endWidthIndex - startWidthIndex;
       var heightSegment = endHeightIndex - startHeightIndex;
       if (widthSegment * heightSegment < lengthThreshold) {

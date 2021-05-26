@@ -61,4 +61,9 @@ public class PointGenerator extends RootNoiseGenerator<Double> implements PointN
     perlinData.setCoordinatesForDimension(0, currentPosition);
     return PerlinNoise.getFor(perlinData) * getMaxAmplitude();
   }
+
+  @Override
+  public int getTotalSize() {
+    return 1;
+  }
 }
