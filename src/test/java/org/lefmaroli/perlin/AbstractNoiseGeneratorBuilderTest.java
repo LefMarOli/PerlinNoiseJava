@@ -116,8 +116,8 @@ class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers,
-        ExecutorService executorService) {
+    protected MockNoiseGenerator buildMultipleNoiseLayer(
+        List<MockNoiseGenerator> layers, ExecutorService executorService) {
       return new MockNoiseGenerator();
     }
   }
@@ -141,8 +141,8 @@ class AbstractNoiseGeneratorBuilderTest {
     }
 
     @Override
-    protected MockNoiseGenerator buildMultipleNoiseLayer(List<MockNoiseGenerator> layers,
-        ExecutorService executorService) {
+    protected MockNoiseGenerator buildMultipleNoiseLayer(
+        List<MockNoiseGenerator> layers, ExecutorService executorService) {
       return null;
     }
   }

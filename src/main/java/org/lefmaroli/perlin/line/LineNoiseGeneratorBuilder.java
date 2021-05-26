@@ -46,8 +46,8 @@ public class LineNoiseGeneratorBuilder
   }
 
   @Override
-  protected LineNoiseGenerator buildMultipleNoiseLayer(List<LineNoiseGenerator> layers,
-      ExecutorService executorService) {
+  protected LineNoiseGenerator buildMultipleNoiseLayer(
+      List<LineNoiseGenerator> layers, ExecutorService executorService) {
     return new LayeredLineGenerator(layers, executorService);
   }
 }

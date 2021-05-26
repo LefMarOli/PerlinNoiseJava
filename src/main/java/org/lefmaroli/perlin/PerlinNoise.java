@@ -180,7 +180,7 @@ public class PerlinNoise {
 
     private void populateCornerMatrix(int currentDimension, BoundGrid bounds) {
       for (var i = 0; i < 2; i++) {
-        if(Thread.interrupted()){
+        if (Thread.interrupted()) {
           return;
         }
         JITTER_TRAIT.jitter();

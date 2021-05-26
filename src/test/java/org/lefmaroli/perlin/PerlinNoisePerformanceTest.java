@@ -45,9 +45,9 @@ class PerlinNoisePerformanceTest {
           }
           duration /= numIterations;
           meanDuration.set(duration);
-          if(duration > 1E6){
+          if (duration > 1E6) {
             logger.info(testTitle + " mean duration " + duration / 1E6 + "ms");
-          }else{
+          } else {
             logger.info(testTitle + " mean duration " + duration + "ns");
           }
           isDone.set(true);
@@ -73,22 +73,24 @@ class PerlinNoisePerformanceTest {
   @Test
   void benchmarkCorePerformance() {
     PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
-    long meanDuration = testPerformance(
-        100000,
-        (i) -> perlinNoise.getFor(i * 0.005),
-        Duration.ofMillis(200),
-        "PerlinNoise core benchmark");
+    long meanDuration =
+        testPerformance(
+            100000,
+            (i) -> perlinNoise.getFor(i * 0.005),
+            Duration.ofMillis(200),
+            "PerlinNoise core benchmark");
     Assertions.assertTrue(meanDuration < 2000);
   }
 
   @Test
   void benchmarkCorePerformance5D() {
     PerlinNoise perlinNoise = new PerlinNoise(System.currentTimeMillis());
-    long meanDuration = testPerformance(
-        100000,
-        (i) -> perlinNoise.getFor(i * 0.005, i * 0.1, i, i * 50.7, i / 3.0),
-        Duration.ofMillis(500),
-        "PerlinNoise core benchmark");
+    long meanDuration =
+        testPerformance(
+            100000,
+            (i) -> perlinNoise.getFor(i * 0.005, i * 0.1, i, i * 50.7, i / 3.0),
+            Duration.ofMillis(500),
+            "PerlinNoise core benchmark");
     Assertions.assertTrue(meanDuration < 5000);
   }
 
@@ -101,11 +103,12 @@ class PerlinNoisePerformanceTest {
             .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
-    long meanDuration = testPerformance(
-        100000,
-        (i) -> noiseGenerator.getNext(),
-        Duration.ofMillis(300),
-        "PointGenerator benchmark");
+    long meanDuration =
+        testPerformance(
+            100000,
+            (i) -> noiseGenerator.getNext(),
+            Duration.ofMillis(300),
+            "PointGenerator benchmark");
     Assertions.assertTrue(meanDuration < 2000);
   }
 
@@ -119,8 +122,12 @@ class PerlinNoisePerformanceTest {
             .withLineStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
-    long meanDuration = testPerformance(
-        500, (i) -> noiseGenerator.getNext(), Duration.ofMillis(500), "LineGenerator benchmark");
+    long meanDuration =
+        testPerformance(
+            500,
+            (i) -> noiseGenerator.getNext(),
+            Duration.ofMillis(500),
+            "LineGenerator benchmark");
     Assertions.assertTrue(meanDuration < 500000);
   }
 
@@ -135,8 +142,12 @@ class PerlinNoisePerformanceTest {
             .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
             .build();
-    long meanDuration = testPerformance(
-        50, (i) -> noiseGenerator.getNext(), Duration.ofMillis(1000), "SliceGenerator benchmark");
+    long meanDuration =
+        testPerformance(
+            50,
+            (i) -> noiseGenerator.getNext(),
+            Duration.ofMillis(1000),
+            "SliceGenerator benchmark");
     meanDuration /= 1E6;
     Assertions.assertTrue(meanDuration < 7);
   }
@@ -178,7 +189,8 @@ class PerlinNoisePerformanceTest {
 
     long diff = unoptimized - optimized;
     Assertions.assertTrue(diff > 0, "Unoptimized code ran faster than optimized code");
-    Assertions.assertTrue(diff < unoptimized * 2 / 3, "Optimized code ran slower than "
-        + "two-thirds of the unoptimized process");
+    Assertions.assertTrue(
+        diff < unoptimized * 2 / 3,
+        "Optimized code ran slower than " + "two-thirds of the unoptimized process");
   }
 }

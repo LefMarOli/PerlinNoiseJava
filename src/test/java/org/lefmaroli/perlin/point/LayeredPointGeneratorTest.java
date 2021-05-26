@@ -76,8 +76,16 @@ class LayeredPointGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "scheduler", "jitterStrategy", "logger", "containers", "generated", "containersCount",
-            "futures", "totalSize", "timeout", "executorService")
+            "scheduler",
+            "jitterStrategy",
+            "logger",
+            "containers",
+            "generated",
+            "containersCount",
+            "futures",
+            "totalSize",
+            "timeout",
+            "executorService")
         .verify();
   }
 }

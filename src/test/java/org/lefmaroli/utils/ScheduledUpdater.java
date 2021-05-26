@@ -22,28 +22,33 @@ public class ScheduledUpdater {
 
   public static CompletableFuture<Void> updateAtRateForDuration(
       Runnable r, long rate, TimeUnit rateUnit, long duration, TimeUnit durationUnit) {
-    ScheduledExecutorService ses = Executors.newScheduledThreadPool(1,
-        new ThreadFactoryBuilder().setNameFormat("ScheduledUpdater-thread-%d").build());
+    ScheduledExecutorService ses =
+        Executors.newScheduledThreadPool(
+            1, new ThreadFactoryBuilder().setNameFormat("ScheduledUpdater-thread-%d").build());
     AtomicBoolean isDone = new AtomicBoolean(false);
     AtomicBoolean hasErrors = new AtomicBoolean(false);
     AtomicReference<Throwable> error = new AtomicReference<>();
-    ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(
+    ScheduledFuture<?> scheduledFuture =
+        ses.scheduleAtFixedRate(
+            () -> {
+              try {
+                r.run();
+              } catch (Throwable t) {
+                hasErrors.set(true);
+                error.set(t);
+                throw t;
+              }
+            },
+            0,
+            rate,
+            rateUnit);
+    ses.schedule(
         () -> {
-          try {
-            r.run();
-          } catch (Throwable t) {
-            hasErrors.set(true);
-            error.set(t);
-            throw t;
-          }
+          scheduledFuture.cancel(true);
+          isDone.set(true);
         },
-        0,
-        rate,
-        rateUnit);
-    ses.schedule(() ->{
-      scheduledFuture.cancel(true);
-      isDone.set(true);
-    } , duration, durationUnit);
+        duration,
+        durationUnit);
     try {
       Awaitility.setDefaultPollInterval(Duration.ofMillis(10));
       waitAtMost(duration + 1, durationUnit).until(() -> (isDone.get() || hasErrors.get()));

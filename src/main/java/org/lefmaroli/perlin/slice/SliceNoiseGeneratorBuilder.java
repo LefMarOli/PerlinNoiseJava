@@ -57,8 +57,8 @@ public class SliceNoiseGeneratorBuilder
   }
 
   @Override
-  protected SliceNoiseGenerator buildMultipleNoiseLayer(List<SliceNoiseGenerator> layers,
-      ExecutorService executorService) {
+  protected SliceNoiseGenerator buildMultipleNoiseLayer(
+      List<SliceNoiseGenerator> layers, ExecutorService executorService) {
     return new LayeredSliceGenerator(layers, executorService);
   }
 }

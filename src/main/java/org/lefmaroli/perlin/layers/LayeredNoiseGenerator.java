@@ -47,7 +47,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     this.executorService = executorService;
   }
 
-  private boolean hasParallelProcessingEnabled(){
+  private boolean hasParallelProcessingEnabled() {
     return executorService != null;
   }
 
@@ -79,7 +79,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
     } else {
       container = containers.poll();
     }
-    if(Thread.interrupted()){
+    if (Thread.interrupted()) {
       return container;
     }
     addNextToQueue(container);
@@ -99,13 +99,13 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
 
   private void processParallel(N container) {
     for (L layer : layers) {
-      if(Thread.interrupted()){
+      if (Thread.interrupted()) {
         return;
       }
       futures.add(CompletableFuture.supplyAsync(new LayerProcess<>(layer), executorService));
     }
     for (CompletableFuture<N> f : futures) {
-      if(Thread.interrupted()){
+      if (Thread.interrupted()) {
         return;
       }
       try {
@@ -126,7 +126,7 @@ public abstract class LayeredNoiseGenerator<N, L extends INoiseGenerator<N>>
 
   private void processSerial(N container) {
     for (L layer : layers) {
-      if(Thread.interrupted()){
+      if (Thread.interrupted()) {
         return;
       }
       container = addTogether(container, layer.getNext());

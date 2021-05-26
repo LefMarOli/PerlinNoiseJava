@@ -66,7 +66,7 @@ public abstract class NoiseBuilder<
     return self();
   }
 
-  public B withLayerExecutorService(ExecutorService executorService){
+  public B withLayerExecutorService(ExecutorService executorService) {
     this.executorService = executorService;
     return self();
   }
@@ -105,8 +105,7 @@ public abstract class NoiseBuilder<
   protected abstract L buildSingleNoiseLayer(
       List<Double> stepSizes, double layerAmplitude, long randomSeed);
 
-  protected abstract L buildMultipleNoiseLayer(List<L> layers,
-      ExecutorService executorService);
+  protected abstract L buildMultipleNoiseLayer(List<L> layers, ExecutorService executorService);
 
   private void resetNumberGenerators() {
     amplitudeGenerator.reset();

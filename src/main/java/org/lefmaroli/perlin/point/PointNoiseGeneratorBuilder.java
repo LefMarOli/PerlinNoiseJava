@@ -29,8 +29,8 @@ public class PointNoiseGeneratorBuilder
   }
 
   @Override
-  protected PointNoiseGenerator buildMultipleNoiseLayer(List<PointNoiseGenerator> layers,
-      ExecutorService executorService) {
+  protected PointNoiseGenerator buildMultipleNoiseLayer(
+      List<PointNoiseGenerator> layers, ExecutorService executorService) {
     return new LayeredPointGenerator(layers, executorService);
   }
 }

@@ -18,8 +18,8 @@ public abstract class MultiDimensionalLayeredNoiseGenerator<
     super(layers, executorService);
     isCircular = checkCircularity(layers);
     ForkJoinPool joinPool = null;
-    for(L layer: layers){
-      if(layer.hasParallelProcessingEnabled()){
+    for (L layer : layers) {
+      if (layer.hasParallelProcessingEnabled()) {
         joinPool = layer.getExecutionPool();
         break;
       }

@@ -46,8 +46,9 @@ class SliceNoiseGeneratorBuilderTest {
     int numLayers = 4;
     int sliceWidth = 200;
     int sliceHeight = 200;
-    ExecutorService executorService = Executors.newFixedThreadPool(numLayers,
-        new ThreadFactoryBuilder().setNameFormat("layer-thread-%d").build());
+    ExecutorService executorService =
+        Executors.newFixedThreadPool(
+            numLayers, new ThreadFactoryBuilder().setNameFormat("layer-thread-%d").build());
     SliceNoiseGenerator generator =
         new SliceNoiseGeneratorBuilder(sliceWidth, sliceHeight)
             .withWidthInterpolationPointGenerator(widthStepSizeGenerator)
@@ -57,48 +58,47 @@ class SliceNoiseGeneratorBuilderTest {
             .withAmplitudeGenerator(amplitudeGenerator)
             .withLayerExecutorService(executorService)
             .build();
-    try{
-    double[][] slice = generator.getNext();
+    try {
+      double[][] slice = generator.getNext();
 
-    AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
-    boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
-    if (isDisplaySupported) {
-      im.set(new SimpleGrayScaleImage(slice, 5));
-      im.get().setVisible();
-    }
-    double[] column = new double[generator.getSliceHeight()];
-    int[] rowPlaceholder = new int[generator.getSliceWidth() - 1];
-    int[] columnPlaceholder = new int[generator.getSliceHeight() - 1];
-    CompletableFuture<Void> completed =
-        ScheduledUpdater.updateAtRateForDuration(
-            () -> {
-              double[][] next = generator.getNext();
-              if (Thread.interrupted()) {
-                return;
-              }
-              if (isDisplaySupported) {
-                im.get().updateImage(next);
-              }
+      AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();
+      boolean isDisplaySupported = !GraphicsEnvironment.isHeadless();
+      if (isDisplaySupported) {
+        im.set(new SimpleGrayScaleImage(slice, 5));
+        im.get().setVisible();
+      }
+      double[] column = new double[generator.getSliceHeight()];
+      int[] rowPlaceholder = new int[generator.getSliceWidth() - 1];
+      int[] columnPlaceholder = new int[generator.getSliceHeight() - 1];
+      CompletableFuture<Void> completed =
+          ScheduledUpdater.updateAtRateForDuration(
+              () -> {
+                double[][] next = generator.getNext();
+                if (Thread.interrupted()) {
+                  return;
+                }
+                if (isDisplaySupported) {
+                  im.get().updateImage(next);
+                }
 
-              for (double[] row : next) {
-                AssertUtils.valuesContinuousInArray(row, rowPlaceholder);
-                System.arraycopy(row, 0, column, 0, row.length);
-                AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
-              }
-            },
-            30,
-            TimeUnit.MILLISECONDS,
-            5,
-            TimeUnit.SECONDS);
-    completed.thenRun(
-        () -> {
-          if (isDisplaySupported) {
-            im.get().dispose();
-          }
-        });
-    }finally{
-      if(!executorService.isShutdown())
-        executorService.shutdownNow();
+                for (double[] row : next) {
+                  AssertUtils.valuesContinuousInArray(row, rowPlaceholder);
+                  System.arraycopy(row, 0, column, 0, row.length);
+                  AssertUtils.valuesContinuousInArray(column, columnPlaceholder);
+                }
+              },
+              30,
+              TimeUnit.MILLISECONDS,
+              5,
+              TimeUnit.SECONDS);
+      completed.thenRun(
+          () -> {
+            if (isDisplaySupported) {
+              im.get().dispose();
+            }
+          });
+    } finally {
+      if (!executorService.isShutdown()) executorService.shutdownNow();
     }
   }
 }
