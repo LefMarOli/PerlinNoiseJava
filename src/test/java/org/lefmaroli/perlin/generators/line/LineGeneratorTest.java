@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.execution.TestJitterStrategy;
@@ -37,6 +38,7 @@ class LineGeneratorTest {
   static void init() throws StepSizeException {
     defaultBuilder = new LineGeneratorBuilder(lineLength);
     resetBuilder(defaultBuilder);
+    defaultGenerator = defaultBuilder.build();
   }
 
   private static LineGeneratorBuilder resetBuilder(LineGeneratorBuilder builder)
@@ -54,7 +56,12 @@ class LineGeneratorTest {
   @BeforeEach
   void setup() {
     resetBuilder(defaultBuilder);
-    defaultGenerator = defaultBuilder.build();
+  }
+
+  @Test
+  void testInvalidLineStepSizeWithCircularity() {
+    defaultBuilder.withLineStepSize(5.0).withCircularBounds(true);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.build());
   }
 
   @Test
@@ -67,16 +74,18 @@ class LineGeneratorTest {
     Assertions.assertThrows(IllegalArgumentException.class, () -> new LineGeneratorBuilder(-5));
   }
 
-  @Test
-  void testCreateInvalidLineStepSize() {
+  @ParameterizedTest
+  @ValueSource(doubles = {-5, 0})
+  void testCreateInvalidLineStepSize(double lineStepSize) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> defaultBuilder.withLineStepSize(-5));
+        IllegalArgumentException.class, () -> defaultBuilder.withLineStepSize(lineStepSize));
   }
 
-  @Test
-  void testCreateInvalidNoiseStepSize() {
+  @ParameterizedTest
+  @ValueSource(doubles = {-5, 0})
+  void testCreateInvalidNoiseStepSize(double noiseStepSize) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(-1));
+        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
   }
 
   @Test
@@ -116,6 +125,7 @@ class LineGeneratorTest {
 
   @Test
   void testValuesMultipliedByMaxAmplitude() {
+    defaultGenerator = defaultBuilder.build();
     Random random = new Random(System.currentTimeMillis());
     double newMaxAmplitude = random.nextDouble() * 100;
     LineGenerator amplifiedLayer = defaultBuilder.withAmplitude(newMaxAmplitude).build();

@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
+import org.lefmaroli.perlin.generators.slice.LayeredSliceGeneratorBuilder;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 
@@ -33,9 +34,10 @@ class LayeredLineGeneratorTest {
   private static LayeredLineGenerator defaultGenerator;
 
   @BeforeAll
-  static void init() {
+  static void init() throws LayeredGeneratorBuilderException {
     defaultBuilder = new LayeredLineGeneratorBuilder(defaultLineLength);
     resetBuilder(defaultBuilder);
+    defaultGenerator = defaultBuilder.build();
   }
 
   private static LayeredLineGeneratorBuilder resetBuilder(LayeredLineGeneratorBuilder builder) {
@@ -52,9 +54,8 @@ class LayeredLineGeneratorTest {
   }
 
   @BeforeEach
-  void setup() throws LayeredGeneratorBuilderException {
+  void setup() {
     resetBuilder(defaultBuilder);
-    defaultGenerator = defaultBuilder.build();
   }
 
   @Test
@@ -68,7 +69,7 @@ class LayeredLineGeneratorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {-1, 0, 1})
+  @ValueSource(ints = {-1, 0, 1, 89})
   void testCreateWrongNumberOfLayers(int numberOfLayers) {
     Assertions.assertThrows(
         IllegalArgumentException.class, () -> defaultBuilder.withNumberOfLayers(numberOfLayers));

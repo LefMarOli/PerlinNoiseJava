@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.execution.TestJitterStrategy;
@@ -67,12 +68,12 @@ class SliceGeneratorTest {
   static void init() throws StepSizeException {
     defaultBuilder = new SliceGeneratorBuilder(sliceWidth, sliceHeight);
     resetBuilder(defaultBuilder);
+    defaultGenerator = defaultBuilder.build();
   }
 
   @BeforeEach
   void setup() throws StepSizeException {
     resetBuilder(defaultBuilder);
-    defaultGenerator = defaultBuilder.build();
   }
 
   static SliceGeneratorBuilder resetBuilder(SliceGeneratorBuilder builder)
@@ -86,6 +87,18 @@ class SliceGeneratorTest {
         .withCircularBounds(isCircular)
         .withForkJoinPool(null);
     return builder;
+  }
+
+  @Test
+  void testInvalidHeightStepSizeWithCircularity(){
+    defaultBuilder.withHeightStepSize(5.0).withCircularBounds(true);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.build());
+  }
+
+  @Test
+  void testInvalidWidthStepSizeWithCircularity(){
+    defaultBuilder.withWidthStepSize(5.0).withCircularBounds(true);
+    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.build());
   }
 
   @Test
@@ -106,22 +119,22 @@ class SliceGeneratorTest {
     return Stream.of(Arguments.of(-5, 5, "invalid width"), Arguments.of(5, -5, "invalid height"));
   }
 
-  @Test
-  void testCreateInvalidNoiseStepSize() {
-    SliceGeneratorBuilder builder = new SliceGeneratorBuilder(sliceWidth, sliceHeight);
-    Assertions.assertThrows(IllegalArgumentException.class, () -> builder.withNoiseStepSize(-5));
+  @ParameterizedTest
+  @ValueSource(doubles = {-5, 0})
+  void testCreateInvalidNoiseStepSize(double noiseStepSize) {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
   }
 
-  @Test
-  void testCreateInvalidWidthStepSize() {
-    SliceGeneratorBuilder builder = new SliceGeneratorBuilder(sliceWidth, sliceHeight);
-    Assertions.assertThrows(IllegalArgumentException.class, () -> builder.withWidthStepSize(-4));
+  @ParameterizedTest
+  @ValueSource(doubles = {-5, 0})
+  void testCreateInvalidWidthStepSize(double widthStepSize) {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.withWidthStepSize(widthStepSize));
   }
 
-  @Test
-  void testCreateInvalidHeightStepSize() {
-    SliceGeneratorBuilder builder = new SliceGeneratorBuilder(sliceWidth, sliceHeight);
-    Assertions.assertThrows(IllegalArgumentException.class, () -> builder.withHeightStepSize(-9));
+  @ParameterizedTest
+  @ValueSource(doubles = {-5, 0})
+  void testCreateInvalidHeightStepSize(double heightStepSize) {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.withHeightStepSize(heightStepSize));
   }
 
   @Test
@@ -183,6 +196,7 @@ class SliceGeneratorTest {
 
   @Test
   void testValuesMultipliedByMaxAmplitude() {
+    defaultGenerator = defaultBuilder.build();
     Random random = new Random(System.currentTimeMillis());
     double newMaxAmplitude = random.nextDouble() * 100;
     SliceGenerator amplifiedLayer = defaultBuilder.withAmplitude(newMaxAmplitude).build();
@@ -205,6 +219,7 @@ class SliceGeneratorTest {
 
   @Test
   void testCreateSameGeneratedSlices() {
+    defaultGenerator = defaultBuilder.build();
     SliceGenerator same = defaultBuilder.build();
     double[][] nextSegment1 = defaultGenerator.getNext();
     double[][] nextSegment2 = same.getNext();

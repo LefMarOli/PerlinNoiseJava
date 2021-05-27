@@ -20,6 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.perlin.generators.LayeredBuilder;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
@@ -36,9 +37,10 @@ class LayeredSliceGeneratorTest {
   private static LayeredSliceGeneratorBuilder defaultBuilder;
 
   @BeforeAll
-  static void init() {
+  static void init() throws LayeredGeneratorBuilderException {
     defaultBuilder = new LayeredSliceGeneratorBuilder(defaultSliceWidth, defaultSliceHeight);
     resetBuilder(defaultBuilder);
+    defaultGenerator = defaultBuilder.build();
   }
 
   private static LayeredSliceGeneratorBuilder resetBuilder(LayeredSliceGeneratorBuilder builder) {
@@ -55,9 +57,8 @@ class LayeredSliceGeneratorTest {
   }
 
   @BeforeEach
-  void setup() throws LayeredGeneratorBuilderException {
+  void setup() {
     resetBuilder(defaultBuilder);
-    defaultGenerator = defaultBuilder.build();
   }
 
   @Test
@@ -71,7 +72,7 @@ class LayeredSliceGeneratorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {-1, 0, 1})
+  @ValueSource(ints = {-1, 0, 1, 75})
   void testCreateWrongNumberOfLayers(int numberOfLayers) {
     Assertions.assertThrows(
         IllegalArgumentException.class, () -> defaultBuilder.withNumberOfLayers(numberOfLayers));
@@ -207,6 +208,9 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testNonCircularity() {
+
+    LayeredBuilder.increaseLayerLimit(15);
+
     Assertions.assertFalse(defaultGenerator.isCircular());
   }
 

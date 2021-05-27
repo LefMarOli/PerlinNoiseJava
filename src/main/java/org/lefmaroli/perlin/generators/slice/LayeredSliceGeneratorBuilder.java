@@ -97,7 +97,7 @@ public class LayeredSliceGeneratorBuilder
           + ", sliceHeight="
           + sliceHeight
           + ", layers="
-          + getLayers()
+          + getLayersAsString()
           + ", maxAmplitude="
           + getMaxAmplitude()
           + ", isCircular="

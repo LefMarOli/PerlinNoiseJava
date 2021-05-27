@@ -57,6 +57,11 @@ public abstract class MultiDimensionalRootGenerator<C> extends RootGenerator<C>
   protected double correctStepSizeForCircularity(
       double stepSize, int dimensionLength, String dimensionName) {
     if (isCircular) {
+      if (stepSize >= 1.0) {
+        throw new IllegalArgumentException(
+            "Impossible to create circularity with step size greater than 1.0 for dimension: "
+                + dimensionName);
+      }
       var interpolationPoints = (int) Math.round(1.0 / stepSize);
       var toEvaluate = Math.min(interpolationPoints, dimensionLength);
       var newInterpolationPoints = RoundUtils.roundNToClosestFactorOfM(toEvaluate, dimensionLength);

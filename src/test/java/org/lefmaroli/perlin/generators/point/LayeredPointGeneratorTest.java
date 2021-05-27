@@ -32,9 +32,10 @@ class LayeredPointGeneratorTest {
   private static final long randomSeed = System.currentTimeMillis();
 
   @BeforeAll
-  static void init() {
+  static void init() throws LayeredGeneratorBuilderException {
     defaultBuilder = new LayeredPointGeneratorBuilder();
     resetBuilder(defaultBuilder);
+    defaultGenerator = defaultBuilder.build();
   }
 
   private static LayeredPointGeneratorBuilder resetBuilder(LayeredPointGeneratorBuilder builder) {
@@ -47,9 +48,8 @@ class LayeredPointGeneratorTest {
   }
 
   @BeforeEach
-  void setup() throws LayeredGeneratorBuilderException {
+  void setup() {
     resetBuilder(defaultBuilder);
-    defaultGenerator = defaultBuilder.build();
   }
 
   @Test
@@ -63,7 +63,7 @@ class LayeredPointGeneratorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {-1, 0, 1})
+  @ValueSource(ints = {-1, 0, 1, 115})
   void testCreateWrongNumberOfLayers(int numberOfLayers) {
     Assertions.assertThrows(
         IllegalArgumentException.class, () -> defaultBuilder.withNumberOfLayers(numberOfLayers));

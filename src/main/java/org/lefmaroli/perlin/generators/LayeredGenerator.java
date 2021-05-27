@@ -26,6 +26,7 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private final int totalSize;
   private final long timeout;
   private final ExecutorService executorService;
+  private final String layersAsString;
 
   protected LayeredGenerator(
       List<? extends IGenerator<N>> layers, ExecutorService executorService) {
@@ -46,6 +47,7 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
     this.totalSize = size;
     this.timeout = (long) totalSize * DEFAULT_TIMEOUT / SIZE_THRESHOLD;
     this.executorService = executorService;
+    this.layersAsString = String.valueOf(layers);
   }
 
   private boolean hasParallelProcessingEnabled() {
@@ -144,8 +146,8 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
     return maxAmplitude;
   }
 
-  protected List<? extends IGenerator<N>> getLayers() {
-    return layers;
+  protected String getLayersAsString() {
+    return layersAsString;
   }
 
   protected abstract N getNewContainer();

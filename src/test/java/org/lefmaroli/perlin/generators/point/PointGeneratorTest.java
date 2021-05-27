@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.perlin.generators.StepSizeException;
 
 class PointGeneratorTest {
@@ -24,6 +25,7 @@ class PointGeneratorTest {
   static void init() throws StepSizeException {
     defaultBuilder = new PointGeneratorBuilder();
     resetBuilder(defaultBuilder);
+    defaultGenerator = defaultBuilder.build();
   }
 
   private static PointGeneratorBuilder resetBuilder(PointGeneratorBuilder builder)
@@ -35,7 +37,6 @@ class PointGeneratorTest {
   @BeforeEach
   void setup() throws StepSizeException {
     resetBuilder(defaultBuilder);
-    defaultGenerator = defaultBuilder.build();
   }
 
   @Test
@@ -55,6 +56,7 @@ class PointGeneratorTest {
 
   @Test
   void testValuesMultipliedByFactor() {
+    defaultGenerator = defaultBuilder.build();
     Random random = new Random(System.currentTimeMillis());
     double amplitudeFactor = random.nextDouble() * 100;
     PointGenerator amplifiedLayer = defaultBuilder.withAmplitude(amplitudeFactor).build();
@@ -79,6 +81,7 @@ class PointGeneratorTest {
 
   @Test
   void testCreateSamePoints() {
+    defaultGenerator = defaultBuilder.build();
     PointGenerator sameLayer = defaultBuilder.build();
     for (int i = 0; i < expectedCount; i++) {
       Assertions.assertEquals(defaultGenerator.getNext(), sameLayer.getNext(), 0.0);
@@ -97,10 +100,11 @@ class PointGeneratorTest {
     }
   }
 
-  @Test
-  void testCreateWithWrongStepSize() {
+  @ParameterizedTest
+  @ValueSource(doubles = {-5, 0})
+  void testCreateWithWrongStepSize(double noiseStepSize) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(-5));
+        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
   }
 
   @ParameterizedTest(name = "{index} - {2}")

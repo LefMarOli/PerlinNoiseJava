@@ -3,7 +3,7 @@ package org.lefmaroli.perlin.generators;
 public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuilder<N, L, B>> {
 
   private final int dimensions;
-  private final double DEFAULT_STEP_SIZE = 0.01;
+  private static final double DEFAULT_STEP_SIZE = 0.01;
   private final double[] stepSizes;
   private double amplitude = 1.0;
   protected long randomSeed = System.currentTimeMillis();
@@ -60,7 +60,7 @@ public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuil
 
   protected static void assertStepSize(double stepSize) throws StepSizeException {
     if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {
-      throw new NoStepSizeException();
+      throw new StepSizeException("Step size smaller than 0");
     }
   }
 }

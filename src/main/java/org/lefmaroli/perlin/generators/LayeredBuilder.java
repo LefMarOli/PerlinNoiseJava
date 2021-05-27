@@ -14,6 +14,8 @@ public abstract class LayeredBuilder<
     L extends ILayeredGenerator<N>,
     S extends IGenerator<N>,
     B extends LayeredBuilder<N, L, S, B>> {
+  private static final int DEFAULT_LAYER_NUMBER_LIMIT = 10;
+  private static int activeLayerNumberLimit = DEFAULT_LAYER_NUMBER_LIMIT;
   private static final DoubleGenerator DEFAULT_STEP_SIZES = new DoubleGenerator(1.0 / 64, 0.5);
   private final int dimensions;
   private final List<Iterable<Double>> stepSizesByDimension;
@@ -21,6 +23,13 @@ public abstract class LayeredBuilder<
   protected long randomSeed = System.currentTimeMillis();
   private Iterable<Double> amplitudes = new DoubleGenerator(1.0, 0.5);
   private ExecutorService executorService = null;
+
+  public static void increaseLayerLimit(int limit){
+    if(limit < 2){
+      throw new IllegalArgumentException("Number of layers needs to be at least 2, provided: " + limit);
+    }
+    activeLayerNumberLimit = limit;
+  }
 
   protected LayeredBuilder(int dimensions) {
     this.dimensions = dimensions;
@@ -38,7 +47,7 @@ public abstract class LayeredBuilder<
 
   private static void assertStepSize(double stepSize) throws StepSizeException {
     if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {
-      throw new NoStepSizeException();
+      throw new StepSizeException("Step size smaller than 0");
     }
   }
 
@@ -60,6 +69,14 @@ public abstract class LayeredBuilder<
   public B withNumberOfLayers(int numberOfLayers) {
     if (numberOfLayers < 2) {
       throw new IllegalArgumentException("Number of layers must be at least 2.");
+    }
+    if(numberOfLayers > activeLayerNumberLimit){
+      String message = "Number of layers greater than limit of " + activeLayerNumberLimit;
+      if(activeLayerNumberLimit == DEFAULT_LAYER_NUMBER_LIMIT){
+        message += " (Default value)";
+      }
+      message += ". Increase limit by first calling increaseLayersNumberLimit()";
+      throw new IllegalArgumentException(message);
     }
     this.numberOfLayers = numberOfLayers;
     return self();

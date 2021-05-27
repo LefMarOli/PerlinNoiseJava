@@ -86,7 +86,7 @@ public class LayeredLineGeneratorBuilder
           + "lineLength="
           + lineLength
           + ", layers="
-          + getLayers()
+          + getLayersAsString()
           + ", maxAmplitude="
           + getMaxAmplitude()
           + ", isCircular="

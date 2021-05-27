@@ -3,9 +3,11 @@ package org.lefmaroli.factorgenerator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public abstract class MultipliedByNumberGenerator<N extends Number> implements NumberGenerator<N> {
 
+  private static final int DEFAULT_LIMIT = 1000000;
   protected final double factor;
   protected final N initialValue;
   private final List<N> computed = new LinkedList<>();
@@ -69,6 +71,10 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
     public N next() {
       var toReturn = getAtPosition(iteratorPosition);
       iteratorPosition++;
+      if (iteratorPosition == DEFAULT_LIMIT || iteratorPosition > DEFAULT_LIMIT) {
+        throw new NoSuchElementException(
+            "Reached default limit of " + DEFAULT_LIMIT + " numbers allowed by this generator");
+      }
       return toReturn;
     }
   }

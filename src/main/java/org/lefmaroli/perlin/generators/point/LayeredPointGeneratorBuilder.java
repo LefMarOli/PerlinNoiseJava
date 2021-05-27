@@ -57,7 +57,7 @@ public class LayeredPointGeneratorBuilder
     public String toString() {
       return "LayeredPointGeneratorImpl{"
           + "layers="
-          + getLayers()
+          + getLayersAsString()
           + ", maxAmplitude="
           + getMaxAmplitude()
           + '}';
