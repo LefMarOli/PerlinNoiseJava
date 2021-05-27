@@ -20,22 +20,22 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
 
   @Override
   public N getNext() {
-      var toReturn = getAtPosition(currentPosition);
-      currentPosition++;
-      return toReturn;
+    var toReturn = getAtPosition(currentPosition);
+    currentPosition++;
+    return toReturn;
   }
 
-  private N getAtPosition(int position){
-    if(position > computed.size() - 1){
-      if(position - 1 > computed.size() - 1){
+  private N getAtPosition(int position) {
+    if (position > computed.size() - 1) {
+      if (position - 1 > computed.size() - 1) {
         return getAtPosition(position - 1);
-      }else{
+      } else {
         var previous = computed.get(position - 1);
         var newValue = getXMultipliedByY(previous, factor);
         computed.add(newValue);
         return newValue;
       }
-    }else{
+    } else {
       return computed.get(position);
     }
   }
@@ -52,8 +52,7 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
     return new MultipliedByNumberGeneratorIterator();
   }
 
-
-  private class MultipliedByNumberGeneratorIterator implements Iterator<N>{
+  private class MultipliedByNumberGeneratorIterator implements Iterator<N> {
 
     private int iteratorPosition;
 

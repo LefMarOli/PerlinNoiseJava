@@ -212,7 +212,7 @@ class SliceGeneratorTest {
     Assertions.assertEquals(nextSegment1.length, nextSegment2.length, 0);
     Assertions.assertEquals(nextSegment1[0].length, nextSegment2[0].length, 0);
     for (int i = 0; i < nextSegment1.length; i++) {
-        Assertions.assertArrayEquals(nextSegment1[i], nextSegment2[i], 0.0);
+      Assertions.assertArrayEquals(nextSegment1[i], nextSegment2[i], 0.0);
     }
   }
 
@@ -260,7 +260,7 @@ class SliceGeneratorTest {
   @ParameterizedTest(name = "{index} - {2}")
   @MethodSource("testEqualsSource")
   @SuppressWarnings("unused")
-  void testEquals(Object first, Object second, String title){
+  void testEquals(Object first, Object second, String title) {
     Assertions.assertEquals(first, second);
     Assertions.assertEquals(first.hashCode(), second.hashCode());
   }
@@ -270,10 +270,11 @@ class SliceGeneratorTest {
     SliceGeneratorBuilder other = resetBuilder(new SliceGeneratorBuilder(sliceWidth, sliceHeight));
     defaultGenerator = resetBuilder(defaultBuilder).build();
     return Stream.of(
-        Arguments.of(other.build(), defaultBuilder.build(), "Different generators from different builders"),
-        Arguments.of(defaultGenerator, defaultBuilder.build(), "Different generators from same builder"),
-        Arguments.of(defaultGenerator, defaultGenerator, "Same generator")
-    );
+        Arguments.of(
+            other.build(), defaultBuilder.build(), "Different generators from different builders"),
+        Arguments.of(
+            defaultGenerator, defaultBuilder.build(), "Different generators from same builder"),
+        Arguments.of(defaultGenerator, defaultGenerator, "Same generator"));
   }
 
   @ParameterizedTest(name = "{index} - {1}")
@@ -296,11 +297,14 @@ class SliceGeneratorTest {
             resetBuilder(defaultBuilder).withHeightStepSize(heightStepSize + 1.0 / 6).build(),
             "different height step size"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withAmplitude(maxAmplitude + 2.0).build(), "different amplitude"),
+            resetBuilder(defaultBuilder).withAmplitude(maxAmplitude + 2.0).build(),
+            "different amplitude"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withRandomSeed(randomSeed + 1).build(), "different random seed"),
+            resetBuilder(defaultBuilder).withRandomSeed(randomSeed + 1).build(),
+            "different random seed"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withCircularBounds(!isCircular).build(), "different circularity"),
+            resetBuilder(defaultBuilder).withCircularBounds(!isCircular).build(),
+            "different circularity"),
         Arguments.of(
             resetBuilder(new SliceGeneratorBuilder(sliceWidth + 1, sliceHeight)).build(),
             "different slice width"),
@@ -347,12 +351,13 @@ class SliceGeneratorTest {
 
   @Test
   void testSmoothCircularity() throws StepSizeException { // NOSONAR
-    SliceGenerator generator = resetBuilder(new SliceGeneratorBuilder(150, 150))
-        .withWidthStepSize(1 / 200.0)
-        .withHeightStepSize(1 / 250.0)
-        .withCircularBounds(true)
-        .withForkJoinPool(ForkJoinPool.commonPool())
-        .build();
+    SliceGenerator generator =
+        resetBuilder(new SliceGeneratorBuilder(150, 150))
+            .withWidthStepSize(1 / 200.0)
+            .withHeightStepSize(1 / 250.0)
+            .withCircularBounds(true)
+            .withForkJoinPool(ForkJoinPool.commonPool())
+            .build();
     double[][] slices = generator.getNext();
     int patchFactor = 2;
     double[][] patched =
@@ -412,9 +417,10 @@ class SliceGeneratorTest {
   void testSmoothVisuals() throws StepSizeException { // NOSONAR
     int sliceWidth = 200;
     int sliceHeight = 200;
-    SliceGenerator generator = resetBuilder(new SliceGeneratorBuilder(sliceWidth, sliceHeight))
-        .withForkJoinPool(ForkJoinPool.commonPool())
-        .build();
+    SliceGenerator generator =
+        resetBuilder(new SliceGeneratorBuilder(sliceWidth, sliceHeight))
+            .withForkJoinPool(ForkJoinPool.commonPool())
+            .build();
     double[][] slice = generator.getNext();
 
     AtomicReference<SimpleGrayScaleImage> im = new AtomicReference<>();

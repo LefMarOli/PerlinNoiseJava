@@ -1,8 +1,8 @@
 package org.lefmaroli.perlin.generators.dimensional;
 
 import java.util.concurrent.ForkJoinPool;
-import org.lefmaroli.perlin.generators.ILayeredGenerator;
 import org.lefmaroli.perlin.generators.IGenerator;
+import org.lefmaroli.perlin.generators.ILayeredGenerator;
 import org.lefmaroli.perlin.generators.LayeredBuilder;
 
 public abstract class LayeredMultiDimensionalBuilder<

@@ -32,36 +32,33 @@ class InterpolationTest {
 
   @ParameterizedTest
   @MethodSource("testLinearArgs")
-  void testLinear(double expected, double lowerBound, double higherBound, double mu){
+  void testLinear(double expected, double lowerBound, double higherBound, double mu) {
     Assertions.assertEquals(expected, Interpolation.linear(lowerBound, higherBound, mu), 0.0);
   }
 
-  private static Stream<Arguments> testLinearArgs(){
+  private static Stream<Arguments> testLinearArgs() {
     return Stream.of(
         Arguments.of(1.5, 1, 2, 0.5),
         Arguments.of(1.25, 1, 2, 0.25),
         Arguments.of(1.5, 2, 1, 0.5),
-        Arguments.of(1.75, 2, 1, 0.25)
-    );
+        Arguments.of(1.75, 2, 1, 0.25));
   }
 
   @ParameterizedTest
   @ValueSource(doubles = {-1, 5})
-  void testLinearIllegalValue(double mu){
+  void testLinearIllegalValue(double mu) {
     Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.linear(1, 5, mu));
   }
 
   @ParameterizedTest
   @MethodSource("linearWithFadeArgs")
-  void testLinearWithFade(double expectedValue, double lowerBound, double higherBound, double mu){
-    Assertions.assertEquals(expectedValue, Interpolation.linearWithFade(lowerBound, higherBound, mu), 0);
+  void testLinearWithFade(double expectedValue, double lowerBound, double higherBound, double mu) {
+    Assertions.assertEquals(
+        expectedValue, Interpolation.linearWithFade(lowerBound, higherBound, mu), 0);
   }
 
-  private static Stream<Arguments> linearWithFadeArgs(){
-    return Stream.of(
-        Arguments.of(1.5, 1, 2, 0.5),
-        Arguments.of(1.103515625, 1, 2, 0.25)
-    );
+  private static Stream<Arguments> linearWithFadeArgs() {
+    return Stream.of(Arguments.of(1.5, 1, 2, 0.5), Arguments.of(1.103515625, 1, 2, 0.25));
   }
 
   @Test
@@ -86,15 +83,12 @@ class InterpolationTest {
 
   @ParameterizedTest
   @MethodSource("testFadeArgs")
-  void testFade(double expectedValue, double testValue){
+  void testFade(double expectedValue, double testValue) {
     Assertions.assertEquals(expectedValue, Interpolation.fade(testValue), 0);
   }
 
-  private static Stream<Arguments> testFadeArgs(){
-    return Stream.of(
-        Arguments.of(0.5, 0.5),
-        Arguments.of(0.103515625, 0.25)
-    );
+  private static Stream<Arguments> testFadeArgs() {
+    return Stream.of(Arguments.of(0.5, 0.5), Arguments.of(0.103515625, 0.25));
   }
 
   @ParameterizedTest

@@ -52,7 +52,7 @@ class LineGeneratorTest {
   }
 
   @BeforeEach
-  void setup(){
+  void setup() {
     resetBuilder(defaultBuilder);
     defaultGenerator = defaultBuilder.build();
   }
@@ -179,7 +179,7 @@ class LineGeneratorTest {
   @ParameterizedTest(name = "{index} - {2}")
   @MethodSource("testEqualsSource")
   @SuppressWarnings("unused")
-  void testEquals(Object first, Object second, String title){
+  void testEquals(Object first, Object second, String title) {
     Assertions.assertEquals(first, second);
     Assertions.assertEquals(first.hashCode(), second.hashCode());
   }
@@ -189,16 +189,17 @@ class LineGeneratorTest {
     LineGeneratorBuilder other = resetBuilder(new LineGeneratorBuilder(lineLength));
     defaultGenerator = resetBuilder(defaultBuilder).build();
     return Stream.of(
-        Arguments.of(other.build(), defaultBuilder.build(), "Different generators from different builders"),
-        Arguments.of(defaultGenerator, defaultBuilder.build(), "Different generators from same builder"),
-        Arguments.of(defaultGenerator, defaultGenerator, "Same generator")
-    );
+        Arguments.of(
+            other.build(), defaultBuilder.build(), "Different generators from different builders"),
+        Arguments.of(
+            defaultGenerator, defaultBuilder.build(), "Different generators from same builder"),
+        Arguments.of(defaultGenerator, defaultGenerator, "Same generator"));
   }
 
   @ParameterizedTest(name = "{index} - {1}")
   @MethodSource("testNotEqualsSource")
   @SuppressWarnings("unused")
-  void testNotEquals(Object other, String title){
+  void testNotEquals(Object other, String title) {
     Assertions.assertNotEquals(defaultGenerator, other);
   }
 
@@ -208,39 +209,48 @@ class LineGeneratorTest {
         Arguments.of(null, "null"),
         Arguments.of(new Random(), "Different object class"),
         Arguments.of(new LineGeneratorBuilder(lineLength + 1).build(), "Different line length"),
-        Arguments.of(resetBuilder(defaultBuilder).withLineStepSize(defaultLineStepSize + 1.0/ 2), "Different line step size"),
-        Arguments.of(resetBuilder(defaultBuilder).withNoiseStepSize(defaultNoiseStepSize + 1.0/ 2), "Different noise step size"),
-        Arguments.of(resetBuilder(defaultBuilder).withAmplitude(maxAmplitude + 1.0/ 2), "Different amplitude"),
-        Arguments.of(resetBuilder(defaultBuilder).withRandomSeed(randomSeed + 1), "Different random seed"),
-        Arguments.of(resetBuilder(defaultBuilder).withCircularBounds(!isCircular), "Different circularity")
-    );
+        Arguments.of(
+            resetBuilder(defaultBuilder).withLineStepSize(defaultLineStepSize + 1.0 / 2),
+            "Different line step size"),
+        Arguments.of(
+            resetBuilder(defaultBuilder).withNoiseStepSize(defaultNoiseStepSize + 1.0 / 2),
+            "Different noise step size"),
+        Arguments.of(
+            resetBuilder(defaultBuilder).withAmplitude(maxAmplitude + 1.0 / 2),
+            "Different amplitude"),
+        Arguments.of(
+            resetBuilder(defaultBuilder).withRandomSeed(randomSeed + 1), "Different random seed"),
+        Arguments.of(
+            resetBuilder(defaultBuilder).withCircularBounds(!isCircular), "Different circularity"));
   }
 
-//  @Test
-//  void testToString() {
-//    ToStringVerifier.forClass(LineGeneratorBuilder.LineGeneratorImpl.class)
-//        .withClassName(NameStyle.SIMPLE_NAME)
-//        .withPreset(Presets.INTELLI_J)
-//        .withIgnoredFields(
-//            "perlinData",
-//            "currentPosition",
-//            "generated",
-//            "containers",
-//            "containersCount",
-//            "lineAngleFactor",
-//            "recycler",
-//            "lineLengthThreshold",
-//            "pool",
-//            "numberAvailableProcessors")
-//        .verify();
-//  }
+  //  @Test
+  //  void testToString() {
+  //    ToStringVerifier.forClass(LineGeneratorBuilder.LineGeneratorImpl.class)
+  //        .withClassName(NameStyle.SIMPLE_NAME)
+  //        .withPreset(Presets.INTELLI_J)
+  //        .withIgnoredFields(
+  //            "perlinData",
+  //            "currentPosition",
+  //            "generated",
+  //            "containers",
+  //            "containersCount",
+  //            "lineAngleFactor",
+  //            "recycler",
+  //            "lineLengthThreshold",
+  //            "pool",
+  //            "numberAvailableProcessors")
+  //        .verify();
+  //  }
 
   @Test
   void testLineCircularity() throws StepSizeException {
-    LineGenerator generator = defaultBuilder.withLineStepSize(1 / 5.0)
-        .withAmplitude(1.0)
-        .withCircularBounds(true)
-        .build();
+    LineGenerator generator =
+        defaultBuilder
+            .withLineStepSize(1 / 5.0)
+            .withAmplitude(1.0)
+            .withCircularBounds(true)
+            .build();
 
     int numCyclesInLine = (int) (generator.getLineLength() * generator.getLineStepSize());
     int numInterpolationPointsPerCycle = (int) (1.0 / generator.getLineStepSize());
@@ -261,13 +271,14 @@ class LineGeneratorTest {
   void testSmoothVisuals() throws StepSizeException { // NOSONAR
     int lineLength = 200;
     LineGenerator generator =
-        new LineGeneratorBuilder(lineLength).withNoiseStepSize(1.0 / 50)
-        .withLineStepSize(1.0 / 500)
-        .withAmplitude(1.0)
-        .withRandomSeed(randomSeed)
-        .withCircularBounds(true)
-        .withForkJoinPool(null)
-        .build();
+        new LineGeneratorBuilder(lineLength)
+            .withNoiseStepSize(1.0 / 50)
+            .withLineStepSize(1.0 / 500)
+            .withAmplitude(1.0)
+            .withRandomSeed(randomSeed)
+            .withCircularBounds(true)
+            .withForkJoinPool(null)
+            .build();
     int requested = 200;
 
     final double[][] image = new double[requested][lineLength * 2];

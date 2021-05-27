@@ -91,6 +91,5 @@ public class PointGeneratorBuilder
     public int getTotalSize() {
       return 1;
     }
-
   }
 }

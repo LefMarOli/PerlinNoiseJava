@@ -11,8 +11,8 @@ import org.lefmaroli.perlin.PerlinNoise;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
 import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.dimensional.MultiDimensionalBuilder;
 import org.lefmaroli.perlin.generators.StepSizeException;
+import org.lefmaroli.perlin.generators.dimensional.MultiDimensionalBuilder;
 import org.lefmaroli.perlin.generators.dimensional.MultiDimensionalRootGenerator;
 
 public class LineGeneratorBuilder
@@ -26,9 +26,10 @@ public class LineGeneratorBuilder
     this.lineLength = lineLength;
   }
 
-  private void assertLineSizeIsValid(int lineLength){
-    if(lineLength < 1){
-      throw new IllegalArgumentException("Line length must be greater than 0, provided: " + lineLength);
+  private void assertLineSizeIsValid(int lineLength) {
+    if (lineLength < 1) {
+      throw new IllegalArgumentException(
+          "Line length must be greater than 0, provided: " + lineLength);
     }
   }
 

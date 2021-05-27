@@ -13,8 +13,7 @@ import java.util.concurrent.TimeoutException;
 import org.lefmaroli.perlin.generators.layers.LayerProcess;
 import org.lefmaroli.perlin.generators.layers.LayerProcessException;
 
-public abstract class LayeredGenerator<N>
-    implements ILayeredGenerator<N> {
+public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
 
   private static final int SIZE_THRESHOLD = 2500;
   private static final int DEFAULT_TIMEOUT = 5;
@@ -28,7 +27,8 @@ public abstract class LayeredGenerator<N>
   private final long timeout;
   private final ExecutorService executorService;
 
-  protected LayeredGenerator(List<? extends IGenerator<N>> layers, ExecutorService executorService) {
+  protected LayeredGenerator(
+      List<? extends IGenerator<N>> layers, ExecutorService executorService) {
     if (layers.isEmpty()) {
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }
@@ -58,7 +58,7 @@ public abstract class LayeredGenerator<N>
   }
 
   @Override
-  public int getNumberOfLayers(){
+  public int getNumberOfLayers() {
     return layers.size();
   }
 

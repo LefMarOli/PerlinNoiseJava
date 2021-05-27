@@ -10,10 +10,7 @@ import org.lefmaroli.perlin.generators.StepSizeException;
 
 public class LayeredPointGeneratorBuilder
     extends LayeredBuilder<
-        Double,
-        LayeredPointGenerator,
-        PointGenerator,
-        LayeredPointGeneratorBuilder> {
+        Double, LayeredPointGenerator, PointGenerator, LayeredPointGeneratorBuilder> {
 
   private final PointGeneratorBuilder singleLayerBuilder;
 
@@ -35,8 +32,11 @@ public class LayeredPointGeneratorBuilder
   @Override
   protected PointGenerator buildSingleNoiseLayer(
       List<Double> stepSizes, double layerAmplitude, long randomSeed) throws StepSizeException {
-    return singleLayerBuilder.withNoiseStepSize(stepSizes.get(0))
-        .withAmplitude(layerAmplitude).withRandomSeed(randomSeed).build();
+    return singleLayerBuilder
+        .withNoiseStepSize(stepSizes.get(0))
+        .withAmplitude(layerAmplitude)
+        .withRandomSeed(randomSeed)
+        .build();
   }
 
   @Override

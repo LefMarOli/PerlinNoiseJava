@@ -1,7 +1,6 @@
 package org.lefmaroli.perlin.generators;
 
-public abstract class RootBuilder<
-    N, L extends IGenerator<N>, B extends RootBuilder<N, L, B>> {
+public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuilder<N, L, B>> {
 
   private final int dimensions;
   private final double DEFAULT_STEP_SIZE = 0.01;

@@ -11,12 +11,12 @@ import org.lefmaroli.perlin.PerlinNoise;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
 import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.dimensional.MultiDimensionalBuilder;
 import org.lefmaroli.perlin.generators.StepSizeException;
+import org.lefmaroli.perlin.generators.dimensional.MultiDimensionalBuilder;
 import org.lefmaroli.perlin.generators.dimensional.MultiDimensionalRootGenerator;
 
-public class SliceGeneratorBuilder extends MultiDimensionalBuilder<
-    double[][], SliceGenerator, SliceGeneratorBuilder> {
+public class SliceGeneratorBuilder
+    extends MultiDimensionalBuilder<double[][], SliceGenerator, SliceGeneratorBuilder> {
 
   private final int sliceWidth;
   private final int sliceHeight;
@@ -28,12 +28,14 @@ public class SliceGeneratorBuilder extends MultiDimensionalBuilder<
     this.sliceHeight = sliceHeight;
   }
 
-  private void assertValidSliceDimension(int sliceWidth, int sliceHeight){
-    if(sliceWidth < 1){
-      throw new IllegalArgumentException("Slice width must be greater than 0, provided: " + sliceWidth);
+  private void assertValidSliceDimension(int sliceWidth, int sliceHeight) {
+    if (sliceWidth < 1) {
+      throw new IllegalArgumentException(
+          "Slice width must be greater than 0, provided: " + sliceWidth);
     }
-    if(sliceHeight < 1){
-      throw new IllegalArgumentException("Slice height must be greater than 0, provided: " + sliceHeight);
+    if (sliceHeight < 1) {
+      throw new IllegalArgumentException(
+          "Slice height must be greater than 0, provided: " + sliceHeight);
     }
   }
 
@@ -42,8 +44,7 @@ public class SliceGeneratorBuilder extends MultiDimensionalBuilder<
     return (SliceGenerator) super.build();
   }
 
-  public SliceGeneratorBuilder withWidthStepSize(
-      double stepSize) throws StepSizeException {
+  public SliceGeneratorBuilder withWidthStepSize(double stepSize) throws StepSizeException {
     setStepSizeForDimension(stepSize, 1);
     return this;
   }
@@ -59,8 +60,8 @@ public class SliceGeneratorBuilder extends MultiDimensionalBuilder<
   }
 
   @Override
-  protected IGenerator<double[][]> buildNoiseGenerator(double[] stepSizes, double amplitude,
-      long randomSeed) {
+  protected IGenerator<double[][]> buildNoiseGenerator(
+      double[] stepSizes, double amplitude, long randomSeed) {
     return new SliceGeneratorImpl(
         stepSizes[0],
         stepSizes[1],
@@ -126,7 +127,8 @@ public class SliceGeneratorBuilder extends MultiDimensionalBuilder<
       var threshold = 2500;
       if (hasParallelProcessingEnabled() && sliceWidth * sliceHeight > 2500) {
         threshold =
-            (int) Math.ceil((double) sliceWidth * sliceHeight / getExecutionPool().getParallelism());
+            (int)
+                Math.ceil((double) sliceWidth * sliceHeight / getExecutionPool().getParallelism());
       }
       return threshold;
     }
@@ -246,7 +248,8 @@ public class SliceGeneratorBuilder extends MultiDimensionalBuilder<
       }
     }
 
-    private double processSliceHeightDomain(int heightIndex, PerlinNoiseDataContainer dataContainer) {
+    private double processSliceHeightDomain(
+        int heightIndex, PerlinNoiseDataContainer dataContainer) {
       if (isCircular()) {
         double heightDist = heightIndex * heightAngleFactor;
         dataContainer.setCoordinatesForDimension(3, (Math.cos(heightDist) + 1.0) / 2.0);

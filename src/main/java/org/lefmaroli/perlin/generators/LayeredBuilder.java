@@ -14,8 +14,7 @@ public abstract class LayeredBuilder<
     L extends ILayeredGenerator<N>,
     S extends IGenerator<N>,
     B extends LayeredBuilder<N, L, S, B>> {
-  private static final DoubleGenerator DEFAULT_STEP_SIZES =
-      new DoubleGenerator(1.0 / 64, 0.5);
+  private static final DoubleGenerator DEFAULT_STEP_SIZES = new DoubleGenerator(1.0 / 64, 0.5);
   private final int dimensions;
   private final List<Iterable<Double>> stepSizesByDimension;
   protected int numberOfLayers = 3;
@@ -75,8 +74,7 @@ public abstract class LayeredBuilder<
     return buildMultipleNoiseLayer(generateNoiseLayers(), executorService);
   }
 
-  protected void setStepSizeGeneratorForDimension(
-      int dimension, Iterable<Double> stepSizes) {
+  protected void setStepSizeGeneratorForDimension(int dimension, Iterable<Double> stepSizes) {
     if (dimension > this.dimensions) {
       String dimensionRange = this.dimensions == 1 ? "1" : "1-" + this.dimensions;
       throw new IllegalArgumentException(
@@ -100,8 +98,8 @@ public abstract class LayeredBuilder<
   private List<S> generateNoiseLayers() throws LayeredGeneratorBuilderException {
     var randomGenerator = new Random(randomSeed);
     List<S> layers = new ArrayList<>(numberOfLayers);
-    List<Iterator<Double>> stepSizeIts = stepSizesByDimension.stream().map(Iterable::iterator).collect(
-        Collectors.toList());
+    List<Iterator<Double>> stepSizeIts =
+        stepSizesByDimension.stream().map(Iterable::iterator).collect(Collectors.toList());
     Iterator<Double> amplitudeIt = amplitudes.iterator();
     for (var i = 0; i < numberOfLayers; i++) {
       var layerRandomSeed = randomGenerator.nextLong();
@@ -114,13 +112,18 @@ public abstract class LayeredBuilder<
     return layers;
   }
 
-  private S generateNoiseLayer(List<Iterator<Double>> stepSizeIts, Iterator<Double> amplitudeIt, int layerNumber, long randomSeed)
+  private S generateNoiseLayer(
+      List<Iterator<Double>> stepSizeIts,
+      Iterator<Double> amplitudeIt,
+      int layerNumber,
+      long randomSeed)
       throws NoiseLayerException, StepSizeException {
     List<Double> stepSizesForLayer = getStepSizesForLayer(stepSizeIts, layerNumber);
     return buildSingleNoiseLayer(stepSizesForLayer, amplitudeIt.next(), randomSeed);
   }
 
-  private List<Double> getStepSizesForLayer(List<Iterator<Double>> stepSizeIts, int layerNumber) throws NoiseLayerException {
+  private List<Double> getStepSizesForLayer(List<Iterator<Double>> stepSizeIts, int layerNumber)
+      throws NoiseLayerException {
     try {
       return getNextStepSizesForEachDimension(stepSizeIts);
     } catch (StepSizeException e) {
@@ -128,11 +131,9 @@ public abstract class LayeredBuilder<
     }
   }
 
-  private static List<Double> getNextStepSizesForEachDimension(List<Iterator<Double>> stepSizeIts) throws StepSizeException {
-    List<Double> stepSizes =
-        stepSizeIts.stream()
-            .map(Iterator::next)
-            .collect(Collectors.toList());
+  private static List<Double> getNextStepSizesForEachDimension(List<Iterator<Double>> stepSizeIts)
+      throws StepSizeException {
+    List<Double> stepSizes = stepSizeIts.stream().map(Iterator::next).collect(Collectors.toList());
     assertStepSizeForAll(stepSizes);
     return stepSizes;
   }
