@@ -90,13 +90,13 @@ class SliceGeneratorTest {
   }
 
   @Test
-  void testInvalidHeightStepSizeWithCircularity(){
+  void testInvalidHeightStepSizeWithCircularity() {
     defaultBuilder.withHeightStepSize(5.0).withCircularBounds(true);
     Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.build());
   }
 
   @Test
-  void testInvalidWidthStepSizeWithCircularity(){
+  void testInvalidWidthStepSizeWithCircularity() {
     defaultBuilder.withWidthStepSize(5.0).withCircularBounds(true);
     Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.build());
   }
@@ -122,19 +122,22 @@ class SliceGeneratorTest {
   @ParameterizedTest
   @ValueSource(doubles = {-5, 0})
   void testCreateInvalidNoiseStepSize(double noiseStepSize) {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
   }
 
   @ParameterizedTest
   @ValueSource(doubles = {-5, 0})
   void testCreateInvalidWidthStepSize(double widthStepSize) {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.withWidthStepSize(widthStepSize));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> defaultBuilder.withWidthStepSize(widthStepSize));
   }
 
   @ParameterizedTest
   @ValueSource(doubles = {-5, 0})
   void testCreateInvalidHeightStepSize(double heightStepSize) {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> defaultBuilder.withHeightStepSize(heightStepSize));
+    Assertions.assertThrows(
+        IllegalArgumentException.class, () -> defaultBuilder.withHeightStepSize(heightStepSize));
   }
 
   @Test

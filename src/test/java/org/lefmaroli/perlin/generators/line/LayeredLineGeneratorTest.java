@@ -19,7 +19,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.slice.LayeredSliceGeneratorBuilder;
 import org.lefmaroli.utils.AssertUtils;
 import org.lefmaroli.utils.ScheduledUpdater;
 

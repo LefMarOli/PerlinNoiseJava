@@ -24,9 +24,10 @@ public abstract class LayeredBuilder<
   private Iterable<Double> amplitudes = new DoubleGenerator(1.0, 0.5);
   private ExecutorService executorService = null;
 
-  public static void increaseLayerLimit(int limit){
-    if(limit < 2){
-      throw new IllegalArgumentException("Number of layers needs to be at least 2, provided: " + limit);
+  public static void increaseLayerLimit(int limit) {
+    if (limit < 2) {
+      throw new IllegalArgumentException(
+          "Number of layers needs to be at least 2, provided: " + limit);
     }
     activeLayerNumberLimit = limit;
   }
@@ -70,9 +71,9 @@ public abstract class LayeredBuilder<
     if (numberOfLayers < 2) {
       throw new IllegalArgumentException("Number of layers must be at least 2.");
     }
-    if(numberOfLayers > activeLayerNumberLimit){
+    if (numberOfLayers > activeLayerNumberLimit) {
       String message = "Number of layers greater than limit of " + activeLayerNumberLimit;
-      if(activeLayerNumberLimit == DEFAULT_LAYER_NUMBER_LIMIT){
+      if (activeLayerNumberLimit == DEFAULT_LAYER_NUMBER_LIMIT) {
         message += " (Default value)";
       }
       message += ". Increase limit by first calling increaseLayersNumberLimit()";
