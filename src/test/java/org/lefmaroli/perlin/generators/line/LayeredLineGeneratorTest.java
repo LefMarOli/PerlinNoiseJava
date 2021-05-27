@@ -171,8 +171,7 @@ class LayeredLineGeneratorTest {
   }
 
   @Test
-  void testCreateSameGeneratedLinesWithPool()
-      throws LayeredGeneratorBuilderException {
+  void testCreateSameGeneratedLinesWithPool() throws LayeredGeneratorBuilderException {
     JitterTrait.setJitterStrategy(new TestJitterStrategy());
     int lineLength = 8000;
     LayeredLineGeneratorBuilder builder = new LayeredLineGeneratorBuilder(lineLength);
@@ -197,25 +196,25 @@ class LayeredLineGeneratorTest {
     }
   }
 
-    @Test
-    void testToString() {
-      ToStringVerifier.forClass(defaultGenerator.getClass())
-          .withClassName(NameStyle.SIMPLE_NAME)
-          .withPreset(Presets.INTELLI_J)
-          .withIgnoredFields(
-              "scheduler",
-              "jitterStrategy",
-              "logger",
-              "containers",
-              "generated",
-              "containersCount",
-              "pool",
-              "futures",
-              "totalSize",
-              "timeout",
-              "executorService")
-          .verify();
-    }
+  @Test
+  void testToString() {
+    ToStringVerifier.forClass(defaultGenerator.getClass())
+        .withClassName(NameStyle.SIMPLE_NAME)
+        .withPreset(Presets.INTELLI_J)
+        .withIgnoredFields(
+            "scheduler",
+            "jitterStrategy",
+            "logger",
+            "containers",
+            "generated",
+            "containersCount",
+            "pool",
+            "futures",
+            "totalSize",
+            "timeout",
+            "executorService")
+        .verify();
+  }
 
   @Test
   void testNonCircularity() {

@@ -12,7 +12,7 @@ public class JitterTrait implements JitterStrategy {
     JitterTrait.jitterStrategy = DEFAULT_PRODUCTION_STRATEGY;
   }
 
-  public static boolean isJitterStrategyDefaultProduction(){
+  public static boolean isJitterStrategyDefaultProduction() {
     return jitterStrategy == DEFAULT_PRODUCTION_STRATEGY;
   }
 

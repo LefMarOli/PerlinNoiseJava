@@ -138,24 +138,24 @@ class LayeredPointGeneratorTest {
         Arguments.of(new Random(), "object from different class"));
   }
 
-    @Test
-    void testToString() {
-      ToStringVerifier.forClass(defaultGenerator.getClass())
-          .withClassName(NameStyle.SIMPLE_NAME)
-          .withPreset(Presets.INTELLI_J)
-          .withIgnoredFields(
-              "scheduler",
-              "jitterStrategy",
-              "logger",
-              "containers",
-              "generated",
-              "containersCount",
-              "futures",
-              "totalSize",
-              "timeout",
-              "executorService")
-          .verify();
-    }
+  @Test
+  void testToString() {
+    ToStringVerifier.forClass(defaultGenerator.getClass())
+        .withClassName(NameStyle.SIMPLE_NAME)
+        .withPreset(Presets.INTELLI_J)
+        .withIgnoredFields(
+            "scheduler",
+            "jitterStrategy",
+            "logger",
+            "containers",
+            "generated",
+            "containersCount",
+            "futures",
+            "totalSize",
+            "timeout",
+            "executorService")
+        .verify();
+  }
 
   @Test
   void testSmoothVisuals() throws LayeredGeneratorBuilderException { // NOSONAR
