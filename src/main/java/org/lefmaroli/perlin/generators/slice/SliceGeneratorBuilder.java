@@ -160,7 +160,7 @@ public class SliceGeneratorBuilder
 
     @Override
     public String toString() {
-      return "SliceGenerator{"
+      return "SliceGeneratorImpl{"
           + "noiseStepSize="
           + getNoiseStepSize()
           + ", widthStepSize="

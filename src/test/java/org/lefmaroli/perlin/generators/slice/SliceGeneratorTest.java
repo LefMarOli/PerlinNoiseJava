@@ -1,5 +1,8 @@
 package org.lefmaroli.perlin.generators.slice;
 
+import com.jparams.verifier.tostring.NameStyle;
+import com.jparams.verifier.tostring.ToStringVerifier;
+import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -331,6 +334,26 @@ class SliceGeneratorTest {
             "different slice height"),
         Arguments.of(null, "null"),
         Arguments.of(new Random(), "object from different class"));
+  }
+
+  @Test
+  void testToString() {
+    ToStringVerifier.forClass(defaultGenerator.getClass())
+        .withClassName(NameStyle.SIMPLE_NAME)
+        .withPreset(Presets.INTELLI_J)
+        .withIgnoredFields(
+            "widthAngleFactor",
+            "heightAngleFactor",
+            "perlinData",
+            "recycler",
+            "currentPosInNoiseInterpolation",
+            "lengthThreshold",
+            "pool",
+            "numberAvailableProcessors",
+            "generated",
+            "containers",
+            "containersCount")
+        .verify();
   }
 
   @Test

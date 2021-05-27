@@ -91,13 +91,13 @@ public class LayeredSliceGeneratorBuilder
 
     @Override
     public String toString() {
-      return "LayeredSliceGenerator{"
+      return "LayeredSliceGeneratorImpl{"
           + "sliceWidth="
           + sliceWidth
           + ", sliceHeight="
           + sliceHeight
           + ", layers="
-          + getLayersAsString()
+          + getLayers()
           + ", maxAmplitude="
           + getMaxAmplitude()
           + ", isCircular="

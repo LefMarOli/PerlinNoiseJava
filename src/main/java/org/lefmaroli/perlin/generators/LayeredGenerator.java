@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.perlin.generators.layers.LayerProcess;
 import org.lefmaroli.perlin.generators.layers.LayerProcessException;
 
@@ -18,7 +19,7 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private static final int SIZE_THRESHOLD = 2500;
   private static final int DEFAULT_TIMEOUT = 5;
   private final double maxAmplitude;
-  private final List<? extends IGenerator<N>> layers;
+  private final List<IGenerator<N>> layers;
   private final Queue<N> generated = new LinkedList<>();
   private final Queue<N> containers = new LinkedList<>();
   private final List<CompletableFuture<N>> futures;
@@ -26,14 +27,14 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private final int totalSize;
   private final long timeout;
   private final ExecutorService executorService;
-  private final String layersAsString;
 
   protected LayeredGenerator(
       List<? extends IGenerator<N>> layers, ExecutorService executorService) {
     if (layers.isEmpty()) {
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }
-    this.layers = layers;
+    this.layers = new ArrayList<>(layers.size());
+    this.layers.addAll(layers);
     this.futures = new ArrayList<>(layers.size());
     var sum = 0.0;
     for (IGenerator<N> layer : layers) {
@@ -45,9 +46,12 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
       size += layer.getTotalSize();
     }
     this.totalSize = size;
-    this.timeout = (long) totalSize * DEFAULT_TIMEOUT / SIZE_THRESHOLD;
+    if (!JitterTrait.isJitterStrategyDefaultProduction()) {
+      this.timeout = 10000;
+    } else {
+      this.timeout = (long) totalSize * DEFAULT_TIMEOUT / SIZE_THRESHOLD;
+    }
     this.executorService = executorService;
-    this.layersAsString = String.valueOf(layers);
   }
 
   private boolean hasParallelProcessingEnabled() {
@@ -146,8 +150,8 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
     return maxAmplitude;
   }
 
-  protected String getLayersAsString() {
-    return layersAsString;
+  protected List<IGenerator<N>> getLayers() {
+    return layers;
   }
 
   protected abstract N getNewContainer();

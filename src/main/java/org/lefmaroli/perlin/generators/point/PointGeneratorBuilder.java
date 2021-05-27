@@ -65,7 +65,7 @@ public class PointGeneratorBuilder
 
     @Override
     public String toString() {
-      return "PointGenerator{"
+      return "PointGeneratorImpl{"
           + "noiseStepSize="
           + getNoiseStepSize()
           + ", maxAmplitude="

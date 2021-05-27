@@ -82,11 +82,11 @@ public class LayeredLineGeneratorBuilder
 
     @Override
     public String toString() {
-      return "LayeredLineGenerator{"
+      return "LayeredLineGeneratorImpl{"
           + "lineLength="
           + lineLength
           + ", layers="
-          + getLayersAsString()
+          + getLayers()
           + ", maxAmplitude="
           + getMaxAmplitude()
           + ", isCircular="

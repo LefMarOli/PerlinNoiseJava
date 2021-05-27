@@ -1,9 +1,15 @@
 package org.lefmaroli.perlin.generators.line;
 
+import com.jparams.verifier.tostring.NameStyle;
+import com.jparams.verifier.tostring.ToStringVerifier;
+import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -16,7 +22,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.lefmaroli.configuration.JitterTrait;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.execution.TestJitterStrategy;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
 import org.lefmaroli.utils.AssertUtils;
@@ -162,25 +170,52 @@ class LayeredLineGeneratorTest {
     Assertions.assertEquals(defaultLineLength, defaultGenerator.getLineLength());
   }
 
-  //  @Test
-  //  void testToString() {
-  //    ToStringVerifier.forClass(LayeredLineGeneratorBuilder.LayeredLineGeneratorImpl.class)
-  //        .withClassName(NameStyle.SIMPLE_NAME)
-  //        .withPreset(Presets.INTELLI_J)
-  //        .withIgnoredFields(
-  //            "scheduler",
-  //            "jitterStrategy",
-  //            "logger",
-  //            "containers",
-  //            "generated",
-  //            "containersCount",
-  //            "pool",
-  //            "futures",
-  //            "totalSize",
-  //            "timeout",
-  //            "executorService")
-  //        .verify();
-  //  }
+  @Test
+  void testCreateSameGeneratedLinesWithPool()
+      throws LayeredGeneratorBuilderException {
+    JitterTrait.setJitterStrategy(new TestJitterStrategy());
+    int lineLength = 8000;
+    LayeredLineGeneratorBuilder builder = new LayeredLineGeneratorBuilder(lineLength);
+    resetBuilder(builder);
+
+    LayeredLineGenerator layer = builder.build();
+    builder.withForkJoinPool(ForkJoinPool.commonPool());
+    ExecutorService executorService = Executors.newFixedThreadPool(numLayers);
+    builder.withLayerExecutorService(executorService);
+    try {
+      LayeredLineGenerator same = builder.build();
+      double[] unforked = layer.getNext();
+      double[] forked = same.getNext();
+
+      Assertions.assertEquals(unforked.length, forked.length, 0);
+      for (int i = 0; i < unforked.length; i++) {
+        Assertions.assertEquals(unforked[i], forked[i], 0.0);
+      }
+    } finally {
+      executorService.shutdown();
+      JitterTrait.resetJitterStrategy();
+    }
+  }
+
+    @Test
+    void testToString() {
+      ToStringVerifier.forClass(defaultGenerator.getClass())
+          .withClassName(NameStyle.SIMPLE_NAME)
+          .withPreset(Presets.INTELLI_J)
+          .withIgnoredFields(
+              "scheduler",
+              "jitterStrategy",
+              "logger",
+              "containers",
+              "generated",
+              "containersCount",
+              "pool",
+              "futures",
+              "totalSize",
+              "timeout",
+              "executorService")
+          .verify();
+    }
 
   @Test
   void testNonCircularity() {

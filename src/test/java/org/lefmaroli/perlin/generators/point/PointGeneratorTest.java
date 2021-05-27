@@ -1,5 +1,8 @@
 package org.lefmaroli.perlin.generators.point;
 
+import com.jparams.verifier.tostring.NameStyle;
+import com.jparams.verifier.tostring.ToStringVerifier;
+import com.jparams.verifier.tostring.preset.Presets;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
@@ -148,15 +151,15 @@ class PointGeneratorTest {
             "Different noise step size"));
   }
 
-  //    @Test
-  //    void testToString() {
-  //      ToStringVerifier.forClass(PointGeneratorBuilder.PointGeneratorImpl.class)
-  //          .withClassName(NameStyle.SIMPLE_NAME)
-  //          .withPreset(Presets.INTELLI_J)
-  //          .withIgnoredFields(
-  //              "perlinData", "currentPosition", "generated", "containers", "containersCount")
-  //          .verify();
-  //    }
+  @Test
+  void testToString() {
+    ToStringVerifier.forClass(defaultGenerator.getClass())
+        .withClassName(NameStyle.SIMPLE_NAME)
+        .withPreset(Presets.INTELLI_J)
+        .withIgnoredFields(
+            "perlinData", "currentPosition", "generated", "containers", "containersCount")
+        .verify();
+  }
 
   @Test
   void getNoiseStepSize() {

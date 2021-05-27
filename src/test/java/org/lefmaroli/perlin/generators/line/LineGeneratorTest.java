@@ -1,5 +1,8 @@
 package org.lefmaroli.perlin.generators.line;
 
+import com.jparams.verifier.tostring.NameStyle;
+import com.jparams.verifier.tostring.ToStringVerifier;
+import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -234,24 +237,24 @@ class LineGeneratorTest {
             resetBuilder(defaultBuilder).withCircularBounds(!isCircular), "Different circularity"));
   }
 
-  //  @Test
-  //  void testToString() {
-  //    ToStringVerifier.forClass(LineGeneratorBuilder.LineGeneratorImpl.class)
-  //        .withClassName(NameStyle.SIMPLE_NAME)
-  //        .withPreset(Presets.INTELLI_J)
-  //        .withIgnoredFields(
-  //            "perlinData",
-  //            "currentPosition",
-  //            "generated",
-  //            "containers",
-  //            "containersCount",
-  //            "lineAngleFactor",
-  //            "recycler",
-  //            "lineLengthThreshold",
-  //            "pool",
-  //            "numberAvailableProcessors")
-  //        .verify();
-  //  }
+  @Test
+  void testToString() {
+    ToStringVerifier.forClass(defaultGenerator.getClass())
+        .withClassName(NameStyle.SIMPLE_NAME)
+        .withPreset(Presets.INTELLI_J)
+        .withIgnoredFields(
+            "perlinData",
+            "currentPosition",
+            "generated",
+            "containers",
+            "containersCount",
+            "lineAngleFactor",
+            "recycler",
+            "lineLengthThreshold",
+            "pool",
+            "numberAvailableProcessors")
+        .verify();
+  }
 
   @Test
   void testLineCircularity() throws StepSizeException {

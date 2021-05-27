@@ -123,7 +123,7 @@ public class LineGeneratorBuilder
 
     @Override
     public String toString() {
-      return "LineGenerator{"
+      return "LineGeneratorImpl{"
           + "noiseStepSize="
           + getNoiseStepSize()
           + ", lineStepSize="

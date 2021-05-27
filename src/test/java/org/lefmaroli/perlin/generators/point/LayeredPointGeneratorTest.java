@@ -1,5 +1,8 @@
 package org.lefmaroli.perlin.generators.point;
 
+import com.jparams.verifier.tostring.NameStyle;
+import com.jparams.verifier.tostring.ToStringVerifier;
+import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.Random;
@@ -135,24 +138,24 @@ class LayeredPointGeneratorTest {
         Arguments.of(new Random(), "object from different class"));
   }
 
-  //  @Test
-  //  void testToString() {
-  //    ToStringVerifier.forClass(LayeredPointGeneratorBuilder.LayeredPointGeneratorImpl.class)
-  //        .withClassName(NameStyle.SIMPLE_NAME)
-  //        .withPreset(Presets.INTELLI_J)
-  //        .withIgnoredFields(
-  //            "scheduler",
-  //            "jitterStrategy",
-  //            "logger",
-  //            "containers",
-  //            "generated",
-  //            "containersCount",
-  //            "futures",
-  //            "totalSize",
-  //            "timeout",
-  //            "executorService")
-  //        .verify();
-  //  }
+    @Test
+    void testToString() {
+      ToStringVerifier.forClass(defaultGenerator.getClass())
+          .withClassName(NameStyle.SIMPLE_NAME)
+          .withPreset(Presets.INTELLI_J)
+          .withIgnoredFields(
+              "scheduler",
+              "jitterStrategy",
+              "logger",
+              "containers",
+              "generated",
+              "containersCount",
+              "futures",
+              "totalSize",
+              "timeout",
+              "executorService")
+          .verify();
+    }
 
   @Test
   void testSmoothVisuals() throws LayeredGeneratorBuilderException { // NOSONAR
