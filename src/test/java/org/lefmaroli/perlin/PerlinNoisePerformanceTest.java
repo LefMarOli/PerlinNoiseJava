@@ -15,13 +15,13 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.perlin.exceptions.NoiseBuilderException;
-import org.lefmaroli.perlin.line.LineNoiseGenerator;
-import org.lefmaroli.perlin.line.LineNoiseGeneratorBuilder;
-import org.lefmaroli.perlin.point.PointNoiseGenerator;
-import org.lefmaroli.perlin.point.PointNoiseGeneratorBuilder;
-import org.lefmaroli.perlin.slice.SliceNoiseGenerator;
-import org.lefmaroli.perlin.slice.SliceNoiseGeneratorBuilder;
+import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
+import org.lefmaroli.perlin.generators.line.LayeredLineGenerator;
+import org.lefmaroli.perlin.generators.line.LayeredLineGeneratorBuilder;
+import org.lefmaroli.perlin.generators.point.LayeredPointGenerator;
+import org.lefmaroli.perlin.generators.point.LayeredPointGeneratorBuilder;
+import org.lefmaroli.perlin.generators.slice.LayeredSliceGenerator;
+import org.lefmaroli.perlin.generators.slice.LayeredSliceGeneratorBuilder;
 
 class PerlinNoisePerformanceTest {
 
@@ -95,13 +95,13 @@ class PerlinNoisePerformanceTest {
   }
 
   @Test
-  void benchmarkPointGeneratorPerformance() throws NoiseBuilderException {
-    PointNoiseGenerator noiseGenerator =
-        new PointNoiseGeneratorBuilder()
+  void benchmarkPointGeneratorPerformance() throws LayeredGeneratorBuilderException {
+    LayeredPointGenerator noiseGenerator =
+        new LayeredPointGeneratorBuilder()
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+            .withNoiseStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withAmplitudes(new DoubleGenerator(1.0, 0.85))
             .build();
     long meanDuration =
         testPerformance(
@@ -113,14 +113,14 @@ class PerlinNoisePerformanceTest {
   }
 
   @Test
-  void benchmarkLineGeneratorPerformance() throws NoiseBuilderException {
-    LineNoiseGenerator noiseGenerator =
-        new LineNoiseGeneratorBuilder(1000)
+  void benchmarkLineGeneratorPerformance() throws LayeredGeneratorBuilderException {
+    LayeredLineGenerator noiseGenerator =
+        new LayeredLineGeneratorBuilder(1000)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withLineStepSizeGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+            .withNoiseStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withLineStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withAmplitudes(new DoubleGenerator(1.0, 0.85))
             .build();
     long meanDuration =
         testPerformance(
@@ -132,15 +132,15 @@ class PerlinNoisePerformanceTest {
   }
 
   @Test
-  void benchmarkSliceGeneratorPerformance() throws NoiseBuilderException {
-    SliceNoiseGenerator noiseGenerator =
-        new SliceNoiseGeneratorBuilder(100, 100)
+  void benchmarkSliceGeneratorPerformance() throws LayeredGeneratorBuilderException {
+    LayeredSliceGenerator noiseGenerator =
+        new LayeredSliceGeneratorBuilder(100, 100)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
-            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+            .withNoiseStepSizes(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withWidthStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withHeightStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withAmplitudes(new DoubleGenerator(1.0, 0.85))
             .build();
     long meanDuration =
         testPerformance(
@@ -153,22 +153,22 @@ class PerlinNoisePerformanceTest {
   }
 
   @Test
-  void benchmarkSliceGeneratorPerformanceWithExecutor() throws NoiseBuilderException {
+  void benchmarkSliceGeneratorPerformanceWithExecutor() throws LayeredGeneratorBuilderException {
     ExecutorService service = Executors.newFixedThreadPool(3);
     long optimized;
     int numIterations = 50;
-    SliceNoiseGeneratorBuilder builder =
-        new SliceNoiseGeneratorBuilder(200, 200)
+    LayeredSliceGeneratorBuilder builder =
+        new LayeredSliceGeneratorBuilder(200, 200)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizeGenerator(new DoubleGenerator(1.0 / 1000, 2.0))
-            .withWidthInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withHeightInterpolationPointGenerator(new DoubleGenerator(1.0 / 50, 0.5))
-            .withAmplitudeGenerator(new DoubleGenerator(1.0, 0.85))
+            .withNoiseStepSizes(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withWidthStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withHeightStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withAmplitudes(new DoubleGenerator(1.0, 0.85))
             .withForkJoinPool(null)
             .withLayerExecutorService(service);
     try {
-      SliceNoiseGenerator noiseGenerator = builder.build();
+      LayeredSliceGenerator noiseGenerator = builder.build();
       optimized =
           testPerformance(
               numIterations,
@@ -179,7 +179,7 @@ class PerlinNoisePerformanceTest {
       service.shutdown();
     }
     builder.withLayerExecutorService(null);
-    SliceNoiseGenerator noiseGenerator = builder.build();
+    LayeredSliceGenerator noiseGenerator = builder.build();
     long unoptimized =
         testPerformance(
             numIterations,

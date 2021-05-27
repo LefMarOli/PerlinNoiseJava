@@ -1,8 +1,11 @@
 package org.lefmaroli.interpolation;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.interpolation.Interpolation.Dimension;
 
@@ -27,28 +30,38 @@ class InterpolationTest {
         DistanceNotBoundedException.class, () -> Interpolation.linear(matrix, distances));
   }
 
-  @Test
-  void testLinearSmallToBigInterpolation() {
-    // 1 and 2 as values, distance of 0.5
-    Assertions.assertEquals(1.5, Interpolation.linear(1, 2, 0.5), 0.0);
-    Assertions.assertEquals(1.25, Interpolation.linear(1, 2, 0.25), 0.0);
+  @ParameterizedTest
+  @MethodSource("testLinearArgs")
+  void testLinear(double expected, double lowerBound, double higherBound, double mu){
+    Assertions.assertEquals(expected, Interpolation.linear(lowerBound, higherBound, mu), 0.0);
   }
 
-  @Test
-  void testLinearBigToSmallInterpolation() {
-    // 1 and 2 as values, distance of 0.5
-    Assertions.assertEquals(1.5, Interpolation.linear(2, 1, 0.5), 0.0);
-    Assertions.assertEquals(1.75, Interpolation.linear(2, 1, 0.25), 0.0);
+  private static Stream<Arguments> testLinearArgs(){
+    return Stream.of(
+        Arguments.of(1.5, 1, 2, 0.5),
+        Arguments.of(1.25, 1, 2, 0.25),
+        Arguments.of(1.5, 2, 1, 0.5),
+        Arguments.of(1.75, 2, 1, 0.25)
+    );
   }
 
-  @Test
-  void testLinearIllegalValue() {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.linear(1, 5, -1));
+  @ParameterizedTest
+  @ValueSource(doubles = {-1, 5})
+  void testLinearIllegalValue(double mu){
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.linear(1, 5, mu));
   }
 
-  @Test
-  void testLinearIllegalValue2() {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.linear(1, 5, 5));
+  @ParameterizedTest
+  @MethodSource("linearWithFadeArgs")
+  void testLinearWithFade(double expectedValue, double lowerBound, double higherBound, double mu){
+    Assertions.assertEquals(expectedValue, Interpolation.linearWithFade(lowerBound, higherBound, mu), 0);
+  }
+
+  private static Stream<Arguments> linearWithFadeArgs(){
+    return Stream.of(
+        Arguments.of(1.5, 1, 2, 0.5),
+        Arguments.of(1.103515625, 1, 2, 0.25)
+    );
   }
 
   @Test
@@ -58,33 +71,36 @@ class InterpolationTest {
     Assertions.assertEquals(1.103515625, Interpolation.linearWithFade(1, 2, 0.25), 0);
   }
 
-  @Test
-  void testLinearWithFadeIllegalValue() {
+  @ParameterizedTest(name = "{index} {0} - {1}")
+  @MethodSource("linearWithFadeIllegalValues")
+  void testLinearWithFadeIllegalValue(int[] values, String title) {
     Assertions.assertThrows(
         IllegalArgumentException.class, () -> Interpolation.linearWithFade(1, 5, -1));
   }
 
-  @Test
-  void testLinearWithFadeIllegalValue2() {
-    Assertions.assertThrows(
-        IllegalArgumentException.class, () -> Interpolation.linearWithFade(1, 5, 5));
+  private static Stream<Arguments> linearWithFadeIllegalValues() {
+    return Stream.of(
+        Arguments.of(new int[] {1, 5, -1}, "Negative value for mu"),
+        Arguments.of(new int[] {1, 5, 5}, "Value greater than 1 for mu"));
   }
 
-  @Test
-  void testFade() {
-    // 0.5 should return exactly 0.5
-    Assertions.assertEquals(0.5, Interpolation.fade(0.5), 0);
-    Assertions.assertEquals(0.103515625, Interpolation.fade(0.25), 0);
+  @ParameterizedTest
+  @MethodSource("testFadeArgs")
+  void testFade(double expectedValue, double testValue){
+    Assertions.assertEquals(expectedValue, Interpolation.fade(testValue), 0);
   }
 
-  @Test
-  void testFadeIllegalValue() {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.fade(-1));
+  private static Stream<Arguments> testFadeArgs(){
+    return Stream.of(
+        Arguments.of(0.5, 0.5),
+        Arguments.of(0.103515625, 0.25)
+    );
   }
 
-  @Test
-  void testFadeIllegalValue2() {
-    Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.fade(5));
+  @ParameterizedTest
+  @ValueSource(ints = {-1, 5})
+  void testFadeIllegalValue(int value) {
+    Assertions.assertThrows(IllegalArgumentException.class, () -> Interpolation.fade(value));
   }
 
   @ParameterizedTest
