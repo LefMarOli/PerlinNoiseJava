@@ -1,17 +1,10 @@
 package org.lefmaroli.perlin.configuration;
 
-import org.apache.logging.log4j.LogManager;
-
-public class DelayJitterStrategy implements JitterStrategy {
+public class DelayJitterStrategy extends AbstractTestJitterStrategy {
 
   @Override
   public void jitter() {
-    try {
-      Thread.sleep(50);
-    } catch (InterruptedException e) {
-      LogManager.getLogger(this.getClass()).error("Jitter strategy interrupted while waiting");
-      Thread.currentThread().interrupt();
-    }
+    waitFor(50);
   }
 
   @Override

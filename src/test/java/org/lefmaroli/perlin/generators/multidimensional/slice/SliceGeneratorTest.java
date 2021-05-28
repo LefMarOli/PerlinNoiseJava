@@ -267,23 +267,28 @@ class SliceGeneratorTest {
 
   @Test
   void testCreateSameGeneratedSlicesWithPool() throws StepSizeException {
-    JitterTrait.setJitterStrategy(new TestJitterStrategy());
-    int width = 200;
-    int height = 200;
-    SliceGeneratorBuilder builder = new SliceGeneratorBuilder(width, height);
-    resetBuilder(builder);
+    TestJitterStrategy jitterStrategy = new TestJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
+    try {
+      int width = 200;
+      int height = 200;
+      SliceGeneratorBuilder builder = new SliceGeneratorBuilder(width, height);
+      resetBuilder(builder);
 
-    SliceGenerator layer = builder.build();
-    builder.withForkJoinPool(ForkJoinPool.commonPool());
-    SliceGenerator same = builder.build();
-    double[][] unforked = layer.getNext();
-    double[][] forked = same.getNext();
+      SliceGenerator layer = builder.build();
+      builder.withForkJoinPool(ForkJoinPool.commonPool());
+      SliceGenerator same = builder.build();
+      double[][] unforked = layer.getNext();
+      double[][] forked = same.getNext();
 
-    assertEquals(unforked.length, forked.length, 0);
-    for (int i = 0; i < unforked.length; i++) {
-      Assertions.assertArrayEquals(unforked[i], forked[i], 0.0);
+      assertEquals(unforked.length, forked.length, 0);
+      for (int i = 0; i < unforked.length; i++) {
+        Assertions.assertArrayEquals(unforked[i], forked[i], 0.0);
+      }
+    } finally {
+      jitterStrategy.shutdown();
+      JitterTrait.resetJitterStrategy();
     }
-    JitterTrait.resetJitterStrategy();
   }
 
   @Test

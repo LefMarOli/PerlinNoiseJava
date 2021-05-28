@@ -12,7 +12,7 @@ public class LayerProcess<N, L extends IGenerator<N>> implements Supplier<N> {
 
   @Override
   public N get() {
-    N next = layer.getNext();
+    var next = layer.getNext();
     if (Thread.currentThread().isInterrupted()) {
       throw new LayerProcessException(
           "Incomplete process due to interruption", new InterruptedException());

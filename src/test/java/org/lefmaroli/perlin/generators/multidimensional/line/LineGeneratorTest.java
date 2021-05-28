@@ -191,22 +191,27 @@ class LineGeneratorTest {
 
   @Test
   void testCreateSameGeneratedLinesWithPool() throws StepSizeException {
-    JitterTrait.setJitterStrategy(new TestJitterStrategy());
-    int lineLength = 8000;
-    LineGeneratorBuilder builder = new LineGeneratorBuilder(lineLength);
-    resetBuilder(builder);
+    TestJitterStrategy jitterStrategy = new TestJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
+    try {
+      int lineLength = 8000;
+      LineGeneratorBuilder builder = new LineGeneratorBuilder(lineLength);
+      resetBuilder(builder);
 
-    LineGenerator layer = builder.build();
-    builder.withForkJoinPool(ForkJoinPool.commonPool());
-    LineGenerator same = builder.build();
-    double[] unforked = layer.getNext();
-    double[] forked = same.getNext();
+      LineGenerator layer = builder.build();
+      builder.withForkJoinPool(ForkJoinPool.commonPool());
+      LineGenerator same = builder.build();
+      double[] unforked = layer.getNext();
+      double[] forked = same.getNext();
 
-    assertEquals(unforked.length, forked.length, 0);
-    for (int i = 0; i < unforked.length; i++) {
-      assertEquals(unforked[i], forked[i], 0.0);
+      assertEquals(unforked.length, forked.length, 0);
+      for (int i = 0; i < unforked.length; i++) {
+        assertEquals(unforked[i], forked[i], 0.0);
+      }
+    } finally {
+      jitterStrategy.shutdown();
+      JitterTrait.resetJitterStrategy();
     }
-    JitterTrait.resetJitterStrategy();
   }
 
   @Test

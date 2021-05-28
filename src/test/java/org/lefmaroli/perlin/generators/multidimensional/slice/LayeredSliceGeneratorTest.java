@@ -180,7 +180,8 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testTimeoutReached() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new TimeoutJitterStrategy());
+    TimeoutJitterStrategy jitterStrategy = new TimeoutJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     ExecutorService executorService = Executors.newFixedThreadPool(numLayers);
     LayeredSliceGeneratorBuilder builder =
         resetBuilder(new LayeredSliceGeneratorBuilder(200, 200))
@@ -190,6 +191,7 @@ class LayeredSliceGeneratorTest {
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }
@@ -310,7 +312,8 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testCreateSameGeneratedSlicesWithPool() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new TestJitterStrategy());
+    TestJitterStrategy jitterStrategy = new TestJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     int width = 200;
     int height = 200;
     LayeredSliceGeneratorBuilder builder = new LayeredSliceGeneratorBuilder(width, height);
@@ -331,6 +334,7 @@ class LayeredSliceGeneratorTest {
       }
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }
@@ -366,7 +370,8 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testParallelProcessingInterruptWhileWaiting() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new DelayJitterStrategy());
+    DelayJitterStrategy jitterStrategy = new DelayJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(numLayers + 1);
     LayeredSliceGeneratorBuilder builder =
         resetBuilder(new LayeredSliceGeneratorBuilder(200, 200))
@@ -378,6 +383,7 @@ class LayeredSliceGeneratorTest {
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }

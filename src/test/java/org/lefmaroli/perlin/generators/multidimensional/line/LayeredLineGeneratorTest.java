@@ -243,7 +243,8 @@ class LayeredLineGeneratorTest {
 
   @Test
   void testCreateSameGeneratedLinesWithPool() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new TestJitterStrategy());
+    TestJitterStrategy jitterStrategy = new TestJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     int lineLength = 8000;
     LayeredLineGeneratorBuilder builder = new LayeredLineGeneratorBuilder(lineLength);
     resetBuilder(builder);
@@ -263,6 +264,7 @@ class LayeredLineGeneratorTest {
       }
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }
@@ -290,7 +292,8 @@ class LayeredLineGeneratorTest {
 
   @Test
   void testTimeoutReached() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new TimeoutJitterStrategy());
+    TimeoutJitterStrategy jitterStrategy = new TimeoutJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     ExecutorService executorService = Executors.newFixedThreadPool(numLayers);
     LayeredLineGeneratorBuilder builder =
         resetBuilder(new LayeredLineGeneratorBuilder(80000))
@@ -300,6 +303,7 @@ class LayeredLineGeneratorTest {
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }
@@ -321,7 +325,8 @@ class LayeredLineGeneratorTest {
 
   @Test
   void testParallelProcessingInterrupted() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new DelayJitterStrategy());
+    DelayJitterStrategy jitterStrategy = new DelayJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(numLayers + 1);
     LayeredLineGeneratorBuilder builder =
         resetBuilder(new LayeredLineGeneratorBuilder(80000))
@@ -332,13 +337,15 @@ class LayeredLineGeneratorTest {
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }
 
   @Test
   void testParallelProcessingInterruptWhileWaiting() throws LayeredGeneratorBuilderException {
-    JitterTrait.setJitterStrategy(new DelayJitterStrategy());
+    DelayJitterStrategy jitterStrategy = new DelayJitterStrategy();
+    JitterTrait.setJitterStrategy(jitterStrategy);
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(numLayers + 1);
     LayeredLineGeneratorBuilder builder =
         resetBuilder(new LayeredLineGeneratorBuilder(80000))
@@ -350,6 +357,7 @@ class LayeredLineGeneratorTest {
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
+      jitterStrategy.shutdown();
       JitterTrait.resetJitterStrategy();
     }
   }
