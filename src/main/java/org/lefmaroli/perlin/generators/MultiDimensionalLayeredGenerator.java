@@ -13,7 +13,8 @@ public abstract class MultiDimensionalLayeredGenerator<
   private final boolean isCircular;
   private final ForkJoinPool pool;
 
-  protected MultiDimensionalLayeredGenerator(List<L> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
+  protected MultiDimensionalLayeredGenerator(
+      List<L> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
     super(layers, executorService, jitterStrategy);
     isCircular = checkCircularity(layers);
     ForkJoinPool joinPool = null;

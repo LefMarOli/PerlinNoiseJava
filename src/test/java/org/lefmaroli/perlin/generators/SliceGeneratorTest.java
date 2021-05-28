@@ -273,8 +273,7 @@ class SliceGeneratorTest {
       resetBuilder(builder);
 
       SliceGenerator layer = builder.build();
-      builder.withForkJoinPool(ForkJoinPool.commonPool())
-      .withJitterStrategy(jitterStrategy);
+      builder.withForkJoinPool(ForkJoinPool.commonPool()).withJitterStrategy(jitterStrategy);
       SliceGenerator same = builder.build();
       double[][] unforked = layer.getNext();
       double[][] forked = same.getNext();

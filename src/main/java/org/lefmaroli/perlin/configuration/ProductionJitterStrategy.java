@@ -4,7 +4,7 @@ public class ProductionJitterStrategy implements JitterStrategy {
 
   private static final ProductionJitterStrategy INSTANCE = new ProductionJitterStrategy();
 
-  public static ProductionJitterStrategy getInstance(){
+  public static ProductionJitterStrategy getInstance() {
     return INSTANCE;
   }
 

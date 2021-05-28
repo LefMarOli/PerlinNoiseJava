@@ -1,6 +1,5 @@
 package org.lefmaroli.perlin.generators;
 
-import org.lefmaroli.perlin.generators.IRootGenerator;
 
 public interface PointGenerator extends IRootGenerator<Double> {
 

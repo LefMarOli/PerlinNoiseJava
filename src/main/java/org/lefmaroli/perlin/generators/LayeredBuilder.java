@@ -117,7 +117,8 @@ public abstract class LayeredBuilder<
   protected abstract B self();
 
   protected abstract S buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy) throws StepSizeException;
+      List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy)
+      throws StepSizeException;
 
   protected abstract L buildMultipleNoiseLayer(
       List<S> layers, ExecutorService executorService, JitterStrategy jitterStrategy);
@@ -149,9 +150,8 @@ public abstract class LayeredBuilder<
     return buildSingleNoiseLayer(stepSizesForLayer, amplitudeIt.next(), randomSeed, jitterStrategy);
   }
 
-  private static List<Double> getStepSizesForLayer(List<Iterator<Double>> stepSizeIts,
-      int layerNumber)
-      throws LayerBuildException {
+  private static List<Double> getStepSizesForLayer(
+      List<Iterator<Double>> stepSizeIts, int layerNumber) throws LayerBuildException {
     try {
       return getNextStepSizesForEachDimension(stepSizeIts);
     } catch (StepSizeException | NoSuchElementException e) {

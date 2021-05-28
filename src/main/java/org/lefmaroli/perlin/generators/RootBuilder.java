@@ -35,7 +35,7 @@ public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuil
     return self();
   }
 
-  B withJitterStrategy(JitterStrategy jitterStrategy){
+  B withJitterStrategy(JitterStrategy jitterStrategy) {
     this.jitterStrategy = jitterStrategy;
     return self();
   }

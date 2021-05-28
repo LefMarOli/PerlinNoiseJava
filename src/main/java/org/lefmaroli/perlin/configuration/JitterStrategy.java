@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin.configuration;
 
-public interface JitterStrategy extends JitterTrait{
+public interface JitterStrategy extends JitterTrait {
 
   long getTimeout();
 }

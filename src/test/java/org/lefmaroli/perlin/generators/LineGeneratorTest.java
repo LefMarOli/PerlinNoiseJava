@@ -196,8 +196,7 @@ class LineGeneratorTest {
       resetBuilder(builder);
 
       LineGenerator layer = builder.build();
-      builder.withForkJoinPool(ForkJoinPool.commonPool())
-          .withJitterStrategy(jitterStrategy);
+      builder.withForkJoinPool(ForkJoinPool.commonPool()).withJitterStrategy(jitterStrategy);
       LineGenerator same = builder.build();
       double[] unforked = layer.getNext();
       double[] forked = same.getNext();

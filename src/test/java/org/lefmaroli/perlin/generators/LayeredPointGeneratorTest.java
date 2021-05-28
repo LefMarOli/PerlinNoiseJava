@@ -24,9 +24,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.LayeredPointGenerator;
-import org.lefmaroli.perlin.generators.LayeredPointGeneratorBuilder;
 import org.lefmaroli.testutils.AssertUtils;
 import org.lefmaroli.testutils.ScheduledUpdater;
 

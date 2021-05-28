@@ -28,7 +28,9 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private boolean emittedExecutorShutdownWarning = false;
 
   protected LayeredGenerator(
-      List<? extends IGenerator<N>> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
+      List<? extends IGenerator<N>> layers,
+      ExecutorService executorService,
+      JitterStrategy jitterStrategy) {
     if (layers.isEmpty()) {
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }

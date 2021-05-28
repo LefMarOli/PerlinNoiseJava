@@ -88,7 +88,8 @@ public class PerlinNoise {
           "Coordinates length should be the same as the number of dimensions");
     }
     defaultContainers.putIfAbsent(
-        dim, new PerlinNoiseDataContainerBuilder(dim, randomSeed, jitterStrategy).createNewContainer());
+        dim,
+        new PerlinNoiseDataContainerBuilder(dim, randomSeed, jitterStrategy).createNewContainer());
     PerlinNoiseDataContainer dataContainer = defaultContainers.get(dim);
     for (var i = 0; i < dim; i++) {
       dataContainer.setCoordinatesForDimension(i, coordinates[i]);
@@ -103,7 +104,7 @@ public class PerlinNoise {
     private final int firstDimensionOffset;
     private final JitterStrategy jitterStrategy;
 
-    public PerlinNoiseDataContainerBuilder(int dimension, long randomSeed){
+    public PerlinNoiseDataContainerBuilder(int dimension, long randomSeed) {
       this(dimension, randomSeed, ProductionJitterStrategy.getInstance());
     }
 
