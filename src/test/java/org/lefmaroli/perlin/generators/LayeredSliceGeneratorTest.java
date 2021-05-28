@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.multidimensional.slice;
+package org.lefmaroli.perlin.generators;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,12 +30,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.SimpleGrayScaleImage;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.configuration.DelayJitterStrategy;
-import org.lefmaroli.perlin.configuration.JitterTrait;
 import org.lefmaroli.perlin.configuration.TestJitterStrategy;
 import org.lefmaroli.perlin.configuration.TimeoutJitterStrategy;
-import org.lefmaroli.perlin.generators.LayerProcessException;
-import org.lefmaroli.perlin.generators.LayeredBuilder;
-import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
 import org.lefmaroli.testutils.AssertUtils;
 import org.lefmaroli.testutils.ScheduledUpdater;
 
@@ -181,18 +177,17 @@ class LayeredSliceGeneratorTest {
   @Test
   void testTimeoutReached() throws LayeredGeneratorBuilderException {
     TimeoutJitterStrategy jitterStrategy = new TimeoutJitterStrategy();
-    JitterTrait.setJitterStrategy(jitterStrategy);
     ExecutorService executorService = Executors.newFixedThreadPool(numLayers);
     LayeredSliceGeneratorBuilder builder =
         resetBuilder(new LayeredSliceGeneratorBuilder(200, 200))
-            .withLayerExecutorService(executorService);
+            .withLayerExecutorService(executorService)
+            .withJitterStrategy(jitterStrategy);
     LayeredSliceGenerator generator = builder.build();
     try {
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
       jitterStrategy.shutdown();
-      JitterTrait.resetJitterStrategy();
     }
   }
 
@@ -313,14 +308,13 @@ class LayeredSliceGeneratorTest {
   @Test
   void testCreateSameGeneratedSlicesWithPool() throws LayeredGeneratorBuilderException {
     TestJitterStrategy jitterStrategy = new TestJitterStrategy();
-    JitterTrait.setJitterStrategy(jitterStrategy);
     int width = 200;
     int height = 200;
     LayeredSliceGeneratorBuilder builder = new LayeredSliceGeneratorBuilder(width, height);
     resetBuilder(builder);
 
     LayeredSliceGenerator layer = builder.build();
-    builder.withForkJoinPool(ForkJoinPool.commonPool());
+    builder.withForkJoinPool(ForkJoinPool.commonPool()).withJitterStrategy(jitterStrategy);
     ExecutorService executorService = Executors.newFixedThreadPool(numLayers);
     builder.withLayerExecutorService(executorService);
     try {
@@ -335,7 +329,6 @@ class LayeredSliceGeneratorTest {
     } finally {
       executorService.shutdown();
       jitterStrategy.shutdown();
-      JitterTrait.resetJitterStrategy();
     }
   }
 
@@ -371,20 +364,19 @@ class LayeredSliceGeneratorTest {
   @Test
   void testParallelProcessingInterruptWhileWaiting() throws LayeredGeneratorBuilderException {
     DelayJitterStrategy jitterStrategy = new DelayJitterStrategy();
-    JitterTrait.setJitterStrategy(jitterStrategy);
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(numLayers + 1);
-    LayeredSliceGeneratorBuilder builder =
-        resetBuilder(new LayeredSliceGeneratorBuilder(200, 200))
-            .withLayerExecutorService(executorService);
-    LayeredSliceGenerator generator = builder.build();
     try {
+      LayeredSliceGeneratorBuilder builder =
+          resetBuilder(new LayeredSliceGeneratorBuilder(200, 200))
+              .withLayerExecutorService(executorService)
+              .withJitterStrategy(jitterStrategy);
+      LayeredSliceGenerator generator = builder.build();
       Thread thisThread = Thread.currentThread();
       executorService.schedule(thisThread::interrupt, 20, TimeUnit.MILLISECONDS);
       Assertions.assertThrows(LayerProcessException.class, generator::getNext);
     } finally {
       executorService.shutdown();
       jitterStrategy.shutdown();
-      JitterTrait.resetJitterStrategy();
     }
   }
 

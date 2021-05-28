@@ -1,12 +1,8 @@
-package org.lefmaroli.perlin.generators.point;
+package org.lefmaroli.perlin.generators;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.LayeredBuilder;
-import org.lefmaroli.perlin.generators.LayeredGenerator;
-import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.StepSizeException;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public class LayeredPointGeneratorBuilder
     extends LayeredBuilder<
@@ -31,26 +27,30 @@ public class LayeredPointGeneratorBuilder
 
   @Override
   protected PointGenerator buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws StepSizeException {
+      List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy)
+      throws StepSizeException {
     return singleLayerBuilder
         .withNoiseStepSize(stepSizes.get(0))
         .withAmplitude(layerAmplitude)
         .withRandomSeed(randomSeed)
+        .withJitterStrategy(jitterStrategy)
         .build();
   }
 
   @Override
   protected LayeredPointGeneratorImpl buildMultipleNoiseLayer(
-      List<PointGenerator> layers, ExecutorService executorService) {
-    return new LayeredPointGeneratorImpl(layers, executorService);
+      List<PointGenerator> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
+    return new LayeredPointGeneratorImpl(layers, executorService, jitterStrategy);
   }
 
   private static class LayeredPointGeneratorImpl extends LayeredGenerator<Double>
       implements LayeredPointGenerator {
 
     LayeredPointGeneratorImpl(
-        List<? extends IGenerator<Double>> layers, ExecutorService executorService) {
-      super(layers, executorService);
+        List<? extends IGenerator<Double>> layers,
+        ExecutorService executorService,
+        JitterStrategy jitterStrategy) {
+      super(layers, executorService, jitterStrategy);
     }
 
     @Override

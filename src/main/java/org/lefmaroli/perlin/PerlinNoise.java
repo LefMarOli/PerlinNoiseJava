@@ -11,7 +11,9 @@ import org.lefmaroli.interpolation.Interpolation;
 import org.lefmaroli.perlin.ContainerRecycler.ContainerCreator;
 import org.lefmaroli.perlin.bounds.BoundGrid;
 import org.lefmaroli.perlin.bounds.BoundGridFactory;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 import org.lefmaroli.perlin.configuration.JitterTrait;
+import org.lefmaroli.perlin.configuration.ProductionJitterStrategy;
 import org.lefmaroli.vector.DimensionalVector;
 
 public class PerlinNoise {
@@ -24,6 +26,7 @@ public class PerlinNoise {
   private final Map<Integer, PerlinNoiseDataContainer> defaultContainers =
       new ConcurrentHashMap<>(MAX_DIMENSION);
   private final long randomSeed;
+  private final JitterStrategy jitterStrategy;
 
   static {
     for (var dim = 1; dim <= MAX_DIMENSION; dim++) {
@@ -33,18 +36,18 @@ public class PerlinNoise {
   }
 
   public static double getFor(PerlinNoiseDataContainer dataContainer) {
-    JitterTrait.jitter();
+    dataContainer.jitter();
     dataContainer.setBoundsForInterpolation(BOUNDS_MAP.get(dataContainer.getDimension()));
     if (Thread.currentThread().isInterrupted()) {
       LogManager.getLogger(PerlinNoise.class)
           .debug("Interrupting processing [getFor(PerlinNoiseDataContainer)]");
       return 0.0;
     }
-    JitterTrait.jitter();
+    dataContainer.jitter();
     double interpolated =
         Interpolation.linearWithFade(
             dataContainer.getCornerMatrix(), dataContainer.getDistancesArray());
-    JitterTrait.jitter();
+    dataContainer.jitter();
     return adjustValue(interpolated, dataContainer.getDimension());
   }
 
@@ -70,7 +73,12 @@ public class PerlinNoise {
   }
 
   public PerlinNoise(long randomSeed) {
+    this(randomSeed, ProductionJitterStrategy.getInstance());
+  }
+
+  public PerlinNoise(long randomSeed, JitterStrategy jitterStrategy) {
     this.randomSeed = randomSeed;
+    this.jitterStrategy = jitterStrategy;
   }
 
   public double getFor(double... coordinates) {
@@ -80,7 +88,7 @@ public class PerlinNoise {
           "Coordinates length should be the same as the number of dimensions");
     }
     defaultContainers.putIfAbsent(
-        dim, new PerlinNoiseDataContainerBuilder(dim, randomSeed).createNewContainer());
+        dim, new PerlinNoiseDataContainerBuilder(dim, randomSeed, jitterStrategy).createNewContainer());
     PerlinNoiseDataContainer dataContainer = defaultContainers.get(dim);
     for (var i = 0; i < dim; i++) {
       dataContainer.setCoordinatesForDimension(i, coordinates[i]);
@@ -93,12 +101,19 @@ public class PerlinNoise {
     private final int dimension;
     private final int numberOfBounds;
     private final int firstDimensionOffset;
+    private final JitterStrategy jitterStrategy;
 
-    public PerlinNoiseDataContainerBuilder(int dimension, long randomSeed) {
+    public PerlinNoiseDataContainerBuilder(int dimension, long randomSeed){
+      this(dimension, randomSeed, ProductionJitterStrategy.getInstance());
+    }
+
+    public PerlinNoiseDataContainerBuilder(
+        int dimension, long randomSeed, JitterStrategy jitterStrategy) {
       if (dimension > MAX_DIMENSION || dimension < 1) {
         throw new IllegalArgumentException(
             "Supported dimensions in range [1, " + MAX_DIMENSION + "]");
       }
+      this.jitterStrategy = jitterStrategy;
       initializeBoundsForDimension(dimension);
       this.dimension = dimension;
       this.numberOfBounds = AXIS_BOUNDS_BY_DIMENSIONS.get(dimension);
@@ -108,7 +123,8 @@ public class PerlinNoise {
 
     @Override
     public PerlinNoiseDataContainer createNewContainer() {
-      return new PerlinNoiseDataContainer(dimension, firstDimensionOffset, numberOfBounds);
+      return new PerlinNoiseDataContainer(
+          dimension, firstDimensionOffset, numberOfBounds, jitterStrategy);
     }
 
     private static void initializeBoundsForDimension(int dimension) {
@@ -122,7 +138,7 @@ public class PerlinNoise {
     }
   }
 
-  public static class PerlinNoiseDataContainer {
+  public static class PerlinNoiseDataContainer implements JitterTrait {
 
     private final CornerMatrix cornerMatrix;
     private final double[] distancesArray;
@@ -132,8 +148,14 @@ public class PerlinNoise {
     private final double[] coordinates;
     private final int firstDimensionOffset;
     private final int numberOfBounds;
+    private final JitterStrategy jitterStrategy;
 
-    private PerlinNoiseDataContainer(int dimension, int firstDimensionOffset, int numberOfBounds) {
+    private PerlinNoiseDataContainer(
+        int dimension,
+        int firstDimensionOffset,
+        int numberOfBounds,
+        JitterStrategy jitterStrategy) {
+      this.jitterStrategy = jitterStrategy;
       this.cornerMatrix = CornerMatrixFactory.getForDimension(dimension);
       this.distancesArray = new double[dimension];
       this.indexIntegerParts = new int[dimension];
@@ -147,7 +169,7 @@ public class PerlinNoise {
     private void setBoundsForInterpolation(BoundGrid bounds) {
       populateFirstDimension();
       populateIntegerPartsArrays();
-      JitterTrait.jitter();
+      jitterStrategy.jitter();
       populateDistanceArray();
       populateCornerMatrix(getDimension(), bounds);
     }
@@ -193,7 +215,7 @@ public class PerlinNoise {
               .debug("Interrupting processing [populateCornerMatrix]");
           return;
         }
-        JitterTrait.jitter();
+        jitterStrategy.jitter();
         indicesArray[currentDimension - 1] = i;
         cornerDistanceArray[currentDimension - 1] =
             distancesArray[currentDimension - 1] - indicesArray[currentDimension - 1];
@@ -224,6 +246,11 @@ public class PerlinNoise {
     @Override
     public int hashCode() {
       return Objects.hash(firstDimensionOffset, numberOfBounds);
+    }
+
+    @Override
+    public void jitter() {
+      jitterStrategy.jitter();
     }
   }
 }

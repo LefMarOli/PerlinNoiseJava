@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.multidimensional.line.LayeredLineGenerator;
-import org.lefmaroli.perlin.generators.multidimensional.line.LayeredLineGeneratorBuilder;
-import org.lefmaroli.perlin.generators.multidimensional.slice.LayeredSliceGenerator;
-import org.lefmaroli.perlin.generators.multidimensional.slice.LayeredSliceGeneratorBuilder;
-import org.lefmaroli.perlin.generators.point.LayeredPointGenerator;
-import org.lefmaroli.perlin.generators.point.LayeredPointGeneratorBuilder;
+import org.lefmaroli.perlin.generators.LayeredLineGenerator;
+import org.lefmaroli.perlin.generators.LayeredLineGeneratorBuilder;
+import org.lefmaroli.perlin.generators.LayeredSliceGenerator;
+import org.lefmaroli.perlin.generators.LayeredSliceGeneratorBuilder;
+import org.lefmaroli.perlin.generators.LayeredPointGenerator;
+import org.lefmaroli.perlin.generators.LayeredPointGeneratorBuilder;
 
 class PerlinNoisePerformanceTest {
 

@@ -13,9 +13,9 @@ public abstract class AbstractTestJitterStrategy implements JitterStrategy{
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
   private final Logger logger = LogManager.getLogger(this.getClass());
 
-  protected void waitFor(long delay){
+  protected void waitFor(long delay, TimeUnit timeUnit){
     try {
-      ScheduledFuture<?> future = scheduler.schedule(() -> {}, delay, TimeUnit.MILLISECONDS);
+      ScheduledFuture<?> future = scheduler.schedule(() -> {}, delay, timeUnit);
       future.get();
     } catch (InterruptedException e) {
       logger.error("Interrupted while causing jitter wait", e);

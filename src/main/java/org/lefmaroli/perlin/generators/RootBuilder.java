@@ -1,5 +1,8 @@
 package org.lefmaroli.perlin.generators;
 
+import org.lefmaroli.perlin.configuration.JitterStrategy;
+import org.lefmaroli.perlin.configuration.ProductionJitterStrategy;
+
 public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuilder<N, L, B>> {
 
   private final int dimensions;
@@ -7,6 +10,7 @@ public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuil
   private final double[] stepSizes;
   private double amplitude = 1.0;
   protected long randomSeed = System.currentTimeMillis();
+  protected JitterStrategy jitterStrategy = ProductionJitterStrategy.getInstance();
 
   protected RootBuilder(int dimensions) {
     if (dimensions < 1 || dimensions > 3) {
@@ -31,6 +35,11 @@ public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuil
     return self();
   }
 
+  B withJitterStrategy(JitterStrategy jitterStrategy){
+    this.jitterStrategy = jitterStrategy;
+    return self();
+  }
+
   protected void setStepSizeForDimension(double stepSize, int dimensionIndex)
       throws StepSizeException {
     if (dimensionIndex < 0 || dimensionIndex >= this.dimensions) {
@@ -50,13 +59,13 @@ public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuil
   }
 
   public IGenerator<N> build() {
-    return buildNoiseGenerator(stepSizes, amplitude, randomSeed);
+    return buildNoiseGenerator(stepSizes, amplitude, randomSeed, jitterStrategy);
   }
 
   protected abstract B self();
 
   protected abstract IGenerator<N> buildNoiseGenerator(
-      double[] stepSizes, double amplitude, long randomSeed);
+      double[] stepSizes, double amplitude, long randomSeed, JitterStrategy jitterStrategy);
 
   protected static void assertStepSize(double stepSize) throws StepSizeException {
     if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {

@@ -1,13 +1,10 @@
-package org.lefmaroli.perlin.generators.multidimensional.line;
+package org.lefmaroli.perlin.generators;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.StepSizeException;
-import org.lefmaroli.perlin.generators.multidimensional.LayeredMultiDimensionalBuilder;
-import org.lefmaroli.perlin.generators.multidimensional.MultiDimensionalLayeredGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public class LayeredLineGeneratorBuilder
     extends LayeredMultiDimensionalBuilder<
@@ -37,7 +34,8 @@ public class LayeredLineGeneratorBuilder
 
   @Override
   protected LineGenerator buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws StepSizeException {
+      List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy)
+      throws StepSizeException {
     return singleLayerBuilder
         .withNoiseStepSize(stepSizes.get(0))
         .withLineStepSize(stepSizes.get(1))
@@ -45,13 +43,14 @@ public class LayeredLineGeneratorBuilder
         .withRandomSeed(randomSeed)
         .withForkJoinPool(getPool())
         .withCircularBounds(isCircular())
+        .withJitterStrategy(jitterStrategy)
         .build();
   }
 
   @Override
   protected LayeredLineGenerator buildMultipleNoiseLayer(
-      List<LineGenerator> layers, ExecutorService executorService) {
-    return new LayeredLineGeneratorImpl(layers, executorService);
+      List<LineGenerator> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
+    return new LayeredLineGeneratorImpl(layers, executorService, jitterStrategy);
   }
 
   private static class LayeredLineGeneratorImpl
@@ -60,8 +59,11 @@ public class LayeredLineGeneratorBuilder
 
     private final int lineLength;
 
-    LayeredLineGeneratorImpl(List<LineGenerator> layers, ExecutorService executorService) {
-      super(layers, executorService);
+    LayeredLineGeneratorImpl(
+        List<LineGenerator> layers,
+        ExecutorService executorService,
+        JitterStrategy jitterStrategy) {
+      super(layers, executorService, jitterStrategy);
       this.lineLength = layers.get(0).getLineLength();
       assertAllLayersHaveSameLineLength(layers);
     }

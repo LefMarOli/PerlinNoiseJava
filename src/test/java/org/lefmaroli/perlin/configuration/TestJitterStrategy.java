@@ -1,6 +1,7 @@
 package org.lefmaroli.perlin.configuration;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class TestJitterStrategy extends AbstractTestJitterStrategy {
 
@@ -19,7 +20,7 @@ public class TestJitterStrategy extends AbstractTestJitterStrategy {
         return;
       case 1:
           int delay = random.nextInt(5);
-          waitFor(delay);
+          waitFor(delay, TimeUnit.MICROSECONDS);
         return;
       case 2:
         Thread.yield();

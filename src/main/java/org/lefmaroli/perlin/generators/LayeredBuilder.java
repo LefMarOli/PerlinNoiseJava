@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
+import org.lefmaroli.perlin.configuration.ProductionJitterStrategy;
 
 public abstract class LayeredBuilder<
     N,
@@ -23,6 +25,7 @@ public abstract class LayeredBuilder<
   protected long randomSeed = System.currentTimeMillis();
   private Iterable<Double> amplitudes = new DoubleGenerator(1.0, 0.5);
   private ExecutorService executorService = null;
+  private JitterStrategy jitterStrategy = ProductionJitterStrategy.getInstance();
 
   public static void increaseLayerLimit(int limit) {
     if (limit < 2) {
@@ -88,8 +91,13 @@ public abstract class LayeredBuilder<
     return self();
   }
 
+  B withJitterStrategy(JitterStrategy jitterStrategy) {
+    this.jitterStrategy = jitterStrategy;
+    return self();
+  }
+
   public ILayeredGenerator<N> build() throws LayeredGeneratorBuilderException {
-    return buildMultipleNoiseLayer(generateNoiseLayers(), executorService);
+    return buildMultipleNoiseLayer(generateNoiseLayers(), executorService, jitterStrategy);
   }
 
   protected void setStepSizeGeneratorForDimension(int dimension, Iterable<Double> stepSizes) {
@@ -109,9 +117,10 @@ public abstract class LayeredBuilder<
   protected abstract B self();
 
   protected abstract S buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws StepSizeException;
+      List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy) throws StepSizeException;
 
-  protected abstract L buildMultipleNoiseLayer(List<S> layers, ExecutorService executorService);
+  protected abstract L buildMultipleNoiseLayer(
+      List<S> layers, ExecutorService executorService, JitterStrategy jitterStrategy);
 
   private List<S> generateNoiseLayers() throws LayeredGeneratorBuilderException {
     var randomGenerator = new Random(randomSeed);
@@ -137,10 +146,11 @@ public abstract class LayeredBuilder<
       long randomSeed)
       throws LayerBuildException, StepSizeException {
     List<Double> stepSizesForLayer = getStepSizesForLayer(stepSizeIts, layerNumber);
-    return buildSingleNoiseLayer(stepSizesForLayer, amplitudeIt.next(), randomSeed);
+    return buildSingleNoiseLayer(stepSizesForLayer, amplitudeIt.next(), randomSeed, jitterStrategy);
   }
 
-  private List<Double> getStepSizesForLayer(List<Iterator<Double>> stepSizeIts, int layerNumber)
+  private static List<Double> getStepSizesForLayer(List<Iterator<Double>> stepSizeIts,
+      int layerNumber)
       throws LayerBuildException {
     try {
       return getNextStepSizesForEachDimension(stepSizeIts);

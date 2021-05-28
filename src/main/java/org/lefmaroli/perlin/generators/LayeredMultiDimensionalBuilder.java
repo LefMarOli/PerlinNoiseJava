@@ -1,17 +1,18 @@
-package org.lefmaroli.perlin.generators.multidimensional;
+package org.lefmaroli.perlin.generators;
 
 import java.util.concurrent.ForkJoinPool;
-import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.RootBuilder;
 
-public abstract class MultiDimensionalBuilder<
-        N, L extends IGenerator<N>, B extends MultiDimensionalBuilder<N, L, B>>
-    extends RootBuilder<N, L, B> {
+public abstract class LayeredMultiDimensionalBuilder<
+        N,
+        L extends ILayeredGenerator<N>,
+        S extends IGenerator<N>,
+        B extends LayeredMultiDimensionalBuilder<N, L, S, B>>
+    extends LayeredBuilder<N, L, S, B> {
 
   private boolean isCircular = false;
   private ForkJoinPool pool = ForkJoinPool.commonPool();
 
-  protected MultiDimensionalBuilder(int dimensions) {
+  protected LayeredMultiDimensionalBuilder(int dimensions) {
     super(dimensions);
   }
 

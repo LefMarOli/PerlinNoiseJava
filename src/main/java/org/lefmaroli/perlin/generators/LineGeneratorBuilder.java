@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.multidimensional.line;
+package org.lefmaroli.perlin.generators;
 
 import java.util.List;
 import java.util.Objects;
@@ -10,10 +10,7 @@ import org.lefmaroli.perlin.ContainerRecycler;
 import org.lefmaroli.perlin.PerlinNoise;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
-import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.StepSizeException;
-import org.lefmaroli.perlin.generators.multidimensional.MultiDimensionalBuilder;
-import org.lefmaroli.perlin.generators.multidimensional.MultiDimensionalRootGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public class LineGeneratorBuilder
     extends MultiDimensionalBuilder<double[], LineGenerator, LineGeneratorBuilder> {
@@ -50,9 +47,16 @@ public class LineGeneratorBuilder
 
   @Override
   protected IGenerator<double[]> buildNoiseGenerator(
-      double[] stepSizes, double amplitude, long randomSeed) {
+      double[] stepSizes, double amplitude, long randomSeed, JitterStrategy jitterStrategy) {
     return new LineGeneratorImpl(
-        stepSizes[0], stepSizes[1], lineLength, amplitude, randomSeed, isCircular(), getPool());
+        stepSizes[0],
+        stepSizes[1],
+        lineLength,
+        amplitude,
+        randomSeed,
+        isCircular(),
+        getPool(),
+        jitterStrategy);
   }
 
   private static class LineGeneratorImpl extends MultiDimensionalRootGenerator<double[]>
@@ -76,7 +80,8 @@ public class LineGeneratorBuilder
         double maxAmplitude,
         long randomSeed,
         boolean isCircular,
-        ForkJoinPool pool) {
+        ForkJoinPool pool,
+        JitterStrategy jitterStrategy) {
       super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
       assertValidValues(parameterNames, lineStepSize, lineLength);
       this.lineLength = lineLength;
@@ -85,9 +90,9 @@ public class LineGeneratorBuilder
       this.lineAngleFactor = this.lineStepSize * (2 * Math.PI);
       PerlinNoiseDataContainerBuilder builder;
       if (isCircular) {
-        builder = new PerlinNoiseDataContainerBuilder(3, randomSeed);
+        builder = new PerlinNoiseDataContainerBuilder(3, randomSeed, jitterStrategy);
       } else {
-        builder = new PerlinNoiseDataContainerBuilder(2, randomSeed);
+        builder = new PerlinNoiseDataContainerBuilder(2, randomSeed, jitterStrategy);
       }
       this.perlinData = builder.createNewContainer();
       this.recycler = new ContainerRecycler<>(builder);

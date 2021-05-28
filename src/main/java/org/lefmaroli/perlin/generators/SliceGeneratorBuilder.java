@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.multidimensional.slice;
+package org.lefmaroli.perlin.generators;
 
 import java.util.List;
 import java.util.Objects;
@@ -10,10 +10,7 @@ import org.lefmaroli.perlin.ContainerRecycler;
 import org.lefmaroli.perlin.PerlinNoise;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
-import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.StepSizeException;
-import org.lefmaroli.perlin.generators.multidimensional.MultiDimensionalBuilder;
-import org.lefmaroli.perlin.generators.multidimensional.MultiDimensionalRootGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public class SliceGeneratorBuilder
     extends MultiDimensionalBuilder<double[][], SliceGenerator, SliceGeneratorBuilder> {
@@ -61,7 +58,7 @@ public class SliceGeneratorBuilder
 
   @Override
   protected IGenerator<double[][]> buildNoiseGenerator(
-      double[] stepSizes, double amplitude, long randomSeed) {
+      double[] stepSizes, double amplitude, long randomSeed, JitterStrategy jitterStrategy) {
     return new SliceGeneratorImpl(
         stepSizes[0],
         stepSizes[1],
@@ -71,7 +68,8 @@ public class SliceGeneratorBuilder
         amplitude,
         randomSeed,
         isCircular(),
-        getPool());
+        getPool(),
+        jitterStrategy);
   }
 
   private static class SliceGeneratorImpl extends MultiDimensionalRootGenerator<double[][]>
@@ -101,7 +99,8 @@ public class SliceGeneratorBuilder
         double maxAmplitude,
         long randomSeed,
         boolean isCircular,
-        ForkJoinPool pool) {
+        ForkJoinPool pool,
+        JitterStrategy jitterStrategy) {
       super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
       assertValidValues(parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
       this.widthStepSize = correctStepSizeForCircularity(widthStepSize, sliceWidth, "slice width");
@@ -114,9 +113,9 @@ public class SliceGeneratorBuilder
       this.lengthThreshold = computeLengthThresholdForForkingProcess(sliceWidth, sliceHeight);
       PerlinNoiseDataContainerBuilder builder;
       if (isCircular) {
-        builder = new PerlinNoiseDataContainerBuilder(5, randomSeed);
+        builder = new PerlinNoiseDataContainerBuilder(5, randomSeed, jitterStrategy);
       } else {
-        builder = new PerlinNoiseDataContainerBuilder(3, randomSeed);
+        builder = new PerlinNoiseDataContainerBuilder(3, randomSeed, jitterStrategy);
       }
       perlinData = builder.createNewContainer();
       this.recycler = new ContainerRecycler<>(builder);

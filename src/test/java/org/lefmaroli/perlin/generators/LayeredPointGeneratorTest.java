@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.point;
+package org.lefmaroli.perlin.generators;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -25,6 +25,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
+import org.lefmaroli.perlin.generators.LayeredPointGenerator;
+import org.lefmaroli.perlin.generators.LayeredPointGeneratorBuilder;
 import org.lefmaroli.testutils.AssertUtils;
 import org.lefmaroli.testutils.ScheduledUpdater;
 

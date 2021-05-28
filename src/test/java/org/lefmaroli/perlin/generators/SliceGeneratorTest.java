@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.multidimensional.slice;
+package org.lefmaroli.perlin.generators;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,9 +24,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.SimpleGrayScaleImage;
-import org.lefmaroli.perlin.configuration.JitterTrait;
 import org.lefmaroli.perlin.configuration.TestJitterStrategy;
-import org.lefmaroli.perlin.generators.StepSizeException;
 import org.lefmaroli.testutils.AssertUtils;
 import org.lefmaroli.testutils.ScheduledUpdater;
 
@@ -268,7 +266,6 @@ class SliceGeneratorTest {
   @Test
   void testCreateSameGeneratedSlicesWithPool() throws StepSizeException {
     TestJitterStrategy jitterStrategy = new TestJitterStrategy();
-    JitterTrait.setJitterStrategy(jitterStrategy);
     try {
       int width = 200;
       int height = 200;
@@ -276,7 +273,8 @@ class SliceGeneratorTest {
       resetBuilder(builder);
 
       SliceGenerator layer = builder.build();
-      builder.withForkJoinPool(ForkJoinPool.commonPool());
+      builder.withForkJoinPool(ForkJoinPool.commonPool())
+      .withJitterStrategy(jitterStrategy);
       SliceGenerator same = builder.build();
       double[][] unforked = layer.getNext();
       double[][] forked = same.getNext();
@@ -287,7 +285,6 @@ class SliceGeneratorTest {
       }
     } finally {
       jitterStrategy.shutdown();
-      JitterTrait.resetJitterStrategy();
     }
   }
 

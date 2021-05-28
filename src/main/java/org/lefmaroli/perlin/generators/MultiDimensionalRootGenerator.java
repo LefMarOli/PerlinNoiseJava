@@ -1,9 +1,8 @@
-package org.lefmaroli.perlin.generators.multidimensional;
+package org.lefmaroli.perlin.generators;
 
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import org.apache.logging.log4j.LogManager;
-import org.lefmaroli.perlin.generators.RootGenerator;
 import org.lefmaroli.rounding.RoundUtils;
 
 public abstract class MultiDimensionalRootGenerator<C> extends RootGenerator<C>

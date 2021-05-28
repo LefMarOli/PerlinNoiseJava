@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.point;
+package org.lefmaroli.perlin.generators;
 
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.lefmaroli.perlin.generators.StepSizeException;
 
 class PointGeneratorTest {
 

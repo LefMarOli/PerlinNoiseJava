@@ -1,11 +1,10 @@
-package org.lefmaroli.perlin.generators.multidimensional;
+package org.lefmaroli.perlin.generators;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
-import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.LayeredGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public abstract class MultiDimensionalLayeredGenerator<
         N, L extends IGenerator<N> & IMultiDimensionalGenerator>
@@ -14,8 +13,8 @@ public abstract class MultiDimensionalLayeredGenerator<
   private final boolean isCircular;
   private final ForkJoinPool pool;
 
-  protected MultiDimensionalLayeredGenerator(List<L> layers, ExecutorService executorService) {
-    super(layers, executorService);
+  protected MultiDimensionalLayeredGenerator(List<L> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
+    super(layers, executorService, jitterStrategy);
     isCircular = checkCircularity(layers);
     ForkJoinPool joinPool = null;
     for (L layer : layers) {

@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.multidimensional.slice;
+package org.lefmaroli.perlin.generators;
 
 interface ISliceGeneratorDimension {
 

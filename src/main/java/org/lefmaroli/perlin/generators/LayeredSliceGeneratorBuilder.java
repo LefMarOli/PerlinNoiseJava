@@ -1,13 +1,10 @@
-package org.lefmaroli.perlin.generators.multidimensional.slice;
+package org.lefmaroli.perlin.generators;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.StepSizeException;
-import org.lefmaroli.perlin.generators.multidimensional.LayeredMultiDimensionalBuilder;
-import org.lefmaroli.perlin.generators.multidimensional.MultiDimensionalLayeredGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public class LayeredSliceGeneratorBuilder
     extends LayeredMultiDimensionalBuilder<
@@ -42,7 +39,8 @@ public class LayeredSliceGeneratorBuilder
 
   @Override
   protected SliceGenerator buildSingleNoiseLayer(
-      List<Double> stepSizes, double layerAmplitude, long randomSeed) throws StepSizeException {
+      List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy)
+      throws StepSizeException {
     return singleLayerBuilder
         .withNoiseStepSize(stepSizes.get(0))
         .withWidthStepSize(stepSizes.get(1))
@@ -51,13 +49,14 @@ public class LayeredSliceGeneratorBuilder
         .withRandomSeed(randomSeed)
         .withCircularBounds(isCircular())
         .withForkJoinPool(getPool())
+        .withJitterStrategy(jitterStrategy)
         .build();
   }
 
   @Override
   protected LayeredSliceGenerator buildMultipleNoiseLayer(
-      List<SliceGenerator> layers, ExecutorService executorService) {
-    return new LayeredSliceGeneratorImpl(layers, executorService);
+      List<SliceGenerator> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
+    return new LayeredSliceGeneratorImpl(layers, executorService, jitterStrategy);
   }
 
   private static class LayeredSliceGeneratorImpl
@@ -68,8 +67,10 @@ public class LayeredSliceGeneratorBuilder
     private final int sliceHeight;
 
     protected LayeredSliceGeneratorImpl(
-        List<SliceGenerator> sliceNoiseGenerators, ExecutorService executorService) {
-      super(sliceNoiseGenerators, executorService);
+        List<SliceGenerator> sliceNoiseGenerators,
+        ExecutorService executorService,
+        JitterStrategy jitterStrategy) {
+      super(sliceNoiseGenerators, executorService, jitterStrategy);
       this.sliceWidth = sliceNoiseGenerators.get(0).getSliceWidth();
       this.sliceHeight = sliceNoiseGenerators.get(0).getSliceHeight();
       assertAllLayersHaveSameSize(sliceNoiseGenerators);

@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.apache.logging.log4j.LogManager;
-import org.lefmaroli.perlin.configuration.JitterTrait;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
 
@@ -28,7 +28,7 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private boolean emittedExecutorShutdownWarning = false;
 
   protected LayeredGenerator(
-      List<? extends IGenerator<N>> layers, ExecutorService executorService) {
+      List<? extends IGenerator<N>> layers, ExecutorService executorService, JitterStrategy jitterStrategy) {
     if (layers.isEmpty()) {
       throw new IllegalArgumentException("Number of layers must at least be 1");
     }
@@ -45,7 +45,7 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
       size += layer.getTotalSize();
     }
     this.totalSize = size;
-    this.timeout = (long) totalSize * JitterTrait.getTimeout() / SIZE_THRESHOLD;
+    this.timeout = (long) totalSize * jitterStrategy.getTimeout() / SIZE_THRESHOLD;
     this.executorService = executorService;
   }
 

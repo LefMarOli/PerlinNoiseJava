@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.multidimensional;
+package org.lefmaroli.perlin.generators;
 
 import java.util.concurrent.ForkJoinPool;
 

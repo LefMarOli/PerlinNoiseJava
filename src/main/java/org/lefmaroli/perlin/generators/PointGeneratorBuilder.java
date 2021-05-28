@@ -1,4 +1,4 @@
-package org.lefmaroli.perlin.generators.point;
+package org.lefmaroli.perlin.generators;
 
 import java.util.Objects;
 import java.util.Random;
@@ -7,9 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.lefmaroli.perlin.PerlinNoise;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainer;
 import org.lefmaroli.perlin.PerlinNoise.PerlinNoiseDataContainerBuilder;
-import org.lefmaroli.perlin.generators.IGenerator;
-import org.lefmaroli.perlin.generators.RootBuilder;
-import org.lefmaroli.perlin.generators.RootGenerator;
+import org.lefmaroli.perlin.configuration.JitterStrategy;
 
 public class PointGeneratorBuilder
     extends RootBuilder<Double, PointGenerator, PointGeneratorBuilder> {
@@ -30,8 +28,8 @@ public class PointGeneratorBuilder
 
   @Override
   protected IGenerator<Double> buildNoiseGenerator(
-      double[] stepSizes, double amplitude, long randomSeed) {
-    return new PointGeneratorImpl(stepSizes[0], amplitude, randomSeed);
+      double[] stepSizes, double amplitude, long randomSeed, JitterStrategy jitterStrategy) {
+    return new PointGeneratorImpl(stepSizes[0], amplitude, randomSeed, jitterStrategy);
   }
 
   private static class PointGeneratorImpl extends RootGenerator<Double> implements PointGenerator {
@@ -40,10 +38,12 @@ public class PointGeneratorBuilder
     private final PerlinNoiseDataContainer perlinData;
     private double currentPosition;
 
-    PointGeneratorImpl(double noiseStepSize, double maxAmplitude, long randomSeed) {
+    PointGeneratorImpl(
+        double noiseStepSize, double maxAmplitude, long randomSeed, JitterStrategy jitterStrategy) {
       super(noiseStepSize, maxAmplitude, randomSeed);
       this.currentPosition = new Random(randomSeed).nextDouble();
-      perlinData = new PerlinNoiseDataContainerBuilder(1, randomSeed).createNewContainer();
+      perlinData =
+          new PerlinNoiseDataContainerBuilder(1, randomSeed, jitterStrategy).createNewContainer();
       LOGGER.debug("Created new {}", this);
     }
 
