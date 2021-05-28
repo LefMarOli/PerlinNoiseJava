@@ -13,5 +13,4 @@ public class TimeoutJitterStrategy extends AbstractTestJitterStrategy {
   public long getTimeout() {
     return 1;
   }
-
 }

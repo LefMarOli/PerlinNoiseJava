@@ -1,6 +1,5 @@
 package org.lefmaroli.vector;
 
-
 public class Vector2D extends AbstractDimensionalVector {
 
   private final double x;

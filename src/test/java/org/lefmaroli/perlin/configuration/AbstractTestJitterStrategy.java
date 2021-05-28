@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class AbstractTestJitterStrategy implements JitterStrategy{
+public abstract class AbstractTestJitterStrategy implements JitterStrategy {
 
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
   private final Logger logger = LogManager.getLogger(this.getClass());
@@ -25,7 +25,7 @@ public abstract class AbstractTestJitterStrategy implements JitterStrategy{
     }
   }
 
-  public void shutdown(){
+  public void shutdown() {
     scheduler.shutdown();
   }
 }
