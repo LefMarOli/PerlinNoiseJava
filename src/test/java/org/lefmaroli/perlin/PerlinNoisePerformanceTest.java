@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
@@ -96,6 +97,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkPointGeneratorPerformance() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 1);
     LayeredPointGenerator noiseGenerator =
         new LayeredPointGeneratorBuilder()
             .withNumberOfLayers(3)
@@ -114,6 +116,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkLineGeneratorPerformance() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 1);
     LayeredLineGenerator noiseGenerator =
         new LayeredLineGeneratorBuilder(1000)
             .withNumberOfLayers(3)
@@ -133,6 +136,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkSliceGeneratorPerformance() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 1);
     LayeredSliceGenerator noiseGenerator =
         new LayeredSliceGeneratorBuilder(100, 100)
             .withNumberOfLayers(3)
@@ -154,6 +158,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkSliceGeneratorPerformanceWithExecutor() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 2);
     ExecutorService service = Executors.newFixedThreadPool(3);
     long optimized;
     int numIterations = 50;
