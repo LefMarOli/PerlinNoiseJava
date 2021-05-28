@@ -97,7 +97,6 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkPointGeneratorPerformance() throws LayeredGeneratorBuilderException {
-    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 1);
     LayeredPointGenerator noiseGenerator =
         new LayeredPointGeneratorBuilder()
             .withNumberOfLayers(3)
@@ -116,7 +115,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkLineGeneratorPerformance() throws LayeredGeneratorBuilderException {
-    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 1);
+    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 2);
     LayeredLineGenerator noiseGenerator =
         new LayeredLineGeneratorBuilder(1000)
             .withNumberOfLayers(3)
@@ -136,7 +135,7 @@ class PerlinNoisePerformanceTest {
 
   @Test
   void benchmarkSliceGeneratorPerformance() throws LayeredGeneratorBuilderException {
-    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 1);
+    Assumptions.assumeTrue(Runtime.getRuntime().availableProcessors() > 2);
     LayeredSliceGenerator noiseGenerator =
         new LayeredSliceGeneratorBuilder(100, 100)
             .withNumberOfLayers(3)

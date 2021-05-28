@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,13 +96,15 @@ class LayeredLineGeneratorTest {
 
   @Test
   void testGetPool() throws LayeredGeneratorBuilderException {
+    ForkJoinPool pool = ForkJoinPool.commonPool();
     LayeredLineGenerator generator =
-        defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
-    assertEquals(ForkJoinPool.commonPool(), generator.getExecutionPool());
+        defaultBuilder.withForkJoinPool(pool).build();
+    assertEquals(pool, generator.getExecutionPool());
   }
 
   @Test
   void testHasProcessingEnabled() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     LayeredLineGenerator generator =
         defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertTrue(generator.hasParallelProcessingEnabled());
@@ -343,6 +346,7 @@ class LayeredLineGeneratorTest {
 
   @Test
   void testSmoothVisuals() throws LayeredGeneratorBuilderException { // NOSONAR
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     double lineStepSizeInitialValue = 1.0 / 50;
     DoubleGenerator lineStepSizeGenerator =
         new DoubleGenerator(lineStepSizeInitialValue, 1.0 / 0.9);

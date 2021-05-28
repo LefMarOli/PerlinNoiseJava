@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,13 +84,15 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testGetPool() throws LayeredGeneratorBuilderException {
+    ForkJoinPool pool = ForkJoinPool.commonPool();
     LayeredSliceGenerator generator =
-        defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
-    assertEquals(ForkJoinPool.commonPool(), generator.getExecutionPool());
+        defaultBuilder.withForkJoinPool(pool).build();
+    assertEquals(pool, generator.getExecutionPool());
   }
 
   @Test
   void testHasProcessingEnabled() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     LayeredSliceGenerator generator =
         defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertTrue(generator.hasParallelProcessingEnabled());
@@ -382,6 +385,7 @@ class LayeredSliceGeneratorTest {
 
   @Test
   void testSmoothVisuals() throws LayeredGeneratorBuilderException { // NOSONAR
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     DoubleGenerator widthStepSizeGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.9);
     DoubleGenerator heightStepSizeGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.7);
     DoubleGenerator noiseStepSizeGenerator = new DoubleGenerator(1.0 / 128, 1.0 / 0.5);

@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,7 +101,15 @@ class SliceGeneratorTest {
   }
 
   @Test
+  void testGetPool() {
+    ForkJoinPool pool = ForkJoinPool.commonPool();
+    SliceGenerator generator = defaultBuilder.withForkJoinPool(pool).build();
+    assertEquals(pool, generator.getExecutionPool());
+  }
+
+  @Test
   void testHasProcessingEnabled() {
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     SliceGenerator generator = defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertTrue(generator.hasParallelProcessingEnabled());
   }
@@ -419,6 +428,7 @@ class SliceGeneratorTest {
 
   @Test
   void testSmoothCircularity() throws StepSizeException { // NOSONAR
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     SliceGenerator generator =
         resetBuilder(new SliceGeneratorBuilder(150, 150))
             .withWidthStepSize(1 / 200.0)
@@ -483,6 +493,7 @@ class SliceGeneratorTest {
 
   @Test
   void testSmoothVisuals() throws StepSizeException { // NOSONAR
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     int sliceWidth = 200;
     int sliceHeight = 200;
     SliceGenerator generator =

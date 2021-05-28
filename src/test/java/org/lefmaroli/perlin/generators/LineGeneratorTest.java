@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,12 +101,14 @@ class LineGeneratorTest {
 
   @Test
   void testGetPool() {
-    LineGenerator generator = defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
-    assertEquals(ForkJoinPool.commonPool(), generator.getExecutionPool());
+    ForkJoinPool pool = ForkJoinPool.commonPool();
+    LineGenerator generator = defaultBuilder.withForkJoinPool(pool).build();
+    assertEquals(pool, generator.getExecutionPool());
   }
 
   @Test
   void testHasProcessingEnabled() {
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     LineGenerator generator = defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertTrue(generator.hasParallelProcessingEnabled());
   }
