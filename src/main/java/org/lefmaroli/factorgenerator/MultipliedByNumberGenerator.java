@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 
 public abstract class MultipliedByNumberGenerator<N extends Number> implements NumberGenerator<N> {
 
-  private static final int DEFAULT_LIMIT = 1000000;
+  public static final int DEFAULT_LIMIT = 10;
   protected final double factor;
   protected final N initialValue;
   private final List<N> computed = new LinkedList<>();
@@ -29,14 +29,10 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
 
   private N getAtPosition(int position) {
     if (position > computed.size() - 1) {
-      if (position - 1 > computed.size() - 1) {
-        return getAtPosition(position - 1);
-      } else {
         var previous = computed.get(position - 1);
         var newValue = getXMultipliedByY(previous, factor);
         computed.add(newValue);
         return newValue;
-      }
     } else {
       return computed.get(position);
     }
@@ -64,17 +60,17 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
 
     @Override
     public boolean hasNext() {
-      return true;
+      return iteratorPosition < DEFAULT_LIMIT;
     }
 
     @Override
     public N next() {
-      var toReturn = getAtPosition(iteratorPosition);
-      iteratorPosition++;
       if (iteratorPosition == DEFAULT_LIMIT || iteratorPosition > DEFAULT_LIMIT) {
         throw new NoSuchElementException(
             "Reached default limit of " + DEFAULT_LIMIT + " numbers allowed by this generator");
       }
+      var toReturn = getAtPosition(iteratorPosition);
+      iteratorPosition++;
       return toReturn;
     }
   }

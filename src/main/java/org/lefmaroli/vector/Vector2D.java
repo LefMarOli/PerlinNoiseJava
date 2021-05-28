@@ -1,5 +1,7 @@
 package org.lefmaroli.vector;
 
+import java.util.Vector;
+
 public class Vector2D extends AbstractDimensionalVector {
 
   private final double x;
@@ -16,12 +18,12 @@ public class Vector2D extends AbstractDimensionalVector {
   }
 
   @Override
-  public DimensionalVector normalize() {
+  public Vector2D normalize() {
     double length = getLength();
-    if (Double.compare(length, 1.0) == 0) {
+    if (Math.abs(length - 1.0) < 1E-10) {
       return this;
     }
-    return new Vector2D(x / length, y / length);
+    return new Vector2D(x / length, y / length).normalize();
   }
 
   @Override

@@ -3,11 +3,11 @@ package org.lefmaroli.perlin.generators;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
-import org.lefmaroli.perlin.generators.layers.NoiseLayerException;
 
 public abstract class LayeredBuilder<
     N,
@@ -48,7 +48,7 @@ public abstract class LayeredBuilder<
 
   private static void assertStepSize(double stepSize) throws StepSizeException {
     if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {
-      throw new StepSizeException("Step size smaller than 0");
+      throw new StepSizeException();
     }
   }
 
@@ -123,7 +123,7 @@ public abstract class LayeredBuilder<
       var layerRandomSeed = randomGenerator.nextLong();
       try {
         layers.add(generateNoiseLayer(stepSizeIts, amplitudeIt, i, layerRandomSeed));
-      } catch (NoiseLayerException | StepSizeException e) {
+      } catch (LayerBuildException | StepSizeException e) {
         throw new LayeredGeneratorBuilderException(e);
       }
     }
@@ -135,23 +135,24 @@ public abstract class LayeredBuilder<
       Iterator<Double> amplitudeIt,
       int layerNumber,
       long randomSeed)
-      throws NoiseLayerException, StepSizeException {
+      throws LayerBuildException, StepSizeException {
     List<Double> stepSizesForLayer = getStepSizesForLayer(stepSizeIts, layerNumber);
     return buildSingleNoiseLayer(stepSizesForLayer, amplitudeIt.next(), randomSeed);
   }
 
   private List<Double> getStepSizesForLayer(List<Iterator<Double>> stepSizeIts, int layerNumber)
-      throws NoiseLayerException {
+      throws LayerBuildException {
     try {
       return getNextStepSizesForEachDimension(stepSizeIts);
-    } catch (StepSizeException e) {
-      throw new NoiseLayerException.Builder(numberOfLayers, layerNumber).setCause(e).build();
+    } catch (StepSizeException | NoSuchElementException e) {
+      throw new LayerBuildException(layerNumber, e);
     }
   }
 
   private static List<Double> getNextStepSizesForEachDimension(List<Iterator<Double>> stepSizeIts)
       throws StepSizeException {
-    List<Double> stepSizes = stepSizeIts.stream().map(Iterator::next).collect(Collectors.toList());
+    List<Double> stepSizes;
+    stepSizes = stepSizeIts.stream().map(Iterator::next).collect(Collectors.toList());
     assertStepSizeForAll(stepSizes);
     return stepSizes;
   }

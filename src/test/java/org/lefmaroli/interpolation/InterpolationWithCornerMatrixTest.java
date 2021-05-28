@@ -7,7 +7,7 @@ class InterpolationWithCornerMatrixTest {
 
   @Test
   void test1D() {
-    CornerMatrix cornerMatrix = CornerMatrix.getForDimension(1);
+    CornerMatrix cornerMatrix = CornerMatrixFactory.getForDimension(1);
     cornerMatrix.setValueAtIndices(0, 0);
     cornerMatrix.setValueAtIndices(1, 1);
     double[] distance = new double[1];
@@ -17,7 +17,7 @@ class InterpolationWithCornerMatrixTest {
 
   @Test
   void test2D() {
-    CornerMatrix cornerMatrix = CornerMatrix.getForDimension(2);
+    CornerMatrix cornerMatrix = CornerMatrixFactory.getForDimension(2);
     cornerMatrix.setValueAtIndices(0.0, 0, 0);
     cornerMatrix.setValueAtIndices(1.0, 0, 1);
     cornerMatrix.setValueAtIndices(1.0, 1, 0);
@@ -30,7 +30,7 @@ class InterpolationWithCornerMatrixTest {
 
   @Test
   void test3D() {
-    CornerMatrix cornerMatrix = CornerMatrix.getForDimension(3);
+    CornerMatrix cornerMatrix = CornerMatrixFactory.getForDimension(3);
     double[] distances3D = new double[3];
     double value = 0.0;
     for (int i = 0; i < 2; i++) {
@@ -50,7 +50,7 @@ class InterpolationWithCornerMatrixTest {
 
   @Test
   void test4D() {
-    CornerMatrix cornerMatrix = CornerMatrix.getForDimension(4);
+    CornerMatrix cornerMatrix = CornerMatrixFactory.getForDimension(4);
     double[] distances4D = new double[4];
     double value = 0.0;
     for (int i = 0; i < 2; i++) {

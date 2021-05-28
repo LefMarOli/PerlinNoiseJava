@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.generators;
 
 public class StepSizeException extends IllegalArgumentException {
 
-  StepSizeException(String message) {
-    super(message);
+  StepSizeException() {
+    super("Step size smaller than 0");
   }
 }

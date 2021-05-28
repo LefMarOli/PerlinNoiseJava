@@ -1,5 +1,7 @@
 package org.lefmaroli.perlin.generators.point;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.jparams.verifier.tostring.preset.Presets;
@@ -7,7 +9,10 @@ import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
@@ -22,9 +27,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.factorgenerator.DoubleGenerator;
+import org.lefmaroli.perlin.configuration.JitterTrait;
+import org.lefmaroli.perlin.configuration.TimeoutJitterStrategy;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.utils.AssertUtils;
-import org.lefmaroli.utils.ScheduledUpdater;
+import org.lefmaroli.testutils.AssertUtils;
+import org.lefmaroli.testutils.ScheduledUpdater;
 
 class LayeredPointGeneratorTest {
 
@@ -60,9 +67,32 @@ class LayeredPointGeneratorTest {
     Assertions.assertNotNull(defaultBuilder.build());
   }
 
+  @ParameterizedTest
+  @MethodSource("invalidStepSizes")
+  void testInvalidNoiseStepSizes(List<Double> stepSizes) {
+    defaultBuilder.withNoiseStepSizes(stepSizes);
+    Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
+  }
+
+  @SuppressWarnings("unused")
+  private static Stream<Arguments> invalidStepSizes() {
+    return Stream.of(Arguments.of(List.of(1.0, -5.0, 9.0)), Arguments.of(List.of(0.2, 0.5, 0.0)));
+  }
+
+  @Test
+  void notEnoughNoiseStepSizes() {
+    defaultBuilder.withNoiseStepSizes(List.of(0.2, 0.5));
+    Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
+  }
+
   @Test
   void testDimension() {
-    Assertions.assertEquals(1, defaultGenerator.getDimensions());
+    assertEquals(1, defaultGenerator.getDimensions());
+  }
+
+  @Test
+  void testGetTotalSize() {
+    assertEquals(numLayers, defaultGenerator.getTotalSize());
   }
 
   @ParameterizedTest
@@ -83,20 +113,20 @@ class LayeredPointGeneratorTest {
 
   @Test
   void testGetMaxAmplitude() {
-    Assertions.assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
+    assertEquals(maxAmplitude, defaultGenerator.getMaxAmplitude(), 0.0);
   }
 
   @Test
   void testNumLayersGenerated() {
-    Assertions.assertEquals(numLayers, defaultGenerator.getNumberOfLayers(), 0);
+    assertEquals(numLayers, defaultGenerator.getNumberOfLayers(), 0);
   }
 
   @ParameterizedTest(name = "{index} - {2}")
   @MethodSource("testEqualsArgs")
   @SuppressWarnings("unused")
   void testEquals(Object first, Object second, String title) {
-    Assertions.assertEquals(first, second);
-    Assertions.assertEquals(first.hashCode(), second.hashCode());
+    assertEquals(first, second);
+    assertEquals(first.hashCode(), second.hashCode());
   }
 
   @SuppressWarnings("unused")
@@ -153,7 +183,8 @@ class LayeredPointGeneratorTest {
             "futures",
             "totalSize",
             "timeout",
-            "executorService")
+            "executorService",
+            "emittedExecutorShutdownWarning")
         .verify();
   }
 

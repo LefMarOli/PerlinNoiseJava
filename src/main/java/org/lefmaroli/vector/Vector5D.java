@@ -22,9 +22,9 @@ public class Vector5D extends AbstractDimensionalVector {
   }
 
   @Override
-  public DimensionalVector normalize() {
+  public Vector5D normalize() {
     double length = getLength();
-    if (Double.compare(length, 1.0) == 0) {
+    if (Math.abs(length - 1.0) < 1E-10) {
       return this;
     }
     return new Vector5D(x / length, y / length, z / length, t / length, w / length);

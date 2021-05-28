@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 import org.lefmaroli.vector.DimensionalVector;
-import org.lefmaroli.vector.Vector1D;
 import org.lefmaroli.vector.VectorFactory;
 
 public class RandomGenerator {
@@ -39,7 +38,7 @@ public class RandomGenerator {
     for (var i = 0; i < NUMBER_OF_TEMPLATES; i++) {
       if (dimensions == 1) {
         double value = randomGenerator.nextDouble() * (max - min) + min;
-        templates[i] = new Vector1D(value);
+        templates[i] = VectorFactory.getVectorForCoordinates(value);
       } else {
         DimensionalVector vectorMultiD;
         double length;

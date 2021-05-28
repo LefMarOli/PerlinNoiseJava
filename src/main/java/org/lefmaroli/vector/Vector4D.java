@@ -20,12 +20,12 @@ public class Vector4D extends AbstractDimensionalVector {
   }
 
   @Override
-  public DimensionalVector normalize() {
+  public Vector4D normalize() {
     double length = getLength();
-    if (Double.compare(length, 1.0) == 0) {
+    if (Math.abs(length - 1.0) < 1E-10) {
       return this;
     }
-    return new Vector4D(x / length, y / length, z / length, t / length);
+    return new Vector4D(x / length, y / length, z / length, t / length).normalize();
   }
 
   @Override

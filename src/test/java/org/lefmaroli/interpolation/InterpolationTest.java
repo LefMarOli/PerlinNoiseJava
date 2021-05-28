@@ -13,14 +13,14 @@ class InterpolationTest {
 
   @Test
   void testWrongDistanceArrayLength() {
-    CornerMatrix matrix = CornerMatrix.getForDimension(4);
+    CornerMatrix matrix = CornerMatrixFactory.getForDimension(4);
     Assertions.assertThrows(
         DistancesArrayLengthException.class, () -> Interpolation.linear(matrix, new double[3]));
   }
 
   @Test
   void testNotBoundedDistance() {
-    CornerMatrix matrix = CornerMatrix.getForDimension(4);
+    CornerMatrix matrix = CornerMatrixFactory.getForDimension(4);
     double[] distances = new double[4];
     distances[0] = 0.4;
     distances[1] = 4.4;

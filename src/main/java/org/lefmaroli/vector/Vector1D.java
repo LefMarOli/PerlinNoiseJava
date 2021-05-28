@@ -1,6 +1,6 @@
 package org.lefmaroli.vector;
 
-public class Vector1D extends AbstractDimensionalVector {
+class Vector1D extends AbstractDimensionalVector {
 
   private static final Vector1D NORMALIZED = new Vector1D(1.0);
 
@@ -11,7 +11,7 @@ public class Vector1D extends AbstractDimensionalVector {
   }
 
   @Override
-  public DimensionalVector normalize() {
+  public Vector1D normalize() {
     return NORMALIZED;
   }
 

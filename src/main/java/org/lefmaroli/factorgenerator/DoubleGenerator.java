@@ -5,10 +5,6 @@ public class DoubleGenerator extends MultipliedByNumberGenerator<Double> {
     super(initialValue, factor);
   }
 
-  public DoubleGenerator(Integer initialValue, double factor) {
-    super(initialValue.doubleValue(), factor);
-  }
-
   @Override
   public DoubleGenerator getCopy() {
     return new DoubleGenerator(initialValue, factor);

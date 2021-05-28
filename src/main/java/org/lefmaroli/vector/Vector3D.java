@@ -18,12 +18,12 @@ public class Vector3D extends AbstractDimensionalVector {
   }
 
   @Override
-  public DimensionalVector normalize() {
+  public Vector3D normalize() {
     double length = getLength();
-    if (Double.compare(length, 1.0) == 0) {
+    if (Math.abs(length - 1.0) < 1E-10) {
       return this;
     }
-    return new Vector3D(x / length, y / length, z / length);
+    return new Vector3D(x / length, y / length, z / length).normalize();
   }
 
   @Override

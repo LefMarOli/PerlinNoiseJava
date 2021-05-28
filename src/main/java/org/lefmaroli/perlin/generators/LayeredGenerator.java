@@ -10,14 +10,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.lefmaroli.configuration.JitterTrait;
-import org.lefmaroli.perlin.generators.layers.LayerProcess;
-import org.lefmaroli.perlin.generators.layers.LayerProcessException;
+import org.apache.logging.log4j.LogManager;
+import org.lefmaroli.perlin.configuration.JitterTrait;
 
 public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
 
   private static final int SIZE_THRESHOLD = 2500;
-  private static final int DEFAULT_TIMEOUT = 5;
   private final double maxAmplitude;
   private final List<IGenerator<N>> layers;
   private final Queue<N> generated = new LinkedList<>();
@@ -27,6 +25,7 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private final int totalSize;
   private final long timeout;
   private final ExecutorService executorService;
+  private boolean emittedExecutorShutdownWarning = false;
 
   protected LayeredGenerator(
       List<? extends IGenerator<N>> layers, ExecutorService executorService) {
@@ -46,16 +45,23 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
       size += layer.getTotalSize();
     }
     this.totalSize = size;
-    if (!JitterTrait.isJitterStrategyDefaultProduction()) {
-      this.timeout = 10000;
-    } else {
-      this.timeout = (long) totalSize * DEFAULT_TIMEOUT / SIZE_THRESHOLD;
-    }
+    this.timeout = (long) totalSize * JitterTrait.getTimeout() / SIZE_THRESHOLD;
     this.executorService = executorService;
   }
 
   private boolean hasParallelProcessingEnabled() {
-    return executorService != null;
+    if (executorService == null) {
+      return false;
+    }
+    if (executorService.isShutdown()) {
+      if (!emittedExecutorShutdownWarning) {
+        LogManager.getLogger(this.getClass())
+            .warn("Provided executorService is already shutdown, processing in serial mode");
+        emittedExecutorShutdownWarning = true;
+      }
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -91,7 +97,8 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
     } else {
       container = containers.poll();
     }
-    if (Thread.interrupted()) {
+    if (Thread.currentThread().isInterrupted()) {
+      LogManager.getLogger(this.getClass()).debug("Interrupted processing [getNext()]");
       return container;
     }
     addNextToQueue(container);
@@ -103,28 +110,28 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
   private void addNextToQueue(N container) {
     container = resetContainer(container);
     if (totalSize > SIZE_THRESHOLD && hasParallelProcessingEnabled()) {
-      processParallel(container);
+      try {
+        processParallel(container);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new LayerProcessException("Interrupted while doing parallel processing", e);
+      }
     } else {
       processSerial(container);
     }
   }
 
-  private void processParallel(N container) {
+  private void processParallel(N container) throws InterruptedException {
     for (IGenerator<N> layer : layers) {
-      if (Thread.interrupted()) {
-        return;
-      }
       futures.add(CompletableFuture.supplyAsync(new LayerProcess<>(layer), executorService));
     }
     for (CompletableFuture<N> f : futures) {
-      if (Thread.interrupted()) {
+      if (Thread.currentThread().isInterrupted()) {
+        LogManager.getLogger(this.getClass()).debug("Interrupted processing [processParallel]");
         return;
       }
       try {
         container = addTogether(container, f.get(timeout, TimeUnit.MILLISECONDS));
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        throw new LayerProcessException("Interrupted while waiting for layer process", e);
       } catch (ExecutionException e) {
         throw new LayerProcessException("Execution exception in layer process", e);
       } catch (TimeoutException e) {
@@ -138,7 +145,8 @@ public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
 
   private void processSerial(N container) {
     for (IGenerator<N> layer : layers) {
-      if (Thread.interrupted()) {
+      if (Thread.currentThread().isInterrupted()) {
+        LogManager.getLogger(this.getClass()).debug("Interrupted processing [processSerial]");
         return;
       }
       container = addTogether(container, layer.getNext());

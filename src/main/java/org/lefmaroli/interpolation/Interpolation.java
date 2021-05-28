@@ -2,6 +2,8 @@ package org.lefmaroli.interpolation;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.lefmaroli.perlin.PerlinNoise;
 
 public class Interpolation {
 
@@ -40,7 +42,8 @@ public class Interpolation {
   }
 
   private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances) {
-    if (Thread.interrupted()) {
+    if (Thread.currentThread().isInterrupted()) {
+      LogManager.getLogger(PerlinNoise.class).debug("Interrupting processing [linearWithFadeUnchecked]");
       return 0.0;
     }
     if (cornerMatrix.getDimension() == 1) {

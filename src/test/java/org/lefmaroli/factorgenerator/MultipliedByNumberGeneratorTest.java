@@ -1,5 +1,7 @@
 package org.lefmaroli.factorgenerator;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,17 @@ class MultipliedByNumberGeneratorTest {
     for (int i = 0; i < 50000; i++) {
       Assertions.assertEquals(0.0, generator.getNext(), 0.0);
     }
+  }
+
+  @Test
+  void testReachLimit(){
+    DoubleGenerator generator = new DoubleGenerator(0.0, 1.0);
+    Iterator<Double> iterator = generator.iterator();
+    for (int i = 0; i < MultipliedByNumberGenerator.DEFAULT_LIMIT; i++) {
+      iterator.next();
+    }
+    Assertions.assertFalse(iterator.hasNext());
+    Assertions.assertThrows(NoSuchElementException.class, iterator::next);
   }
 
   @Test

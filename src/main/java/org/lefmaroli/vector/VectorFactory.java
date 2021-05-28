@@ -4,7 +4,7 @@ public class VectorFactory {
 
   private VectorFactory() {}
 
-  public static DimensionalVector getVectorForCoordinates(double[] coordinates) {
+  public static DimensionalVector getVectorForCoordinates(double... coordinates) {
     if (coordinates.length > 5 || coordinates.length == 0) {
       throw new IllegalArgumentException("Coordinates length should be between 1 and 5");
     }

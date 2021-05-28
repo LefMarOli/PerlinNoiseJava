@@ -60,7 +60,7 @@ public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuil
 
   protected static void assertStepSize(double stepSize) throws StepSizeException {
     if (Double.compare(stepSize, 0.0) < 0 || Double.compare(stepSize, 0.0) == 0) {
-      throw new StepSizeException("Step size smaller than 0");
+      throw new StepSizeException();
     }
   }
 }

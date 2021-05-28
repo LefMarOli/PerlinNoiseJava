@@ -9,8 +9,8 @@ import javax.swing.SwingUtilities;
 import org.junit.jupiter.api.Test;
 import org.lefmaroli.display.LineChart;
 import org.lefmaroli.display.SimpleGrayScaleImage;
-import org.lefmaroli.utils.AssertUtils;
-import org.lefmaroli.utils.ScheduledUpdater;
+import org.lefmaroli.testutils.AssertUtils;
+import org.lefmaroli.testutils.ScheduledUpdater;
 
 class PerlinNoiseVisualizeTests {
 

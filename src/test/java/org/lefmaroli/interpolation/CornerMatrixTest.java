@@ -7,7 +7,7 @@ class CornerMatrixTest {
 
   @Test
   void testToString() {
-    CornerMatrix matrix = CornerMatrix.getForDimension(2);
+    CornerMatrix matrix = CornerMatrixFactory.getForDimension(2);
     matrix.setValueAtIndices(0.0, 0, 0);
     matrix.setValueAtIndices(1.0, 0, 1);
     matrix.setValueAtIndices(2.0, 1, 0);
@@ -23,13 +23,13 @@ class CornerMatrixTest {
 
   @Test
   void cantGetSubMatrixForDimension1() {
-    CornerMatrix cornerMatrix = CornerMatrix.getForDimension(1);
+    CornerMatrix cornerMatrix = CornerMatrixFactory.getForDimension(1);
     Assertions.assertThrows(IllegalArgumentException.class, () -> cornerMatrix.getSubMatrix(0));
   }
 
   @Test
   void testGetAtIndices() {
-    CornerMatrix matrix = CornerMatrix.getForDimension(2);
+    CornerMatrix matrix = CornerMatrixFactory.getForDimension(2);
     matrix.setValueAtIndices(0.0, 0, 0);
     matrix.setValueAtIndices(1.0, 0, 1);
     matrix.setValueAtIndices(2.0, 1, 0);
