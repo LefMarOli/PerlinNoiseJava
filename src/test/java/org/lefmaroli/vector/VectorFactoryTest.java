@@ -14,42 +14,42 @@ class VectorFactoryTest {
 
   @ParameterizedTest
   @ValueSource(ints = {0, 6})
-  void testIllegalDimension(int dimension){
-    assertThrows(IllegalArgumentException.class, ()->VectorFactory.getVectorForCoordinates(new double[dimension]));
+  void testIllegalDimension(int dimension) {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> VectorFactory.getVectorForCoordinates(new double[dimension]));
   }
 
   @ParameterizedTest
   @MethodSource("classArgs")
-  void testRightReturnedClass(Class<? extends DimensionalVector> clazz, double[] args){
+  void testRightReturnedClass(Class<? extends DimensionalVector> clazz, double[] args) {
     assertEquals(clazz, VectorFactory.getVectorForCoordinates(args).getClass());
   }
 
   @SuppressWarnings("unused")
-  private static Stream<Arguments> classArgs(){
+  private static Stream<Arguments> classArgs() {
     return Stream.of(
-        Arguments.of(Vector1D.class, new double[]{0.2}),
-        Arguments.of(Vector2D.class, new double[]{0.2, 0.3}),
-        Arguments.of(Vector3D.class, new double[]{0.2, 0.3, 0.1}),
-        Arguments.of(Vector4D.class, new double[]{0.2, 0.3, 0.1, 0.5}),
-        Arguments.of(Vector5D.class, new double[]{0.2, 0.3, 0.1, 0.5, 0.9})
-    );
+        Arguments.of(Vector1D.class, new double[] {0.2}),
+        Arguments.of(Vector2D.class, new double[] {0.2, 0.3}),
+        Arguments.of(Vector3D.class, new double[] {0.2, 0.3, 0.1}),
+        Arguments.of(Vector4D.class, new double[] {0.2, 0.3, 0.1, 0.5}),
+        Arguments.of(Vector5D.class, new double[] {0.2, 0.3, 0.1, 0.5, 0.9}));
   }
 
   @ParameterizedTest(name = "{1}")
   @MethodSource("notNulls")
   @SuppressWarnings("unused")
-  void testNotNull(double[] args, String title){
+  void testNotNull(double[] args, String title) {
     assertNotNull(VectorFactory.getVectorForCoordinates(args));
   }
 
   @SuppressWarnings({"unused"})
-  private static Stream<Arguments> notNulls(){
+  private static Stream<Arguments> notNulls() {
     return Stream.of(
-        Arguments.of(new double[]{0.2}, "1 dimension"),
-        Arguments.of(new double[]{0.2, 0.3}, "2 dimension"),
-        Arguments.of(new double[]{0.2, 0.3, 0.1}, "3 dimension"),
-        Arguments.of(new double[]{0.2, 0.3, 0.1, 0.5}, "4 dimension"),
-        Arguments.of(new double[]{0.2, 0.3, 0.1, 0.5, 0.9}, "5 dimension")
-    );
+        Arguments.of(new double[] {0.2}, "1 dimension"),
+        Arguments.of(new double[] {0.2, 0.3}, "2 dimension"),
+        Arguments.of(new double[] {0.2, 0.3, 0.1}, "3 dimension"),
+        Arguments.of(new double[] {0.2, 0.3, 0.1, 0.5}, "4 dimension"),
+        Arguments.of(new double[] {0.2, 0.3, 0.1, 0.5, 0.9}, "5 dimension"));
   }
 }

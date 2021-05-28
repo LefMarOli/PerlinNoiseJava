@@ -4,7 +4,7 @@ public class JitterTrait {
   private static final JitterStrategy DEFAULT_PRODUCTION_STRATEGY = new ProductionJitterStrategy();
   private static JitterStrategy jitterStrategy = DEFAULT_PRODUCTION_STRATEGY;
 
-  private JitterTrait(){}
+  private JitterTrait() {}
 
   public static void setJitterStrategy(JitterStrategy jitterStrategy) {
     JitterTrait.jitterStrategy = jitterStrategy;
@@ -18,7 +18,7 @@ public class JitterTrait {
     return jitterStrategy == DEFAULT_PRODUCTION_STRATEGY;
   }
 
-  public static long getTimeout(){
+  public static long getTimeout() {
     return jitterStrategy.getTimeout();
   }
 

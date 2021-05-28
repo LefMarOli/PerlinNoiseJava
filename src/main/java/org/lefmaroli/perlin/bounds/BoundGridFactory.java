@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.bounds;
 
 public class BoundGridFactory {
 
-  private BoundGridFactory(){}
+  private BoundGridFactory() {}
 
   private static final int MAX_DIMENSION = 5;
 

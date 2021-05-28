@@ -221,7 +221,8 @@ public class SliceGeneratorBuilder
         perlinData.setCoordinatesForDimension(0, noiseDist);
         for (var widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
           if (Thread.interrupted()) {
-            LogManager.getLogger(this.getClass()).error("Interrupted processing [processNoiseDomain]");
+            LogManager.getLogger(this.getClass())
+                .error("Interrupted processing [processNoiseDomain]");
             return;
           }
           processSliceWidthDomain(widthIndex, 0, sliceHeight, slice[widthIndex], perlinData);

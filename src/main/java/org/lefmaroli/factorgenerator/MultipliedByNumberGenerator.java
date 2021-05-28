@@ -29,10 +29,10 @@ public abstract class MultipliedByNumberGenerator<N extends Number> implements N
 
   private N getAtPosition(int position) {
     if (position > computed.size() - 1) {
-        var previous = computed.get(position - 1);
-        var newValue = getXMultipliedByY(previous, factor);
-        computed.add(newValue);
-        return newValue;
+      var previous = computed.get(position - 1);
+      var newValue = getXMultipliedByY(previous, factor);
+      computed.add(newValue);
+      return newValue;
     } else {
       return computed.get(position);
     }

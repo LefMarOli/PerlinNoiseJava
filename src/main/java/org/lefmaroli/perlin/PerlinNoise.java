@@ -5,13 +5,13 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
+import org.lefmaroli.interpolation.CornerMatrix;
 import org.lefmaroli.interpolation.CornerMatrixFactory;
+import org.lefmaroli.interpolation.Interpolation;
+import org.lefmaroli.perlin.ContainerRecycler.ContainerCreator;
+import org.lefmaroli.perlin.bounds.BoundGrid;
 import org.lefmaroli.perlin.bounds.BoundGridFactory;
 import org.lefmaroli.perlin.configuration.JitterTrait;
-import org.lefmaroli.perlin.ContainerRecycler.ContainerCreator;
-import org.lefmaroli.interpolation.CornerMatrix;
-import org.lefmaroli.interpolation.Interpolation;
-import org.lefmaroli.perlin.bounds.BoundGrid;
 import org.lefmaroli.vector.DimensionalVector;
 
 public class PerlinNoise {
@@ -35,8 +35,9 @@ public class PerlinNoise {
   public static double getFor(PerlinNoiseDataContainer dataContainer) {
     JitterTrait.jitter();
     dataContainer.setBoundsForInterpolation(BOUNDS_MAP.get(dataContainer.getDimension()));
-    if(Thread.currentThread().isInterrupted()){
-      LogManager.getLogger(PerlinNoise.class).debug("Interrupting processing [getFor(PerlinNoiseDataContainer)]");
+    if (Thread.currentThread().isInterrupted()) {
+      LogManager.getLogger(PerlinNoise.class)
+          .debug("Interrupting processing [getFor(PerlinNoiseDataContainer)]");
       return 0.0;
     }
     JitterTrait.jitter();
@@ -115,8 +116,8 @@ public class PerlinNoise {
           dimension,
           dim -> {
             var numberOfBoundsPerDimension = AXIS_BOUNDS_BY_DIMENSIONS.get(dimension);
-            return BoundGridFactory
-                .getNewBoundGridForDimension(dimension, numberOfBoundsPerDimension);
+            return BoundGridFactory.getNewBoundGridForDimension(
+                dimension, numberOfBoundsPerDimension);
           });
     }
   }
@@ -188,7 +189,8 @@ public class PerlinNoise {
     private void populateCornerMatrix(int currentDimension, BoundGrid bounds) {
       for (var i = 0; i < 2; i++) {
         if (Thread.currentThread().isInterrupted()) {
-          LogManager.getLogger(this.getClass()).debug("Interrupting processing [populateCornerMatrix]");
+          LogManager.getLogger(this.getClass())
+              .debug("Interrupting processing [populateCornerMatrix]");
           return;
         }
         JitterTrait.jitter();

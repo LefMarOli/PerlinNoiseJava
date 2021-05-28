@@ -105,8 +105,7 @@ class PerlinNoiseTest {
     PerlinNoiseDataContainer first = builder.createNewContainer();
     return Stream.of(
         Arguments.of(first, null, "test not equal to null"),
-        Arguments.of(
-            first, new Random(), "test not equal to other class"),
+        Arguments.of(first, new Random(), "test not equal to other class"),
         Arguments.of(
             first,
             otherBuilder.createNewContainer(),

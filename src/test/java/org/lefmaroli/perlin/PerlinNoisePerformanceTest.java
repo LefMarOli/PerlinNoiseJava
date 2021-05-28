@@ -18,10 +18,10 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
 import org.lefmaroli.perlin.generators.multidimensional.line.LayeredLineGenerator;
 import org.lefmaroli.perlin.generators.multidimensional.line.LayeredLineGeneratorBuilder;
-import org.lefmaroli.perlin.generators.point.LayeredPointGenerator;
-import org.lefmaroli.perlin.generators.point.LayeredPointGeneratorBuilder;
 import org.lefmaroli.perlin.generators.multidimensional.slice.LayeredSliceGenerator;
 import org.lefmaroli.perlin.generators.multidimensional.slice.LayeredSliceGeneratorBuilder;
+import org.lefmaroli.perlin.generators.point.LayeredPointGenerator;
+import org.lefmaroli.perlin.generators.point.LayeredPointGeneratorBuilder;
 
 class PerlinNoisePerformanceTest {
 

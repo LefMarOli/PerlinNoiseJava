@@ -17,7 +17,7 @@ class MultipliedByNumberGeneratorTest {
   }
 
   @Test
-  void testReachLimit(){
+  void testReachLimit() {
     DoubleGenerator generator = new DoubleGenerator(0.0, 1.0);
     Iterator<Double> iterator = generator.iterator();
     for (int i = 0; i < MultipliedByNumberGenerator.DEFAULT_LIMIT; i++) {

@@ -36,8 +36,6 @@ import org.lefmaroli.perlin.configuration.TimeoutJitterStrategy;
 import org.lefmaroli.perlin.generators.LayerProcessException;
 import org.lefmaroli.perlin.generators.LayeredBuilder;
 import org.lefmaroli.perlin.generators.LayeredGeneratorBuilderException;
-import org.lefmaroli.perlin.generators.multidimensional.line.LayeredLineGenerator;
-import org.lefmaroli.perlin.generators.multidimensional.line.LayeredLineGeneratorBuilder;
 import org.lefmaroli.testutils.AssertUtils;
 import org.lefmaroli.testutils.ScheduledUpdater;
 

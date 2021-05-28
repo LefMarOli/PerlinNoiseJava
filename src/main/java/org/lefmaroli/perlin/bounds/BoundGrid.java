@@ -18,7 +18,7 @@ public abstract class BoundGrid {
               + ", supplied coordinates: "
               + Arrays.toString(coordinates));
     }
-    if(boundIndices.length != coordinates.length){
+    if (boundIndices.length != coordinates.length) {
       throw new IllegalArgumentException(
           "Number of bound indices don't match dimension of "
               + dimension

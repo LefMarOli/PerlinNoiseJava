@@ -56,11 +56,9 @@ class Vector3DTest {
   }
 
   @SuppressWarnings("unused")
-  private static Stream<Arguments> wrongNumberOfArguments(){
+  private static Stream<Arguments> wrongNumberOfArguments() {
     return Stream.of(
-        Arguments.of(new double[]{0.2, 0.1}, "too few"),
-        Arguments.of(new double[]{0.2, 0.1, 0.3, 0.5}, "too many")
-    );
+        Arguments.of(new double[] {0.2, 0.1}, "too few"),
+        Arguments.of(new double[] {0.2, 0.1, 0.3, 0.5}, "too many"));
   }
-
 }

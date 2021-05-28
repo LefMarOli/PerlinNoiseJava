@@ -10,9 +10,7 @@ import com.jparams.verifier.tostring.preset.Presets;
 import java.awt.GraphicsEnvironment;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
@@ -25,8 +23,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.lefmaroli.perlin.configuration.JitterTrait;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.perlin.configuration.JitterTrait;
 import org.lefmaroli.perlin.configuration.TestJitterStrategy;
 import org.lefmaroli.perlin.generators.StepSizeException;
 import org.lefmaroli.testutils.AssertUtils;
@@ -98,29 +96,29 @@ class LineGeneratorTest {
   }
 
   @Test
-  void testGetDimension(){
+  void testGetDimension() {
     assertEquals(2, defaultGenerator.getDimensions());
   }
 
   @Test
-  void testGetPool(){
+  void testGetPool() {
     LineGenerator generator = defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertEquals(ForkJoinPool.commonPool(), generator.getExecutionPool());
   }
 
   @Test
-  void testHasProcessingEnabled(){
+  void testHasProcessingEnabled() {
     LineGenerator generator = defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertTrue(generator.hasParallelProcessingEnabled());
   }
 
   @Test
-  void testHasProcessingDisabled(){
+  void testHasProcessingDisabled() {
     assertFalse(defaultGenerator.hasParallelProcessingEnabled());
   }
 
   @Test
-  void testHasProcessingDisabledNotEnoughParallelism(){
+  void testHasProcessingDisabledNotEnoughParallelism() {
     ForkJoinPool pool = new ForkJoinPool(1);
     LineGenerator generator = defaultBuilder.withForkJoinPool(pool).build();
     assertFalse(generator.hasParallelProcessingEnabled());

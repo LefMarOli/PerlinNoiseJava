@@ -1,9 +1,8 @@
 package org.lefmaroli.perlin.configuration;
 
-
 import org.apache.logging.log4j.LogManager;
 
-public class DelayJitterStrategy implements JitterStrategy{
+public class DelayJitterStrategy implements JitterStrategy {
 
   @Override
   public void jitter() {

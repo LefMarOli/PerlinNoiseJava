@@ -17,7 +17,7 @@ public class TestJitterStrategy implements JitterStrategy {
   private final long timeout = 10000;
 
   @Override
-  public long getTimeout(){
+  public long getTimeout() {
     return timeout;
   }
 

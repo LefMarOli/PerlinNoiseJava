@@ -43,7 +43,8 @@ public class Interpolation {
 
   private static double linearWithFadeUnchecked(CornerMatrix cornerMatrix, double[] distances) {
     if (Thread.currentThread().isInterrupted()) {
-      LogManager.getLogger(PerlinNoise.class).debug("Interrupting processing [linearWithFadeUnchecked]");
+      LogManager.getLogger(PerlinNoise.class)
+          .debug("Interrupting processing [linearWithFadeUnchecked]");
       return 0.0;
     }
     if (cornerMatrix.getDimension() == 1) {

@@ -174,7 +174,8 @@ public class LineGeneratorBuilder
         perlinData.setCoordinatesForDimension(0, noiseDist);
         for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
           if (Thread.currentThread().isInterrupted()) {
-            LogManager.getLogger(this.getClass()).debug("Interrupted processing [processNoiseDomain]");
+            LogManager.getLogger(this.getClass())
+                .debug("Interrupted processing [processNoiseDomain]");
             return;
           }
           lineData[lineIndex] = processLineDomain(lineIndex, perlinData);

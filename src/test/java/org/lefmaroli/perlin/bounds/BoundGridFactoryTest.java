@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,9 +39,12 @@ class BoundGridFactoryTest {
   @ParameterizedTest(name = "{index} - {3}")
   @MethodSource("invalidCoordinates")
   @SuppressWarnings("unused")
-  void testInvalidCoordinatesDimensions(int dimension, int[] coordinates, int[] boundsIndices, String title) {
+  void testInvalidCoordinatesDimensions(
+      int dimension, int[] coordinates, int[] boundsIndices, String title) {
     BoundGrid boundGrid = BoundGridFactory.getNewBoundGridForDimension(dimension, 8);
-    assertThrows(IllegalArgumentException.class, ()-> boundGrid.getBoundForCoordinates(coordinates, boundsIndices));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> boundGrid.getBoundForCoordinates(coordinates, boundsIndices));
   }
 
   @SuppressWarnings("unused")
@@ -71,9 +73,12 @@ class BoundGridFactoryTest {
   @ParameterizedTest(name = "{index} - {3}")
   @MethodSource("invalidBoundIndices")
   @SuppressWarnings("unused")
-  void testInvalidBoundIndicesDimensions(int dimension, int[] coordinates, int[] boundsIndices, String title) {
+  void testInvalidBoundIndicesDimensions(
+      int dimension, int[] coordinates, int[] boundsIndices, String title) {
     BoundGrid boundGrid = BoundGridFactory.getNewBoundGridForDimension(dimension, 8);
-    assertThrows(IllegalArgumentException.class, ()-> boundGrid.getBoundForCoordinates(coordinates, boundsIndices));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> boundGrid.getBoundForCoordinates(coordinates, boundsIndices));
   }
 
   @SuppressWarnings("unused")
@@ -89,9 +94,15 @@ class BoundGridFactoryTest {
         Arguments.of(
             4, new int[] {1, 2, 3, 4}, new int[] {1, 2, 3}, "Dimension 4, three bound indices"),
         Arguments.of(
-            4, new int[] {1, 2, 3, 4}, new int[] {1, 2, 3, 4, 5}, "Dimension 4, five bound indices"),
+            4,
+            new int[] {1, 2, 3, 4},
+            new int[] {1, 2, 3, 4, 5},
+            "Dimension 4, five bound indices"),
         Arguments.of(
-            5, new int[] {1, 2, 3, 4, 5}, new int[] {1, 2, 3, 4}, "Dimension 5, four bound indices"),
+            5,
+            new int[] {1, 2, 3, 4, 5},
+            new int[] {1, 2, 3, 4},
+            "Dimension 5, four bound indices"),
         Arguments.of(
             5,
             new int[] {1, 2, 3, 4, 5},
@@ -101,18 +112,17 @@ class BoundGridFactoryTest {
 
   @ParameterizedTest
   @MethodSource("wrapIndices")
-  void testWrapIndices(int index, int expected){
+  void testWrapIndices(int index, int expected) {
     assertEquals(expected, BoundGrid.wrapIndexToBounds(index, 8));
   }
 
   @SuppressWarnings("unused")
-  private static Stream<Arguments> wrapIndices(){
+  private static Stream<Arguments> wrapIndices() {
     return Stream.of(
         Arguments.of(1, 1),
         Arguments.of(7, 7),
         Arguments.of(8, 0),
         Arguments.of(9, 1),
-        Arguments.of(17, 1)
-    );
+        Arguments.of(17, 1));
   }
 }

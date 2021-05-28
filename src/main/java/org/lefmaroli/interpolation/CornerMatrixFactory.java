@@ -2,7 +2,7 @@ package org.lefmaroli.interpolation;
 
 public class CornerMatrixFactory {
 
-  private CornerMatrixFactory(){}
+  private CornerMatrixFactory() {}
 
   public static CornerMatrix getForDimension(int dimension) {
     if (dimension == 1) {

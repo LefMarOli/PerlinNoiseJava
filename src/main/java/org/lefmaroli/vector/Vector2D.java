@@ -1,6 +1,5 @@
 package org.lefmaroli.vector;
 
-import java.util.Vector;
 
 public class Vector2D extends AbstractDimensionalVector {
 

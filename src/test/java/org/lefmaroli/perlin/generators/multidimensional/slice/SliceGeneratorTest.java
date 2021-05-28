@@ -23,11 +23,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.lefmaroli.perlin.configuration.JitterTrait;
 import org.lefmaroli.display.SimpleGrayScaleImage;
+import org.lefmaroli.perlin.configuration.JitterTrait;
 import org.lefmaroli.perlin.configuration.TestJitterStrategy;
 import org.lefmaroli.perlin.generators.StepSizeException;
-import org.lefmaroli.perlin.generators.multidimensional.line.LineGenerator;
 import org.lefmaroli.testutils.AssertUtils;
 import org.lefmaroli.testutils.ScheduledUpdater;
 
@@ -98,23 +97,23 @@ class SliceGeneratorTest {
   }
 
   @Test
-  void testDimension(){
+  void testDimension() {
     assertEquals(3, defaultGenerator.getDimensions());
   }
 
   @Test
-  void testHasProcessingEnabled(){
+  void testHasProcessingEnabled() {
     SliceGenerator generator = defaultBuilder.withForkJoinPool(ForkJoinPool.commonPool()).build();
     assertTrue(generator.hasParallelProcessingEnabled());
   }
 
   @Test
-  void testHasProcessingDisabled(){
+  void testHasProcessingDisabled() {
     assertFalse(defaultGenerator.hasParallelProcessingEnabled());
   }
 
   @Test
-  void testHasProcessingDisabledNotEnoughParallelism(){
+  void testHasProcessingDisabledNotEnoughParallelism() {
     ForkJoinPool pool = new ForkJoinPool(1);
     SliceGenerator generator = defaultBuilder.withForkJoinPool(pool).build();
     assertFalse(generator.hasParallelProcessingEnabled());
@@ -401,8 +400,7 @@ class SliceGeneratorTest {
         for (int j = 0; j < numInterpolationPointsPerCycleInWidth; j++) {
           double ref = slice[j][row];
           for (int k = 1; k < numCyclesInWidth; k++) {
-            assertEquals(
-                ref, slice[k * numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
+            assertEquals(ref, slice[k * numInterpolationPointsPerCycleInWidth + j][row], 1E-12);
           }
         }
       }
@@ -411,8 +409,7 @@ class SliceGeneratorTest {
         for (int j = 0; j < numInterpolationPointsPerCycleInHeight; j++) {
           double ref = slice[column][j];
           for (int k = 1; k < numCyclesInHeight; k++) {
-            assertEquals(
-                ref, slice[column][k * numInterpolationPointsPerCycleInHeight + j], 1E-12);
+            assertEquals(ref, slice[column][k * numInterpolationPointsPerCycleInHeight + j], 1E-12);
           }
         }
       }

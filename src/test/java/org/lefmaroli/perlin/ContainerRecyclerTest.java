@@ -6,7 +6,7 @@ import org.lefmaroli.perlin.ContainerRecycler.ContainerCreator;
 
 class ContainerRecyclerTest {
 
-  private static class TestContainerCreator implements ContainerCreator<Object>{
+  private static class TestContainerCreator implements ContainerCreator<Object> {
 
     @Override
     public Object createNewContainer() {
@@ -16,17 +16,16 @@ class ContainerRecyclerTest {
 
   private final TestContainerCreator testContainerCreator = new TestContainerCreator();
 
-
   @Test
-  void testCreateNewContainers(){
+  void testCreateNewContainers() {
     ContainerRecycler<Object> recycler = new ContainerRecycler<>(testContainerCreator);
-    for (int i = 0; i <5000; i++) {
+    for (int i = 0; i < 5000; i++) {
       Assertions.assertNotNull(recycler.getNewOrNextAvailableContainer());
     }
   }
 
   @Test
-  void testContainersDifferent(){
+  void testContainersDifferent() {
     ContainerRecycler<Object> recycler = new ContainerRecycler<>(testContainerCreator);
     Object container = recycler.getNewOrNextAvailableContainer();
     Object secondContainer = recycler.getNewOrNextAvailableContainer();
@@ -34,7 +33,7 @@ class ContainerRecyclerTest {
   }
 
   @Test
-  void testContainerRecycled(){
+  void testContainerRecycled() {
     ContainerRecycler<Object> recycler = new ContainerRecycler<>(testContainerCreator);
     Object container = recycler.getNewOrNextAvailableContainer();
     recycler.recycleContainer(container);
