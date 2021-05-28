@@ -96,6 +96,7 @@ class LayeredLineGeneratorTest {
 
   @Test
   void testGetPool() throws LayeredGeneratorBuilderException {
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     ForkJoinPool pool = ForkJoinPool.commonPool();
     LayeredLineGenerator generator =
         defaultBuilder.withForkJoinPool(pool).build();
