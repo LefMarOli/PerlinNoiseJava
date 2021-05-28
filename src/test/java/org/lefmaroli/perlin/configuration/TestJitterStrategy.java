@@ -18,8 +18,8 @@ public class TestJitterStrategy extends AbstractTestJitterStrategy {
       case 0:
         return;
       case 1:
-          int delay = random.nextInt(5);
-          waitFor(delay);
+        int delay = random.nextInt(5);
+        waitFor(delay);
         return;
       case 2:
         Thread.yield();
