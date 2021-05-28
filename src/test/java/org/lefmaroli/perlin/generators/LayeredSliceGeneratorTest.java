@@ -85,8 +85,7 @@ class LayeredSliceGeneratorTest {
   @Test
   void testGetPool() throws LayeredGeneratorBuilderException {
     ForkJoinPool pool = ForkJoinPool.commonPool();
-    LayeredSliceGenerator generator =
-        defaultBuilder.withForkJoinPool(pool).build();
+    LayeredSliceGenerator generator = defaultBuilder.withForkJoinPool(pool).build();
     assertEquals(pool, generator.getExecutionPool());
   }
 
