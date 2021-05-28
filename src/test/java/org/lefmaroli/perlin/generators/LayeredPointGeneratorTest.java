@@ -9,12 +9,14 @@ import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -184,6 +186,7 @@ class LayeredPointGeneratorTest {
 
   @Test
   void testSmoothVisuals() throws LayeredGeneratorBuilderException { // NOSONAR
+    Assumptions.assumeTrue(ForkJoinPool.commonPool().getParallelism() > 1);
     DoubleGenerator noiseStepSizeGenerator = new DoubleGenerator(1.0 / 200, 2.0);
     DoubleGenerator amplitudeGenerator = new DoubleGenerator(1.0, 0.95);
     int numLayers = 4;
