@@ -5,7 +5,7 @@ import java.util.concurrent.ForkJoinPool;
 import org.apache.logging.log4j.LogManager;
 import org.lefmaroli.rounding.RoundUtils;
 
-public abstract class MultiDimensionalRootGenerator<C> extends RootGenerator<C>
+abstract class MultiDimensionalRootGenerator<C> extends RootGenerator<C>
     implements IMultiDimensionalGenerator {
 
   private final boolean isCircular;

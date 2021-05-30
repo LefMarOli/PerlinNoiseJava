@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import org.lefmaroli.perlin.configuration.JitterStrategy;
 
-public abstract class MultiDimensionalLayeredGenerator<
+abstract class MultiDimensionalLayeredGenerator<
         N, L extends IGenerator<N> & IMultiDimensionalGenerator>
     extends LayeredGenerator<N> implements IMultiDimensionalGenerator {
 

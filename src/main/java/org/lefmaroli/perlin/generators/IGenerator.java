@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin.generators;
 
-public interface IGenerator<R> {
+interface IGenerator<R> {
   R getNext();
 
   double getMaxAmplitude();

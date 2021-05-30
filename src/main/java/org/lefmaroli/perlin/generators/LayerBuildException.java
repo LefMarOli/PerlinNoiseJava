@@ -1,6 +1,6 @@
 package org.lefmaroli.perlin.generators;
 
-public class LayerBuildException extends Exception {
+class LayerBuildException extends Exception {
 
   private static final String MESSAGE_FORMAT = "Exception occurred while building layer number %s";
 

@@ -1,8 +1,8 @@
 package org.lefmaroli.perlin.generators;
 
-public class LayerProcessException extends RuntimeException {
+class LayerProcessException extends RuntimeException {
 
-  public LayerProcessException(String message, Throwable cause) {
+  LayerProcessException(String message, Throwable cause) {
     super(message, cause);
   }
 }

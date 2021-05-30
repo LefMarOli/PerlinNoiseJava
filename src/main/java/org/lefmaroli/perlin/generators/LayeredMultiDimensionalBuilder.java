@@ -2,7 +2,7 @@ package org.lefmaroli.perlin.generators;
 
 import java.util.concurrent.ForkJoinPool;
 
-public abstract class LayeredMultiDimensionalBuilder<
+abstract class LayeredMultiDimensionalBuilder<
         N,
         L extends ILayeredGenerator<N>,
         S extends IGenerator<N>,

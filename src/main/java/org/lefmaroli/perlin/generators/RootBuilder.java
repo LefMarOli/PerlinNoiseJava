@@ -3,7 +3,7 @@ package org.lefmaroli.perlin.generators;
 import org.lefmaroli.perlin.configuration.JitterStrategy;
 import org.lefmaroli.perlin.configuration.ProductionJitterStrategy;
 
-public abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuilder<N, L, B>> {
+abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuilder<N, L, B>> {
 
   private final int dimensions;
   private static final double DEFAULT_STEP_SIZE = 0.01;

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 import org.apache.logging.log4j.LogManager;
 import org.lefmaroli.perlin.configuration.JitterStrategy;
 
-public abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
+abstract class LayeredGenerator<N> implements ILayeredGenerator<N> {
 
   private static final int SIZE_THRESHOLD = 2500;
   private final double maxAmplitude;

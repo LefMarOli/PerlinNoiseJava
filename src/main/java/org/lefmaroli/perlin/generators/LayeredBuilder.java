@@ -11,7 +11,7 @@ import org.lefmaroli.factorgenerator.DoubleGenerator;
 import org.lefmaroli.perlin.configuration.JitterStrategy;
 import org.lefmaroli.perlin.configuration.ProductionJitterStrategy;
 
-public abstract class LayeredBuilder<
+abstract class LayeredBuilder<
     N,
     L extends ILayeredGenerator<N>,
     S extends IGenerator<N>,

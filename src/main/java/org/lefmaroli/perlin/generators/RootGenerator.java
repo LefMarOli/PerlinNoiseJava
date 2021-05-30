@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 
-public abstract class RootGenerator<C> implements IRootGenerator<C> {
+abstract class RootGenerator<C> implements IRootGenerator<C> {
 
   protected final long randomSeed;
   private final Queue<C> generated = new LinkedList<>();
