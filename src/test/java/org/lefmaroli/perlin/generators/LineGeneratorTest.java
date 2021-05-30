@@ -282,7 +282,7 @@ class LineGeneratorTest {
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
             "perlinData",
-            "currentPosition",
+            "currentTimeIndex",
             "generated",
             "containers",
             "containersCount",

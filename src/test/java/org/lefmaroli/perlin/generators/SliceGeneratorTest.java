@@ -384,7 +384,7 @@ class SliceGeneratorTest {
             "heightAngleFactor",
             "perlinData",
             "recycler",
-            "currentPosInNoiseInterpolation",
+            "currentTimeIndex",
             "lengthThreshold",
             "pool",
             "numberAvailableProcessors",

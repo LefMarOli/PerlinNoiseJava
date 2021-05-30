@@ -156,7 +156,7 @@ class PointGeneratorTest {
         .withClassName(NameStyle.SIMPLE_NAME)
         .withPreset(Presets.INTELLI_J)
         .withIgnoredFields(
-            "perlinData", "currentPosition", "generated", "containers", "containersCount")
+            "perlinData", "currentTimeDistance", "generated", "containers", "containersCount")
         .verify();
   }
 
