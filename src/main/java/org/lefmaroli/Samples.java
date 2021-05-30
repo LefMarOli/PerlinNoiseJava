@@ -1,2 +1,3 @@
-package org.lefmaroli;public class Samples {
-}
+package org.lefmaroli;
+
+public class Samples {}
