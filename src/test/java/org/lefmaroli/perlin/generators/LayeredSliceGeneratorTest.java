@@ -61,7 +61,7 @@ class LayeredSliceGeneratorTest {
         .withAmplitudes(List.of(1.0, 0.5, 0.25))
         .withNumberOfLayers(numLayers)
         .withRandomSeed(randomSeed)
-        .withNoiseStepSizes(List.of(1.0 / 100, 1.0 / 50, 1.0 / 25))
+        .withTimeStepSizes(List.of(1.0 / 100, 1.0 / 50, 1.0 / 25))
         .withWidthStepSizes(List.of(1.0 / 100, 1.0 / 50, 1.0 / 25))
         .withHeightStepSizes(List.of(1.0 / 100, 1.0 / 50, 1.0 / 25))
         .withLayerExecutorService(null);
@@ -114,13 +114,13 @@ class LayeredSliceGeneratorTest {
   @ParameterizedTest
   @MethodSource("invalidStepSizes")
   void testInvalidNoiseStepSizes(List<Double> stepSizes) {
-    defaultBuilder.withNoiseStepSizes(stepSizes);
+    defaultBuilder.withTimeStepSizes(stepSizes);
     Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
   }
 
   @Test
   void notEnoughNoiseStepSizes() {
-    defaultBuilder.withNoiseStepSizes(List.of(0.2, 0.5));
+    defaultBuilder.withTimeStepSizes(List.of(0.2, 0.5));
     Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
   }
 
@@ -292,7 +292,7 @@ class LayeredSliceGeneratorTest {
             resetBuilder(defaultBuilder).withHeightStepSizes(List.of(0.2, 0.02, 0.002)).build(),
             "Different height step sizes"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withNoiseStepSizes(List.of(0.2, 0.02, 0.002)).build(),
+            resetBuilder(defaultBuilder).withTimeStepSizes(List.of(0.2, 0.02, 0.002)).build(),
             "Different noise step sizes"),
         Arguments.of(null, "null"),
         Arguments.of(new Random(), "object from different class"));
@@ -400,7 +400,7 @@ class LayeredSliceGeneratorTest {
         new LayeredSliceGeneratorBuilder(sliceWidth, sliceHeight)
             .withWidthStepSizes(widthStepSizeGenerator)
             .withHeightStepSizes(heightStepSizeGenerator)
-            .withNoiseStepSizes(noiseStepSizeGenerator)
+            .withTimeStepSizes(noiseStepSizeGenerator)
             .withNumberOfLayers(numLayers)
             .withAmplitudes(amplitudeGenerator)
             .withLayerExecutorService(executorService)

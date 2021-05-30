@@ -101,7 +101,7 @@ class PerlinNoisePerformanceTest {
         new LayeredPointGeneratorBuilder()
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withTimeStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudes(new DoubleGenerator(1.0, 0.85))
             .build();
     long meanDuration =
@@ -120,7 +120,7 @@ class PerlinNoisePerformanceTest {
         new LayeredLineGeneratorBuilder(1000)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
+            .withTimeStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withLineStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudes(new DoubleGenerator(1.0, 0.85))
             .build();
@@ -140,7 +140,7 @@ class PerlinNoisePerformanceTest {
         new LayeredSliceGeneratorBuilder(100, 100)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizes(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withTimeStepSizes(new DoubleGenerator(1.0 / 1000, 2.0))
             .withWidthStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withHeightStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudes(new DoubleGenerator(1.0, 0.85))
@@ -165,7 +165,7 @@ class PerlinNoisePerformanceTest {
         new LayeredSliceGeneratorBuilder(200, 200)
             .withNumberOfLayers(3)
             .withRandomSeed(0L)
-            .withNoiseStepSizes(new DoubleGenerator(1.0 / 1000, 2.0))
+            .withTimeStepSizes(new DoubleGenerator(1.0 / 1000, 2.0))
             .withWidthStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withHeightStepSizes(new DoubleGenerator(1.0 / 50, 0.5))
             .withAmplitudes(new DoubleGenerator(1.0, 0.85))

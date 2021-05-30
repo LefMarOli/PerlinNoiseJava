@@ -50,7 +50,7 @@ class LineGeneratorTest {
   private static LineGeneratorBuilder resetBuilder(LineGeneratorBuilder builder)
       throws StepSizeException {
     builder
-        .withNoiseStepSize(defaultNoiseStepSize)
+        .withTimeStepSize(defaultNoiseStepSize)
         .withLineStepSize(defaultLineStepSize)
         .withAmplitude(maxAmplitude)
         .withRandomSeed(randomSeed)
@@ -91,7 +91,7 @@ class LineGeneratorTest {
   @ValueSource(doubles = {-5, 0})
   void testCreateInvalidNoiseStepSize(double noiseStepSize) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
+        IllegalArgumentException.class, () -> defaultBuilder.withTimeStepSize(noiseStepSize));
   }
 
   @Test
@@ -139,7 +139,7 @@ class LineGeneratorTest {
 
   @Test
   void testGetNoiseStepSize() {
-    assertEquals(defaultNoiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-8);
+    assertEquals(defaultNoiseStepSize, defaultGenerator.getTimeStepSize(), 1E-8);
   }
 
   @Test
@@ -264,7 +264,7 @@ class LineGeneratorTest {
             resetBuilder(defaultBuilder).withLineStepSize(defaultLineStepSize + 1.0 / 2),
             "Different line step size"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withNoiseStepSize(defaultNoiseStepSize + 1.0 / 2),
+            resetBuilder(defaultBuilder).withTimeStepSize(defaultNoiseStepSize + 1.0 / 2),
             "Different noise step size"),
         Arguments.of(
             resetBuilder(defaultBuilder).withAmplitude(maxAmplitude + 1.0 / 2),
@@ -323,7 +323,7 @@ class LineGeneratorTest {
     int lineLength = 200;
     LineGenerator generator =
         new LineGeneratorBuilder(lineLength)
-            .withNoiseStepSize(1.0 / 50)
+            .withTimeStepSize(1.0 / 50)
             .withLineStepSize(1.0 / 500)
             .withAmplitude(1.0)
             .withRandomSeed(randomSeed)

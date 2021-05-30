@@ -87,11 +87,11 @@ public class SliceGeneratorBuilder
     private final int sliceHeight;
     private final PerlinNoiseDataContainer perlinData;
     private final ContainerRecycler<PerlinNoiseDataContainer> recycler;
-    private int currentPosInNoiseInterpolation = 0;
+    private int currentTimeIndex = 0;
     private final int lengthThreshold;
 
     SliceGeneratorImpl(
-        double noiseStepSize,
+        double timeStepSize,
         double widthStepSize,
         double heightStepSize,
         int sliceWidth,
@@ -101,7 +101,7 @@ public class SliceGeneratorBuilder
         boolean isCircular,
         ForkJoinPool pool,
         JitterStrategy jitterStrategy) {
-      super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
+      super(timeStepSize, maxAmplitude, randomSeed, isCircular, pool);
       assertValidValues(parameterNames, widthStepSize, heightStepSize, sliceWidth, sliceHeight);
       this.widthStepSize = correctStepSizeForCircularity(widthStepSize, sliceWidth, "slice width");
       this.widthAngleFactor = this.widthStepSize * 2 * Math.PI;
@@ -160,8 +160,8 @@ public class SliceGeneratorBuilder
     @Override
     public String toString() {
       return "SliceGeneratorImpl{"
-          + "noiseStepSize="
-          + getNoiseStepSize()
+          + "timeStepSize="
+          + getTimeStepSize()
           + ", widthStepSize="
           + widthStepSize
           + ", heightStepSize="
@@ -206,18 +206,18 @@ public class SliceGeneratorBuilder
 
     @Override
     protected double[][] generateNextSegment(double[][] container) {
-      currentPosInNoiseInterpolation++;
-      processNoiseDomain(currentPosInNoiseInterpolation, container);
+      currentTimeIndex++;
+      processNoiseDomain(currentTimeIndex, container);
       return container;
     }
 
-    private void processNoiseDomain(int noiseIndex, double[][] slice) {
-      double noiseDist = (double) (noiseIndex) * getNoiseStepSize();
+    private void processNoiseDomain(int timeIndex, double[][] slice) {
+      double timeDist = (double) (timeIndex) * getTimeStepSize();
       if (hasParallelProcessingEnabled()) {
         getExecutionPool()
-            .invoke(new SliceNoiseTask(slice, noiseDist, 0, sliceWidth, 0, sliceHeight));
+            .invoke(new SliceNoiseTask(slice, timeDist, 0, sliceWidth, 0, sliceHeight));
       } else {
-        perlinData.setCoordinatesForDimension(0, noiseDist);
+        perlinData.setCoordinatesForDimension(0, timeDist);
         for (var widthIndex = 0; widthIndex < sliceWidth; widthIndex++) {
           if (Thread.interrupted()) {
             LogManager.getLogger(this.getClass())
@@ -264,7 +264,7 @@ public class SliceGeneratorBuilder
     private class SliceNoiseTask extends RecursiveAction {
 
       private final double[][] results;
-      private final double noiseDistance;
+      private final double timeDistance;
       private final int startWidthIndex;
       private final int endWidthIndex;
       private final int startHeightIndex;
@@ -272,13 +272,13 @@ public class SliceGeneratorBuilder
 
       SliceNoiseTask(
           double[][] results,
-          double noiseDistance,
+          double timeDistance,
           int startWidthIndex,
           int endWidthIndex,
           int startHeightIndex,
           int endHeightIndex) {
         this.results = results;
-        this.noiseDistance = noiseDistance;
+        this.timeDistance = timeDistance;
         this.startWidthIndex = startWidthIndex;
         this.endWidthIndex = endWidthIndex;
         this.startHeightIndex = startHeightIndex;
@@ -287,7 +287,7 @@ public class SliceGeneratorBuilder
 
       private void computeDirectly() {
         PerlinNoiseDataContainer dataContainer = recycler.getNewOrNextAvailableContainer();
-        dataContainer.setCoordinatesForDimension(0, noiseDistance);
+        dataContainer.setCoordinatesForDimension(0, timeDistance);
         for (var widthIndex = startWidthIndex; widthIndex < endWidthIndex; widthIndex++) {
           if (Thread.interrupted()) {
             LogManager.getLogger(this.getClass()).error("Interrupted processing [computeDirectly]");
@@ -314,28 +314,28 @@ public class SliceGeneratorBuilder
         invokeAll(
             new SliceNoiseTask(
                 results,
-                noiseDistance,
+                timeDistance,
                 startWidthIndex,
                 splitWidthIndex,
                 startHeightIndex,
                 splitHeightIndex),
             new SliceNoiseTask(
                 results,
-                noiseDistance,
+                timeDistance,
                 splitWidthIndex,
                 endWidthIndex,
                 startHeightIndex,
                 splitHeightIndex),
             new SliceNoiseTask(
                 results,
-                noiseDistance,
+                timeDistance,
                 startWidthIndex,
                 splitWidthIndex,
                 splitHeightIndex,
                 endHeightIndex),
             new SliceNoiseTask(
                 results,
-                noiseDistance,
+                timeDistance,
                 splitWidthIndex,
                 endWidthIndex,
                 splitHeightIndex,

@@ -55,7 +55,7 @@ abstract class LayeredBuilder<
     }
   }
 
-  public B withNoiseStepSizes(Iterable<Double> stepSizes) {
+  public B withTimeStepSizes(Iterable<Double> stepSizes) {
     setStepSizeGeneratorForDimension(1, stepSizes);
     return self();
   }

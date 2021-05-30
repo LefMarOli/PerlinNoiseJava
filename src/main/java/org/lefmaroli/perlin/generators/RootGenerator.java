@@ -10,15 +10,15 @@ abstract class RootGenerator<C> implements IRootGenerator<C> {
   protected final long randomSeed;
   private final Queue<C> generated = new LinkedList<>();
   private final Queue<C> containers = new LinkedList<>();
-  private final double noiseStepSize;
+  private final double timeStepSize;
   private final double maxAmplitude;
   private int containersCount = 0;
 
-  protected RootGenerator(double noiseStepSize, double maxAmplitude, long randomSeed) {
-    if (noiseStepSize < 0.0) {
+  protected RootGenerator(double timeStepSize, double maxAmplitude, long randomSeed) {
+    if (timeStepSize < 0.0) {
       throw new IllegalArgumentException("Noise interpolation points must be greater than 0");
     }
-    this.noiseStepSize = noiseStepSize;
+    this.timeStepSize = timeStepSize;
     this.maxAmplitude = maxAmplitude;
     this.randomSeed = randomSeed;
   }
@@ -33,8 +33,8 @@ abstract class RootGenerator<C> implements IRootGenerator<C> {
   }
 
   @Override
-  public double getNoiseStepSize() {
-    return noiseStepSize;
+  public double getTimeStepSize() {
+    return timeStepSize;
   }
 
   public C getNext() {
@@ -56,13 +56,13 @@ abstract class RootGenerator<C> implements IRootGenerator<C> {
     }
     RootGenerator<?> that = (RootGenerator<?>) o;
     return randomSeed == that.randomSeed
-        && Double.compare(that.noiseStepSize, noiseStepSize) == 0
+        && Double.compare(that.timeStepSize, timeStepSize) == 0
         && Double.compare(that.maxAmplitude, maxAmplitude) == 0;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(randomSeed, noiseStepSize, maxAmplitude);
+    return Objects.hash(randomSeed, timeStepSize, maxAmplitude);
   }
 
   @Override

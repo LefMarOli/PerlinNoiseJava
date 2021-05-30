@@ -57,7 +57,7 @@ class LayeredLineGeneratorTest {
     builder
         .withNumberOfLayers(numLayers)
         .withRandomSeed(randomSeed)
-        .withNoiseStepSizes(List.of(1 / 2048.0, 1.0 / 1024, 1.0 / 512))
+        .withTimeStepSizes(List.of(1 / 2048.0, 1.0 / 1024, 1.0 / 512))
         .withLineStepSizes(List.of(1 / 2048.0, 1.0 / 1024, 1.0 / 512))
         .withAmplitudes(List.of(1.0, 0.5, 0.25))
         .withCircularBounds(isCircularDefault)
@@ -126,13 +126,13 @@ class LayeredLineGeneratorTest {
   @ParameterizedTest
   @MethodSource("invalidStepSizes")
   void testInvalidNoiseStepSizes(List<Double> stepSizes) {
-    defaultBuilder.withNoiseStepSizes(stepSizes);
+    defaultBuilder.withTimeStepSizes(stepSizes);
     Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
   }
 
   @Test
   void notEnoughNoiseStepSizes() {
-    defaultBuilder.withNoiseStepSizes(List.of(0.2, 0.5));
+    defaultBuilder.withTimeStepSizes(List.of(0.2, 0.5));
     Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
   }
 
@@ -230,7 +230,7 @@ class LayeredLineGeneratorTest {
             resetBuilder(defaultBuilder).withLineStepSizes(List.of(0.2, 0.02, 0.002)).build(),
             "Different line step sizes"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withNoiseStepSizes(List.of(0.2, 0.02, 0.002)).build(),
+            resetBuilder(defaultBuilder).withTimeStepSizes(List.of(0.2, 0.02, 0.002)).build(),
             "Different noise step sizes"),
         Arguments.of(null, "null"),
         Arguments.of(new Random(), "object from different class"));
@@ -358,7 +358,7 @@ class LayeredLineGeneratorTest {
     LayeredLineGenerator generator =
         new LayeredLineGeneratorBuilder(lineLength)
             .withLineStepSizes(lineStepSizeGenerator)
-            .withNoiseStepSizes(noiseStepSizeGenerator)
+            .withTimeStepSizes(noiseStepSizeGenerator)
             .withNumberOfLayers(numLayers)
             .withAmplitudes(amplitudeGenerator)
             .build();

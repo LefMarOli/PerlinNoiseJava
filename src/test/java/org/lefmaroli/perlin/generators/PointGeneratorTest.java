@@ -32,7 +32,7 @@ class PointGeneratorTest {
 
   private static PointGeneratorBuilder resetBuilder(PointGeneratorBuilder builder)
       throws StepSizeException {
-    builder.withNoiseStepSize(noiseStepSize).withAmplitude(amplitude).withRandomSeed(randomSeed);
+    builder.withTimeStepSize(noiseStepSize).withAmplitude(amplitude).withRandomSeed(randomSeed);
     return builder;
   }
 
@@ -106,7 +106,7 @@ class PointGeneratorTest {
   @ValueSource(doubles = {-5, 0})
   void testCreateWithWrongStepSize(double noiseStepSize) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
+        IllegalArgumentException.class, () -> defaultBuilder.withTimeStepSize(noiseStepSize));
   }
 
   @ParameterizedTest(name = "{index} - {2}")
@@ -146,7 +146,7 @@ class PointGeneratorTest {
             resetBuilder(defaultBuilder).withAmplitude(amplitude + 1.0).build(),
             "Different amplitude"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withNoiseStepSize(noiseStepSize + 1.0 / 8).build(),
+            resetBuilder(defaultBuilder).withTimeStepSize(noiseStepSize + 1.0 / 8).build(),
             "Different noise step size"));
   }
 
@@ -162,6 +162,6 @@ class PointGeneratorTest {
 
   @Test
   void getNoiseStepSize() {
-    Assertions.assertEquals(noiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-9);
+    Assertions.assertEquals(noiseStepSize, defaultGenerator.getTimeStepSize(), 1E-9);
   }
 }

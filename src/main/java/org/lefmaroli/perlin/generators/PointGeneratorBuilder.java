@@ -36,12 +36,12 @@ public class PointGeneratorBuilder
 
     private static final Logger LOGGER = LogManager.getLogger(PointGeneratorImpl.class);
     private final PerlinNoiseDataContainer perlinData;
-    private double currentPosition;
+    private double currentTimeDistance;
 
     PointGeneratorImpl(
-        double noiseStepSize, double maxAmplitude, long randomSeed, JitterStrategy jitterStrategy) {
-      super(noiseStepSize, maxAmplitude, randomSeed);
-      this.currentPosition = new Random(randomSeed).nextDouble();
+        double timeStepSize, double maxAmplitude, long randomSeed, JitterStrategy jitterStrategy) {
+      super(timeStepSize, maxAmplitude, randomSeed);
+      this.currentTimeDistance = new Random(randomSeed).nextDouble();
       perlinData =
           new PerlinNoiseDataContainerBuilder(1, randomSeed, jitterStrategy).createNewContainer();
       LOGGER.debug("Created new {}", this);
@@ -66,8 +66,8 @@ public class PointGeneratorBuilder
     @Override
     public String toString() {
       return "PointGeneratorImpl{"
-          + "noiseStepSize="
-          + getNoiseStepSize()
+          + "timeStepSize="
+          + getTimeStepSize()
           + ", maxAmplitude="
           + getMaxAmplitude()
           + ", randomSeed="
@@ -82,8 +82,8 @@ public class PointGeneratorBuilder
 
     @Override
     protected Double generateNextSegment(Double container) {
-      currentPosition += getNoiseStepSize();
-      perlinData.setCoordinatesForDimension(0, currentPosition);
+      currentTimeDistance += getTimeStepSize();
+      perlinData.setCoordinatesForDimension(0, currentTimeDistance);
       return PerlinNoise.getFor(perlinData) * getMaxAmplitude();
     }
 

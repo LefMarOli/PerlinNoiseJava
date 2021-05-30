@@ -12,12 +12,12 @@ abstract class MultiDimensionalRootGenerator<C> extends RootGenerator<C>
   private final ForkJoinPool pool;
 
   protected MultiDimensionalRootGenerator(
-      double noiseStepSize,
+      double timeStepSize,
       double maxAmplitude,
       long randomSeed,
       boolean isCircular,
       ForkJoinPool pool) {
-    super(noiseStepSize, maxAmplitude, randomSeed);
+    super(timeStepSize, maxAmplitude, randomSeed);
     this.isCircular = isCircular;
     this.pool = pool;
   }

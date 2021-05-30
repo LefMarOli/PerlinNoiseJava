@@ -68,13 +68,13 @@ public class LineGeneratorBuilder
     private final double lineStepSize;
     private final int lineLength;
     private final double lineAngleFactor;
-    private int currentPosition = 0;
+    private int currentTimeIndex = 0;
     private final PerlinNoiseDataContainer perlinData;
     private final ContainerRecycler<PerlinNoiseDataContainer> recycler;
     private final int lineLengthThreshold;
 
     public LineGeneratorImpl(
-        double noiseStepSize,
+        double timeStepSize,
         double lineStepSize,
         int lineLength,
         double maxAmplitude,
@@ -82,7 +82,7 @@ public class LineGeneratorBuilder
         boolean isCircular,
         ForkJoinPool pool,
         JitterStrategy jitterStrategy) {
-      super(noiseStepSize, maxAmplitude, randomSeed, isCircular, pool);
+      super(timeStepSize, maxAmplitude, randomSeed, isCircular, pool);
       assertValidValues(parameterNames, lineStepSize, lineLength);
       this.lineLength = lineLength;
       this.lineLengthThreshold = computeLineLengthThresholdForForkingProcess(lineLength);
@@ -129,8 +129,8 @@ public class LineGeneratorBuilder
     @Override
     public String toString() {
       return "LineGeneratorImpl{"
-          + "noiseStepSize="
-          + getNoiseStepSize()
+          + "timeStepSize="
+          + getTimeStepSize()
           + ", lineStepSize="
           + lineStepSize
           + ", lineLength="
@@ -166,17 +166,17 @@ public class LineGeneratorBuilder
 
     @Override
     protected double[] generateNextSegment(double[] container) {
-      currentPosition++;
-      processNoiseDomain(currentPosition, container);
+      currentTimeIndex++;
+      processTimeDomain(currentTimeIndex, container);
       return container;
     }
 
-    private void processNoiseDomain(int noiseIndex, double[] lineData) {
-      double noiseDist = (double) (noiseIndex) * getNoiseStepSize();
+    private void processTimeDomain(int timeIndex, double[] lineData) {
+      double timeDist = (double) (timeIndex) * getTimeStepSize();
       if (hasParallelProcessingEnabled()) {
-        getExecutionPool().invoke(new LineNoiseTask(lineData, noiseDist, 0, lineLength));
+        getExecutionPool().invoke(new LineNoiseTask(lineData, timeDist, 0, lineLength));
       } else {
-        perlinData.setCoordinatesForDimension(0, noiseDist);
+        perlinData.setCoordinatesForDimension(0, timeDist);
         for (var lineIndex = 0; lineIndex < lineLength; lineIndex++) {
           if (Thread.currentThread().isInterrupted()) {
             LogManager.getLogger(this.getClass())
@@ -202,20 +202,20 @@ public class LineGeneratorBuilder
     private class LineNoiseTask extends RecursiveAction {
 
       private final double[] results;
-      private final double noiseDistance;
+      private final double timeDistance;
       private final int startLineIndex;
       private final int endLineIndex;
 
-      LineNoiseTask(double[] results, double noiseDistance, int startLineIndex, int endLineIndex) {
+      LineNoiseTask(double[] results, double timeDistance, int startLineIndex, int endLineIndex) {
         this.results = results;
-        this.noiseDistance = noiseDistance;
+        this.timeDistance = timeDistance;
         this.startLineIndex = startLineIndex;
         this.endLineIndex = endLineIndex;
       }
 
       private void computeDirectly() {
         PerlinNoiseDataContainer dataContainer = recycler.getNewOrNextAvailableContainer();
-        dataContainer.setCoordinatesForDimension(0, noiseDistance);
+        dataContainer.setCoordinatesForDimension(0, timeDistance);
         for (var lineIndex = startLineIndex; lineIndex < endLineIndex; lineIndex++) {
           if (Thread.currentThread().isInterrupted()) {
             LogManager.getLogger(this.getClass()).debug("Interrupted processing [computeDirectly]");
@@ -237,8 +237,8 @@ public class LineGeneratorBuilder
         int splitIndex = (lineSegment / 2) + startLineIndex;
 
         invokeAll(
-            new LineNoiseTask(results, noiseDistance, startLineIndex, splitIndex),
-            new LineNoiseTask(results, noiseDistance, splitIndex, endLineIndex));
+            new LineNoiseTask(results, timeDistance, startLineIndex, splitIndex),
+            new LineNoiseTask(results, timeDistance, splitIndex, endLineIndex));
         if (Thread.currentThread().isInterrupted()) {
           LogManager.getLogger(this.getClass()).debug("Interrupted processing [compute]");
         }

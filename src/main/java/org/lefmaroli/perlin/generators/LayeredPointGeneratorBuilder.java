@@ -30,7 +30,7 @@ public class LayeredPointGeneratorBuilder
       List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy)
       throws StepSizeException {
     return singleLayerBuilder
-        .withNoiseStepSize(stepSizes.get(0))
+        .withTimeStepSize(stepSizes.get(0))
         .withAmplitude(layerAmplitude)
         .withRandomSeed(randomSeed)
         .withJitterStrategy(jitterStrategy)

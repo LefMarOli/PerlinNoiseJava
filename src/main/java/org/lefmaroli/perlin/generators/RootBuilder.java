@@ -29,9 +29,9 @@ abstract class RootBuilder<N, L extends IGenerator<N>, B extends RootBuilder<N, 
     return self();
   }
 
-  public B withNoiseStepSize(double noiseStepSize) throws StepSizeException {
-    assertStepSize(noiseStepSize);
-    stepSizes[0] = noiseStepSize;
+  public B withTimeStepSize(double timeStepSize) throws StepSizeException {
+    assertStepSize(timeStepSize);
+    stepSizes[0] = timeStepSize;
     return self();
   }
 

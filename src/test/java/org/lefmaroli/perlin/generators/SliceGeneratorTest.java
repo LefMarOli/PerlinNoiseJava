@@ -85,7 +85,7 @@ class SliceGeneratorTest {
   static SliceGeneratorBuilder resetBuilder(SliceGeneratorBuilder builder)
       throws StepSizeException {
     builder
-        .withNoiseStepSize(noiseStepSize)
+        .withTimeStepSize(noiseStepSize)
         .withWidthStepSize(widthStepSize)
         .withHeightStepSize(heightStepSize)
         .withAmplitude(maxAmplitude)
@@ -161,7 +161,7 @@ class SliceGeneratorTest {
   @ValueSource(doubles = {-5, 0})
   void testCreateInvalidNoiseStepSize(double noiseStepSize) {
     Assertions.assertThrows(
-        IllegalArgumentException.class, () -> defaultBuilder.withNoiseStepSize(noiseStepSize));
+        IllegalArgumentException.class, () -> defaultBuilder.withTimeStepSize(noiseStepSize));
   }
 
   @ParameterizedTest
@@ -189,7 +189,7 @@ class SliceGeneratorTest {
 
   @Test
   void testGetNoiseStepSize() {
-    assertEquals(noiseStepSize, defaultGenerator.getNoiseStepSize(), 1E-9);
+    assertEquals(noiseStepSize, defaultGenerator.getTimeStepSize(), 1E-9);
   }
 
   @Test
@@ -347,7 +347,7 @@ class SliceGeneratorTest {
   private static Stream<Arguments> notEquals() throws StepSizeException {
     return Stream.of(
         Arguments.of(
-            resetBuilder(defaultBuilder).withNoiseStepSize(noiseStepSize + 1.0 / 6).build(),
+            resetBuilder(defaultBuilder).withTimeStepSize(noiseStepSize + 1.0 / 6).build(),
             "different noise step size"),
         Arguments.of(
             resetBuilder(defaultBuilder).withWidthStepSize(widthStepSize + 1.0 / 6).build(),

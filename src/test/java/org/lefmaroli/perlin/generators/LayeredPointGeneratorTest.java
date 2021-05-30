@@ -49,7 +49,7 @@ class LayeredPointGeneratorTest {
         .withRandomSeed(randomSeed)
         .withNumberOfLayers(numLayers)
         .withAmplitudes(List.of(1.0, 0.5, 0.25))
-        .withNoiseStepSizes(List.of(1 / 2048.0, 1 / 1024.0, 1 / 512.0))
+        .withTimeStepSizes(List.of(1 / 2048.0, 1 / 1024.0, 1 / 512.0))
         .withLayerExecutorService(null);
   }
 
@@ -66,7 +66,7 @@ class LayeredPointGeneratorTest {
   @ParameterizedTest
   @MethodSource("invalidStepSizes")
   void testInvalidNoiseStepSizes(List<Double> stepSizes) {
-    defaultBuilder.withNoiseStepSizes(stepSizes);
+    defaultBuilder.withTimeStepSizes(stepSizes);
     Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
   }
 
@@ -77,7 +77,7 @@ class LayeredPointGeneratorTest {
 
   @Test
   void notEnoughNoiseStepSizes() {
-    defaultBuilder.withNoiseStepSizes(List.of(0.2, 0.5));
+    defaultBuilder.withTimeStepSizes(List.of(0.2, 0.5));
     Assertions.assertThrows(LayeredGeneratorBuilderException.class, () -> defaultBuilder.build());
   }
 
@@ -158,7 +158,7 @@ class LayeredPointGeneratorTest {
             resetBuilder(defaultBuilder).withRandomSeed(randomSeed + 1).build(),
             "Different random seed"),
         Arguments.of(
-            resetBuilder(defaultBuilder).withNoiseStepSizes(List.of(0.2, 0.02, 0.002)).build(),
+            resetBuilder(defaultBuilder).withTimeStepSizes(List.of(0.2, 0.02, 0.002)).build(),
             "Different noise step sizes"),
         Arguments.of(null, "null"),
         Arguments.of(new Random(), "object from different class"));
@@ -192,7 +192,7 @@ class LayeredPointGeneratorTest {
     int numLayers = 4;
     LayeredPointGenerator generator =
         new LayeredPointGeneratorBuilder()
-            .withNoiseStepSizes(noiseStepSizeGenerator)
+            .withTimeStepSizes(noiseStepSizeGenerator)
             .withNumberOfLayers(numLayers)
             .withAmplitudes(amplitudeGenerator)
             .build();

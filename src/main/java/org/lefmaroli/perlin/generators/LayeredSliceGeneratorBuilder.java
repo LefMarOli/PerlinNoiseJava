@@ -42,7 +42,7 @@ public class LayeredSliceGeneratorBuilder
       List<Double> stepSizes, double layerAmplitude, long randomSeed, JitterStrategy jitterStrategy)
       throws StepSizeException {
     return singleLayerBuilder
-        .withNoiseStepSize(stepSizes.get(0))
+        .withTimeStepSize(stepSizes.get(0))
         .withWidthStepSize(stepSizes.get(1))
         .withHeightStepSize(stepSizes.get(2))
         .withAmplitude(layerAmplitude)
