@@ -124,7 +124,7 @@
     <dependency>
       <artifactId>spring-core</artifactId>
       <groupId>org.springframework</groupId>
-      <version>5.2.6.RELEASE</version>
+      <version>5.2.22.RELEASE</version>
     </dependency>
     <dependency>
       <artifactId>awaitility</artifactId>
